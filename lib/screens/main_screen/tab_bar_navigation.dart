@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/screens/main_screen/all_words.dart';
 import 'package:kelime_hazinem/screens/main_screen/homepage.dart';
+import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
 
 class MainScreenTabBar extends StatefulWidget {
   const MainScreenTabBar({super.key});
@@ -45,8 +47,8 @@ class _MainScreenTabBarState extends State<MainScreenTabBar> {
         body: const TabBarView(
           children: [
             HomePage(),
-            Text("data 2"),
-            Text("data 3"),
+            MyLists(),
+            AllWords(),
           ],
         ),
       ),

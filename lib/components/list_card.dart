@@ -55,7 +55,7 @@ class _ListCardState extends State<ListCard> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [BoxShadow(blurRadius: 4, color: widget.color.withOpacity(0.25))],
         ),
-        constraints: const BoxConstraints(maxWidth: 90),
+        constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 350) ? 80 : 90),
         alignment: Alignment.center,
         child: Padding(
           padding: const EdgeInsets.all(8.0),

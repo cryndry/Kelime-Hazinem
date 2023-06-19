@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 void popBottomSheet(BuildContext context, String title, String info, List<Widget> buttons) {
+  print("screen width: " + MediaQuery.of(context).size.width.toString());
   showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
