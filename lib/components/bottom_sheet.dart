@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 void popBottomSheet(BuildContext context, String title, String info, List<Widget> buttons) {
-  print("screen width: " + MediaQuery.of(context).size.width.toString());
   showModalBottomSheet(
       context: context,
       isScrollControlled: true,

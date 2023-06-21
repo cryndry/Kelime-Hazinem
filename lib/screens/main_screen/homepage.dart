@@ -3,7 +3,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
-import 'package:kelime_hazinem/components/word_card.dart';
+import 'package:kelime_hazinem/components/random_word_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return PageLayout(
       children: [
-        const WordCard(isRandomWordCard: true),
+        const RandomWordCard(),
         const SizedBox(height: 12),
         ListCardGrid(
           children: [
