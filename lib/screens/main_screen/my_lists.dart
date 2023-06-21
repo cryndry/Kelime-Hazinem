@@ -6,6 +6,7 @@ import 'package:kelime_hazinem/components/page_layout.dart';
 
 class MyLists extends StatelessWidget {
   const MyLists({super.key});
+  // TODO: after dynamic implementation of this page, AutomaticKeepAliveClientMixin state will be added like other tabs,
 
   @override
   Widget build(BuildContext context) {
