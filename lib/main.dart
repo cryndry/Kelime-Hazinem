@@ -5,11 +5,12 @@ import 'package:kelime_hazinem/utils/database.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
-  runApp(const MyApp());
+  await SharedPreferencesDatabase.initDB();
+  runApp(const KelimeHazinem());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class KelimeHazinem extends StatelessWidget {
+  const KelimeHazinem({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF007AFF)),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: MainScreen(),
     );
   }
 }

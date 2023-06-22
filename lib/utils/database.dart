@@ -1,4 +1,5 @@
 import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,21 +21,21 @@ abstract class SqlDatabase {
       ByteData data = await rootBundle.load(path.join("assets", _dbName));
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
+      Database db = await openDatabase(dbPath);
+      await db.transaction((txn) async {
+        final List<Map<String, Object?>> doesDbHaveInitialColumns = await txn
+            .rawQuery("SELECT COUNT(*) as isFound FROM pragma_table_info('$_dbTableName') WHERE name='willLearn';");
+        if (doesDbHaveInitialColumns[0]["isFound"] == 1) return;
+
+        await txn.execute("ALTER TABLE $_dbTableName ADD willLearn int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD favorite int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD learned int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD memorized int(1) default 0;");
+      });
+      _db = db; // to ensure that db is used after the initialization completed with all aspects
+    } else {
+      _db = await openDatabase(dbPath);
     }
-
-    Database db = await openDatabase(dbPath);
-    await db.transaction((txn) async {
-      final List<Map<String, Object?>> doesDbHaveInitialColumns = await txn
-          .rawQuery("SELECT COUNT(*) as isFound FROM pragma_table_info('$_dbTableName') WHERE name='willLearn';");
-      if (doesDbHaveInitialColumns[0]["isFound"] == 1) return;
-
-      await txn.execute("ALTER TABLE $_dbTableName ADD willLearn int(1) default 0;");
-      await txn.execute("ALTER TABLE $_dbTableName ADD favorite int(1) default 0;");
-      await txn.execute("ALTER TABLE $_dbTableName ADD learned int(1) default 0;");
-      await txn.execute("ALTER TABLE $_dbTableName ADD memorized int(1) default 0;");
-    });
-
-    _db = db; // to ensure that db is used after the initialization completed with all aspects
   }
 
   static Future<List<Word>> getAllWords() async {
@@ -44,7 +45,7 @@ abstract class SqlDatabase {
     });
     return words.map((word) => Word.fromJson(word)).toList();
   }
-  
+
   static Future<List<Map<String, dynamic>>> getAllWordsJson() async {
     return await _db.transaction((txn) async {
       return await txn.query(_dbTableName, columns: null);
@@ -70,5 +71,17 @@ abstract class SqlDatabase {
       if (result == 1) return true;
       return false;
     });
+  }
+}
+
+abstract class SharedPreferencesDatabase {
+  static late SharedPreferences db;
+
+  static Future<void> initDB() async {
+    db = await SharedPreferences.getInstance();
+
+    if (!db.containsKey("firstTabIndex")) {
+      SharedPreferencesDatabase.db.setInt("firstTabIndex", 0);
+    }
   }
 }
