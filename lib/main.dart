@@ -17,6 +17,7 @@ class KelimeHazinem extends StatelessWidget {
     return MaterialApp(
       title: 'Kelime Hazinem',
       theme: ThemeData(
+        fontFamily: "Manrope",
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF007AFF)),
         useMaterial3: true,
       ),
