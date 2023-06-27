@@ -8,7 +8,7 @@ class AnimatedActionButton extends StatefulWidget {
     required this.duration,
     required this.activeFillColor,
     this.inactiveFillColor = Colors.transparent,
-    required this.path,
+    required this.icon,
     required this.size,
     this.strokeColor = Colors.white,
     this.semanticsLabel,
@@ -19,7 +19,7 @@ class AnimatedActionButton extends StatefulWidget {
   final int duration;
   final Color activeFillColor;
   final Color inactiveFillColor;
-  final String path;
+  final String icon;
   final double size;
   final Color strokeColor;
   final String? semanticsLabel;
@@ -84,7 +84,7 @@ class AnimatedActionButtonState extends State<AnimatedActionButton> with SingleT
     return AnimatedBuilder(
       animation: _colorTween,
       builder: (context, child) => ActionButton(
-        path: widget.path,
+        icon: widget.icon,
         strokeColor: widget.strokeColor,
         size: widget.size,
         fillColor: _colorTween.value,

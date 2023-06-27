@@ -3,6 +3,7 @@ import 'package:kelime_hazinem/components/fab.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MyLists extends StatelessWidget {
   const MyLists({super.key});
@@ -12,9 +13,9 @@ class MyLists extends StatelessWidget {
   Widget build(BuildContext context) {
     return PageLayout(
       FABs: [
-        FAB(iconPath: "assets/Cloud.svg", onTap: (){}),
+        FAB(icon: MySvgs.cloud, onTap: (){}),
         const SizedBox(height: 12),
-        FAB(iconPath: "assets/Plus.svg", onTap: (){}),
+        FAB(icon: MySvgs.plus, onTap: (){}),
       ],
       children: [
         ListCardGrid(

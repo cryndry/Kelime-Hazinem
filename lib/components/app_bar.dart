@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   const MyAppBar({
@@ -25,25 +26,31 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _MyAppBarState extends State<MyAppBar> {
   late List<Widget> buttons;
-  static const firstOrSecondTabButtons = [
+
+  List<ActionButton> firstOrSecondTabButtons = const [
     ActionButton(
-      path: "assets/Cloud.svg",
+      key: ValueKey("cloud"),
+      icon: MySvgs.cloud,
       size: 32,
       semanticsLabel: "Liste Paylaş",
     ),
     ActionButton(
-      path: "assets/Settings.svg",
+      key: ValueKey("settings"),
+      icon: MySvgs.settings,
       size: 32,
       semanticsLabel: "Ayarlar",
     ),
   ];
-  static const thirdTabButtons = [
+
+  late List<ActionButton> thirdTabButtons = [
     ActionButton(
-      path: "assets/Search.svg",
+      key: const ValueKey("search"),
+      icon: MySvgs.search,
       size: 32,
       semanticsLabel: "Kelime Ara",
+      onTap: () {},
     ),
-    ...firstOrSecondTabButtons
+    ...firstOrSecondTabButtons,
   ];
 
   @override
@@ -72,35 +79,68 @@ class _MyAppBarState extends State<MyAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(64),
-      child: Container(
-        color: const Color(0xFF007AFF),
-        padding: const EdgeInsets.all(16),
-        child: AppBar(
-          backgroundColor: const Color(0xFF007AFF),
-          title: Text(
-            widget.title,
-            style: const TextStyle(
-              fontSize: 22,
-              height: 32 / 22,
+    final canPop = Navigator.canPop(context);
+    return Container(
+      constraints: const BoxConstraints.tightFor(height: 64),
+      color: const Color(0xFF007AFF),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: AppBar(
+        backgroundColor: const Color(0xFF007AFF),
+        foregroundColor: Colors.white,
+        titleSpacing: canPop ? 12 : 0,
+        title: widget.secTitle == null
+            ? Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  height: 32 / 22,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 20 / 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.secTitle!,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      height: 16 / 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+        leadingWidth: 32,
+        leading: canPop
+            ? ActionButton(
+                icon: MySvgs.backArrow,
+                size: 32,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
+            : null,
+        actions: [
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: (buttons.isNotEmpty) ? buttons.length * 40 - 8 : 0),
+            child: ListView.separated(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => buttons[index],
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              itemCount: buttons.length,
             ),
           ),
-          foregroundColor: Colors.white,
-          titleSpacing: 0,
-          actions: [
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: (buttons.isNotEmpty) ? buttons.length * 40 - 8 : 0),
-              child: ListView.separated(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => buttons[index],
-                separatorBuilder: (context, index) => const SizedBox(width: 8),
-                itemCount: buttons.length,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

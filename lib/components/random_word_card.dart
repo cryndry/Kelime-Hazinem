@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/word_card.dart';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class RandomWordCard extends StatefulWidget {
@@ -50,7 +51,7 @@ class _RandomWordCardState extends State<RandomWordCard> {
           width: 32,
           height: 32,
           child: ActionButton(
-            path: "assets/Refresh.svg",
+            icon: MySvgs.refresh,
             size: 32,
             semanticsLabel: "Kelimeyi Yenile",
             onTap: getRandomWord,

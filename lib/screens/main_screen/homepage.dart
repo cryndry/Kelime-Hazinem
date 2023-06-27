@@ -4,6 +4,7 @@ import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/random_word_card.dart';
+import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,37 +33,33 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
             ListCard(
                 title: "Öğrenecek\u200blerim",
                 color: const Color(0xFFB3261E),
-                icon: const ActionButton(
-                  path: "assets/Will Learn.svg",
-                  fillColor: Color(0xFFB3261E),
-                  strokeColor: Color(0xFFFFFFFF),
+                icon: ActionButton(
+                  icon: MySvgs.willLearn,
+                  fillColor: const Color(0xFFB3261E),
                   size: 32,
                 )),
             ListCard(
                 title: "Favorilerim".split('').join('\ufeff'),
                 color: const Color(0xFFFFD000),
-                icon: const ActionButton(
-                  path: "assets/Favorites.svg",
-                  fillColor: Color(0xFFFFD000),
-                  strokeColor: Color(0xFFFFFFFF),
+                icon: ActionButton(
+                  icon: MySvgs.favorites,
+                  fillColor: const Color(0xFFFFD000),
                   size: 32,
                 )),
             ListCard(
                 title: "Öğrendik\u200blerim",
                 color: const Color(0xFF70E000),
-                icon: const ActionButton(
-                  path: "assets/Learned.svg",
-                  fillColor: Color(0xFF70E000),
-                  strokeColor: Color(0xFFFFFFFF),
+                icon: ActionButton(
+                  icon: MySvgs.learned,
+                  fillColor: const Color(0xFF70E000),
                   size: 32,
                 )),
             ListCard(
                 title: "Hazinem",
                 color: const Color(0xFF008000),
-                icon: const ActionButton(
-                  path: "assets/Memorized.svg",
-                  fillColor: Color(0xFF008000),
-                  strokeColor: Color(0xFFFFFFFF),
+                icon: ActionButton(
+                  icon: MySvgs.memorized,
+                  fillColor: const Color(0xFF008000),
                   size: 32,
                 )),
           ],

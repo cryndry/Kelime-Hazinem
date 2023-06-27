@@ -3,6 +3,7 @@ import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
+import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
 
 class ListCard extends StatefulWidget {
   ListCard({
@@ -15,10 +16,6 @@ class ListCard extends StatefulWidget {
   final String title;
   final ActionButton? icon;
   final Color color;
-
-  
-
-  
 
   final ButtonStyle outlinedButtonStyle = ButtonStyle(
       foregroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
@@ -39,13 +36,20 @@ class _ListCardState extends State<ListCard> {
           widget.title,
           "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
           <Widget>[
-            FillColoredButton(title: "Kelime Öğrenme", onPressed: (){}),
+            FillColoredButton(
+                title: "Kelime Öğrenme",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WordLearn(listName: widget.title,)),
+                  );
+                }),
             const SizedBox(height: 12),
-            FillColoredButton(title: "Kelime Testi", onPressed: (){}),
+            FillColoredButton(title: "Kelime Testi", onPressed: () {}),
             const SizedBox(height: 12),
-            FillColoredButton(title: "Kelimeyi Bul", onPressed: (){}),
+            FillColoredButton(title: "Kelimeyi Bul", onPressed: () {}),
             const SizedBox(height: 12),
-            StrokeColoredButton(title: "Tüm Kelimeler", onPressed: (){}),
+            StrokeColoredButton(title: "Tüm Kelimeler", onPressed: () {}),
           ],
         );
       },
@@ -92,18 +96,18 @@ class _ListCardState extends State<ListCard> {
               Container(
                 constraints: const BoxConstraints(minHeight: 32, maxHeight: 48),
                 child: Text(
-                    widget.title,
-                    maxLines: 3,
-                    softWrap: true,
-                    style: const TextStyle(
-                      letterSpacing: -0.5,
-                      fontSize: 14,
-                      height: 16 / 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+                  widget.title,
+                  maxLines: 3,
+                  softWrap: true,
+                  style: const TextStyle(
+                    letterSpacing: -0.5,
+                    fontSize: 14,
+                    height: 16 / 14,
+                    fontWeight: FontWeight.w500,
                   ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),

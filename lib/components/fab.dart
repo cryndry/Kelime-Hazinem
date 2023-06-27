@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 
 class FAB extends StatelessWidget {
-  const FAB({super.key, required this.iconPath, required this.onTap, this.semanticsLabel});
+  const FAB({super.key, required this.icon, required this.onTap, this.semanticsLabel});
 
-  final String iconPath;
+  final String icon;
   final String? semanticsLabel;
   final void Function() onTap;
 
@@ -19,7 +19,7 @@ class FAB extends StatelessWidget {
         boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black26)],
       ),
       child: ActionButton(
-        path: iconPath,
+        icon: icon,
         size: 32,
         fillColor: Colors.transparent,
         strokeColor: Colors.white,

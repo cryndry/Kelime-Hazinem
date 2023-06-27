@@ -46,10 +46,11 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<List<Map<String, dynamic>>> getAllWordsJson() async {
-    return await _db.transaction((txn) async {
-      return await txn.query(_dbTableName, columns: null);
+  static Future<List<Word>> getWordsQuery(int limit, String listName) async {
+    List<Map<String, dynamic>> words = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1 LIMIT $limit");
     });
+    return words.map((word) => Word.fromJson(word)).toList();
   }
 
   static Future<Word> getRandomWord() async {
@@ -82,6 +83,14 @@ abstract class SharedPreferencesDatabase {
 
     if (!db.containsKey("firstTabIndex")) {
       SharedPreferencesDatabase.db.setInt("firstTabIndex", 0);
+    }
+    
+    if (!db.containsKey("wordLearnListLength")) {
+      SharedPreferencesDatabase.db.setInt("wordLearnListLength", 50);
+    }
+
+    if (!db.containsKey("otherModsListLength")) {
+      SharedPreferencesDatabase.db.setInt("otherModsListLength", 20);
     }
   }
 }
