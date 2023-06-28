@@ -31,6 +31,9 @@ abstract class SqlDatabase {
         await txn.execute("ALTER TABLE $_dbTableName ADD favorite int(1) default 0;");
         await txn.execute("ALTER TABLE $_dbTableName ADD learned int(1) default 0;");
         await txn.execute("ALTER TABLE $_dbTableName ADD memorized int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD basic int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD intermediate int(1) default 0;");
+        await txn.execute("ALTER TABLE $_dbTableName ADD advanced int(1) default 0;");
       });
       _db = db; // to ensure that db is used after the initialization completed with all aspects
     } else {
@@ -51,6 +54,13 @@ abstract class SqlDatabase {
       return await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1 LIMIT $limit");
     });
     return words.map((word) => Word.fromJson(word)).toList();
+  }
+
+  static Future<bool> checkIfListHaveWords(String listName) async {
+    List<Map<String, dynamic>> words = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1");
+    });
+    return words.isNotEmpty;
   }
 
   static Future<Word> getRandomWord() async {
@@ -84,7 +94,7 @@ abstract class SharedPreferencesDatabase {
     if (!db.containsKey("firstTabIndex")) {
       SharedPreferencesDatabase.db.setInt("firstTabIndex", 0);
     }
-    
+
     if (!db.containsKey("wordLearnListLength")) {
       SharedPreferencesDatabase.db.setInt("wordLearnListLength", 50);
     }

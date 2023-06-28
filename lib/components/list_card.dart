@@ -17,6 +17,20 @@ class ListCard extends StatefulWidget {
   final ActionButton? icon;
   final Color color;
 
+  late final String dbTitle = (() {
+    final defaults = {
+      "Öğrenecek\u200blerim": "willLearn",
+      "Favorilerim".split('').join('\ufeff'): "favorite",
+      "Öğrendik\u200blerim": "learned",
+      "Hazinem": "memorized",
+      "Temel Seviye": "basic",
+      "Orta Seviye": "intermediate",
+      "İleri Seviye": "advanced",
+    };
+
+    return defaults[title] ?? title.toLowerCase().replaceAll(" ", "_");
+  })();
+
   final ButtonStyle outlinedButtonStyle = ButtonStyle(
       foregroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
       backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
@@ -41,7 +55,11 @@ class _ListCardState extends State<ListCard> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WordLearn(listName: widget.title,)),
+                    MaterialPageRoute(
+                        builder: (context) => WordLearn(
+                              listName: widget.title,
+                              dbTitle: widget.dbTitle,
+                            )),
                   );
                 }),
             const SizedBox(height: 12),

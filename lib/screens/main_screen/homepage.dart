@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     return PageLayout(
       children: [
         const RandomWordCard(),
@@ -33,33 +33,33 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
             ListCard(
                 title: "Öğrenecek\u200blerim",
                 color: const Color(0xFFB3261E),
-                icon: ActionButton(
+                icon: const ActionButton(
                   icon: MySvgs.willLearn,
-                  fillColor: const Color(0xFFB3261E),
+                  fillColor: Color(0xFFB3261E),
                   size: 32,
                 )),
             ListCard(
                 title: "Favorilerim".split('').join('\ufeff'),
                 color: const Color(0xFFFFD000),
-                icon: ActionButton(
+                icon: const ActionButton(
                   icon: MySvgs.favorites,
-                  fillColor: const Color(0xFFFFD000),
+                  fillColor: Color(0xFFFFD000),
                   size: 32,
                 )),
             ListCard(
                 title: "Öğrendik\u200blerim",
                 color: const Color(0xFF70E000),
-                icon: ActionButton(
+                icon: const ActionButton(
                   icon: MySvgs.learned,
-                  fillColor: const Color(0xFF70E000),
+                  fillColor: Color(0xFF70E000),
                   size: 32,
                 )),
             ListCard(
                 title: "Hazinem",
                 color: const Color(0xFF008000),
-                icon: ActionButton(
+                icon: const ActionButton(
                   icon: MySvgs.memorized,
-                  fillColor: const Color(0xFF008000),
+                  fillColor: Color(0xFF008000),
                   size: 32,
                 )),
           ],
