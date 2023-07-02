@@ -5,7 +5,7 @@ import 'package:kelime_hazinem/utils/database.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
-  await SharedPreferencesDatabase.initDB();
+  await KeyValueDatabase.initDB();
   runApp(const KelimeHazinem());
 }
 

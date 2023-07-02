@@ -86,22 +86,34 @@ abstract class SqlDatabase {
   }
 }
 
-abstract class SharedPreferencesDatabase {
-  static late SharedPreferences db;
+abstract final class DbKeys {
+  static const String firstTabIndex = "firstTabIndex";
+  static const String wordLearnListLength = "wordLearnListLength";
+  static const String otherModsListLength = "otherModsListLength";
+  static const String isAnimatable = "isAnimatable";
+}
+
+abstract class KeyValueDatabase {
+  static late SharedPreferences _db;
 
   static Future<void> initDB() async {
-    db = await SharedPreferences.getInstance();
+    _db = await SharedPreferences.getInstance();
 
-    if (!db.containsKey("firstTabIndex")) {
-      SharedPreferencesDatabase.db.setInt("firstTabIndex", 0);
-    }
-
-    if (!db.containsKey("wordLearnListLength")) {
-      SharedPreferencesDatabase.db.setInt("wordLearnListLength", 50);
-    }
-
-    if (!db.containsKey("otherModsListLength")) {
-      SharedPreferencesDatabase.db.setInt("otherModsListLength", 20);
-    }
+    if (!_db.containsKey(DbKeys.firstTabIndex)) setFirstTabIndex(0);
+    if (!_db.containsKey(DbKeys.wordLearnListLength)) setWordLearnListLength(30);
+    if (!_db.containsKey(DbKeys.otherModsListLength)) setOtherModsListLength(15);
+    if (!_db.containsKey(DbKeys.isAnimatable)) setIsAnimatable(true);
   }
+
+  static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
+  static void setFirstTabIndex(int value) => _db.setInt(DbKeys.firstTabIndex, value);
+
+  static int getWordLearnListLength() => _db.getInt(DbKeys.wordLearnListLength)!;
+  static void setWordLearnListLength(int value) => _db.setInt(DbKeys.wordLearnListLength, value);
+
+  static int getOtherModsListLength() => _db.getInt(DbKeys.otherModsListLength)!;
+  static void setOtherModsListLength(int value) => _db.setInt(DbKeys.otherModsListLength, value);
+
+  static bool getIsAnimatable() => _db.getBool(DbKeys.isAnimatable)!;
+  static void setIsAnimatable(bool value) => _db.setBool(DbKeys.isAnimatable, value);
 }

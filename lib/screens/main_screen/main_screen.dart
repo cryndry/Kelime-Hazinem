@@ -7,7 +7,7 @@ class MainScreen extends StatefulWidget {
   MainScreen({super.key});
 
   static String title = 'Kelime Hazinem';
-  final int firstTabIndex = SharedPreferencesDatabase.db.getInt("firstTabIndex")!;
+  final int firstTabIndex = KeyValueDatabase.getFirstTabIndex();
 
   @override
   State<MainScreen> createState() => _MainScreenState();

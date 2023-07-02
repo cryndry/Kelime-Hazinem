@@ -20,7 +20,7 @@ class WordLearn extends StatefulWidget {
 }
 
 class _WordLearnState extends State<WordLearn> {
-  final int listLength = SharedPreferencesDatabase.db.getInt("wordLearnListLength")!;
+  final int listLength = KeyValueDatabase.getWordLearnListLength();
   final PageController pageController = PageController();
   final TextEditingController textEditingController = TextEditingController(text: "1");
   final FocusNode textInputFocus = FocusNode();
@@ -214,7 +214,9 @@ class KeepAlivePage extends StatefulWidget {
 }
 
 class KeepAlivePageState extends State<KeepAlivePage> with AutomaticKeepAliveClientMixin<KeepAlivePage> {
+  final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
   bool isMeaningVisible = false;
+  double wordFlipTurn = 0;
 
   @override
   bool get wantKeepAlive => true;
@@ -222,79 +224,104 @@ class KeepAlivePageState extends State<KeepAlivePage> with AutomaticKeepAliveCli
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return GestureDetector(
-      onTap: () {
-        widget.handleSetState(() {
-          isMeaningVisible = true;
-        });
-      },
-      child: Stack(
+
+    final wordWidget = Text(
+      widget.currentWord.word,
+      style: const TextStyle(
+        fontSize: 28,
+        height: 36 / 28,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
+    final infoWidget = Visibility(
+      visible: isMeaningVisible,
+      child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    const Flexible(
-                      child: FractionallySizedBox(
-                        heightFactor: 0.4,
-                      ),
-                    ),
-                    Text(
-                      widget.currentWord.word,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        height: 36 / 28,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (widget.currentWord.description.isNotEmpty) const SizedBox(height: 8),
-                    if (widget.currentWord.description.isNotEmpty)
-                      Text(
-                        widget.currentWord.description,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 20 / 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromRGBO(0, 0, 0, 0.6),
-                        ),
-                      ),
-                    Visibility(
-                      visible: isMeaningVisible,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 64),
-                        child: Text(
-                          widget.currentWord.meaning.replaceAll(RegExp(r"(\|)"), ", "),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            height: 28 / 20,
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromRGBO(0, 0, 0, 0.8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+          if (widget.currentWord.description.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                widget.currentWord.description,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 20 / 16,
+                  fontWeight: FontWeight.w500,
+                  color: Color.fromRGBO(0, 0, 0, 0.6),
                 ),
               ),
-            ],
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 36,
-            child: WordActionButtonRow(
-              word: widget.currentWord,
-              eachIconSize: 36,
-              iconStrokeColor: Colors.black,
-              handleSetState: widget.handleSetState,
+            ),
+          Padding(
+            padding: const EdgeInsets.only(top: 64),
+            child: Text(
+              widget.currentWord.meaning.replaceAll(RegExp(r"(\|)"), ", "),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                height: 28 / 20,
+                fontWeight: FontWeight.w500,
+                color: Color.fromRGBO(0, 0, 0, 0.8),
+              ),
             ),
           ),
         ],
       ),
+    );
+
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              isMeaningVisible = true;
+              wordFlipTurn = 1;
+            });
+          },
+          child: AbsorbPointer(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Flexible(
+                        child: FractionallySizedBox(
+                          heightFactor: 0.4,
+                        ),
+                      ),
+                      isAnimatable
+                          ? AnimatedRotation(
+                              turns: wordFlipTurn,
+                              duration: const Duration(milliseconds: 400),
+                              child: wordWidget,
+                            )
+                          : wordWidget,
+                      isAnimatable
+                          ? AnimatedSize(
+                              duration: const Duration(milliseconds: 400),
+                              child: infoWidget,
+                            )
+                          : infoWidget,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 16,
+          right: 16,
+          bottom: 36,
+          child: WordActionButtonRow(
+            word: widget.currentWord,
+            eachIconSize: 36,
+            iconStrokeColor: Colors.black,
+            handleSetState: widget.handleSetState,
+          ),
+        ),
+      ],
     );
   }
 }
