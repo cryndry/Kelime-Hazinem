@@ -21,24 +21,9 @@ abstract class SqlDatabase {
       ByteData data = await rootBundle.load(path.join("assets", _dbName));
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
-      Database db = await openDatabase(dbPath);
-      await db.transaction((txn) async {
-        final List<Map<String, Object?>> doesDbHaveInitialColumns = await txn
-            .rawQuery("SELECT COUNT(*) as isFound FROM pragma_table_info('$_dbTableName') WHERE name='willLearn';");
-        if (doesDbHaveInitialColumns[0]["isFound"] == 1) return;
-
-        await txn.execute("ALTER TABLE $_dbTableName ADD willLearn int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD favorite int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD learned int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD memorized int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD basic int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD intermediate int(1) default 0;");
-        await txn.execute("ALTER TABLE $_dbTableName ADD advanced int(1) default 0;");
-      });
-      _db = db; // to ensure that db is used after the initialization completed with all aspects
-    } else {
-      _db = await openDatabase(dbPath);
     }
+
+    _db = await openDatabase(dbPath);
   }
 
   static Future<List<Word>> getAllWords() async {
@@ -57,10 +42,14 @@ abstract class SqlDatabase {
   }
 
   static Future<bool> checkIfListHaveWords(String listName) async {
-    List<Map<String, dynamic>> words = await _db.transaction((txn) async {
-      return await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1");
-    });
-    return words.isNotEmpty;
+    try {
+      return await _db.transaction((txn) async {
+        final result = await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1");
+        return result.isNotEmpty;
+      });
+    } catch (e) {
+      return false;
+    }
   }
 
   static Future<Word> getRandomWord() async {
@@ -76,6 +65,18 @@ abstract class SqlDatabase {
         _dbTableName,
         newValue,
         conflictAlgorithm: ConflictAlgorithm.replace,
+        where: "id = ?",
+        whereArgs: [id],
+      );
+      if (result == 1) return true;
+      return false;
+    });
+  }
+
+  static Future<bool> deleteWord(int id) async {
+    return await _db.transaction((txn) async {
+      final result = await txn.delete(
+        _dbTableName,
         where: "id = ?",
         whereArgs: [id],
       );

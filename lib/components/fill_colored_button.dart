@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class FillColoredButton extends StatelessWidget {
-  FillColoredButton({super.key, required this.title, required this.onPressed});
+  FillColoredButton({super.key, this.title, required this.onPressed, this.icon});
 
-  final String title;
+  final String? title;
   final void Function() onPressed;
+  final Widget? icon;
 
   final ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
@@ -26,7 +27,14 @@ class FillColoredButton extends StatelessWidget {
     return ElevatedButton(
       style: elevatedButtonStyle,
       onPressed: onPressed,
-      child: Text(title, style: buttonTextStyle),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (title != null) Text(title!, style: buttonTextStyle),
+          if (title != null && icon != null) const SizedBox(width: 12),
+          if (icon != null) icon!,
+        ],
+      ),
     );
   }
 }

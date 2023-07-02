@@ -15,11 +15,11 @@ class Word {
   });
 
   final int id;
-  final String? wordSearch;
-  final String word;
-  final String meaning;
-  final String? description;
-  final String? descriptionSearch;
+  String wordSearch;
+  String word;
+  String meaning;
+  String description;
+  String descriptionSearch;
   int willLearn;
   int favorite;
   int learned;
@@ -27,11 +27,11 @@ class Word {
 
   factory Word.fromJson(Map<String, dynamic> json) => Word(
         id: json["id"],
-        wordSearch: json["wordSearch"],
+        wordSearch: json["word_search"],
         word: json["word"],
         meaning: json["meaning"],
         description: json["description"],
-        descriptionSearch: json["descriptionSearch"],
+        descriptionSearch: json["description_search"],
         willLearn: json["willLearn"],
         favorite: json["favorite"],
         learned: json["learned"],
@@ -41,11 +41,11 @@ class Word {
   // unused for now
   Map<String, dynamic> toJson() => {
         "id": id,
-        "wordSearch": wordSearch,
+        "word_search": wordSearch,
         "word": word,
         "meaning": meaning,
         "description": description,
-        "descriptionSearch": descriptionSearch,
+        "description_search": descriptionSearch,
         "willLearn": willLearn,
         "favorite": favorite,
         "learned": learned,

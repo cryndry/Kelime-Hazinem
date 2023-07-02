@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
+import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
+import 'package:kelime_hazinem/utils/database.dart';
 
 class ListCard extends StatefulWidget {
   ListCard({
@@ -41,6 +43,17 @@ class ListCard extends StatefulWidget {
 }
 
 class _ListCardState extends State<ListCard> {
+  bool doesHaveWord = false;
+
+  @override
+  void initState() {
+    SqlDatabase.checkIfListHaveWords(widget.dbTitle).then((result) {
+      doesHaveWord = result;
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -53,14 +66,44 @@ class _ListCardState extends State<ListCard> {
             FillColoredButton(
                 title: "Kelime Öğrenme",
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
+                  if (doesHaveWord) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
                         builder: (context) => WordLearn(
-                              listName: widget.title,
-                              dbTitle: widget.dbTitle,
-                            )),
-                  );
+                          listName: widget.title,
+                          dbTitle: widget.dbTitle,
+                        ),
+                      ),
+                    );
+                  } else {
+                    popDialog(
+                      context: context,
+                      fadeDurationInMiliSecs: 1200,
+                      children: [
+                        const Text(
+                          "Listede hiç kelime yok.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            height: 20 / 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: FittedBox(
+                            child: StrokeColoredButton(
+                              title: "Tamam",
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
                 }),
             const SizedBox(height: 12),
             FillColoredButton(title: "Kelime Testi", onPressed: () {}),
@@ -102,7 +145,7 @@ class _ListCardState extends State<ListCard> {
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
-                              height: 1,
+                              height: 20 / 16,
                               fontWeight: FontWeight.w500,
                             ),
                           )

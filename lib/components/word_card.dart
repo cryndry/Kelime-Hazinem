@@ -60,8 +60,8 @@ class _WordCardState extends State<WordCard> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(widget.word.word, style: wordTextStyle),
-                if (widget.word.description != null) const SizedBox(height: 2),
-                if (widget.word.description != null) Text(widget.word.description!, style: infoTextStyle),
+                if (widget.word.description.isNotEmpty) const SizedBox(height: 2),
+                if (widget.word.description.isNotEmpty) Text(widget.word.description, style: infoTextStyle),
                 const SizedBox(height: 8),
                 Text(widget.word.meaning, style: meaningTextStyle),
               ],
