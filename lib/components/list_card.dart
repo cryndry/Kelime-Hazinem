@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
-import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
-class ListCard extends StatefulWidget {
+class ListCard extends StatelessWidget {
   ListCard({
     super.key,
     this.icon,
@@ -39,86 +38,50 @@ class ListCard extends StatefulWidget {
       surfaceTintColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)));
 
   @override
-  State<ListCard> createState() => _ListCardState();
-}
-
-class _ListCardState extends State<ListCard> {
-  bool doesHaveWord = false;
-
-  @override
-  void initState() {
-    SqlDatabase.checkIfListHaveWords(widget.dbTitle).then((result) {
-      doesHaveWord = result;
-    });
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        popBottomSheet(
-          context,
-          widget.title,
-          "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
-          <Widget>[
-            FillColoredButton(
-                title: "Kelime Öğrenme",
-                onPressed: () {
-                  if (doesHaveWord) {
+      onTap: () async {
+        bool doesHaveWord = await SqlDatabase.checkIfListHaveWords(dbTitle);
+        if (doesHaveWord) {
+          popBottomSheet(
+            context,
+            title,
+            "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
+            <Widget>[
+              FillColoredButton(
+                  title: "Kelime Öğrenme",
+                  onPressed: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) => WordLearn(
-                          listName: widget.title,
-                          dbTitle: widget.dbTitle,
+                          listName: title,
+                          dbTitle: dbTitle,
                         ),
                       ),
                     );
-                  } else {
-                    popDialog(
-                      context: context,
-                      fadeDurationInMiliSecs: 1200,
-                      children: [
-                        const Text(
-                          "Listede hiç kelime yok.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            height: 20 / 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: FittedBox(
-                            child: StrokeColoredButton(
-                              title: "Tamam",
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                }),
-            const SizedBox(height: 12),
-            FillColoredButton(title: "Kelime Testi", onPressed: () {}),
-            const SizedBox(height: 12),
-            FillColoredButton(title: "Kelimeyi Bul", onPressed: () {}),
-            const SizedBox(height: 12),
-            StrokeColoredButton(title: "Tüm Kelimeler", onPressed: () {}),
-          ],
-        );
+                  }),
+              const SizedBox(height: 12),
+              FillColoredButton(title: "Kelime Testi", onPressed: () {}),
+              const SizedBox(height: 12),
+              FillColoredButton(title: "Kelimeyi Bul", onPressed: () {}),
+              const SizedBox(height: 12),
+              StrokeColoredButton(title: "Tüm Kelimeler", onPressed: () {}),
+            ],
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              duration: Duration(milliseconds: 1200),
+              content: Text("Listede hiç kelime yok!"),
+            ),
+          );
+        }
       },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(blurRadius: 4, color: widget.color.withOpacity(0.25))],
+          boxShadow: [BoxShadow(blurRadius: 4, color: color.withOpacity(0.25))],
         ),
         constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 350) ? 80 : 90),
         alignment: Alignment.center,
@@ -136,12 +99,12 @@ class _ListCardState extends State<ListCard> {
                     height: 48,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: widget.color,
+                      color: color,
                       borderRadius: BorderRadius.circular(24),
                     ),
-                    child: (widget.icon == null)
+                    child: (icon == null)
                         ? Text(
-                            widget.title.substring(0, 1).toUpperCase(),
+                            title.substring(0, 1).toUpperCase(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -149,7 +112,7 @@ class _ListCardState extends State<ListCard> {
                               fontWeight: FontWeight.w500,
                             ),
                           )
-                        : widget.icon,
+                        : icon,
                   )
                 ],
               ),
@@ -157,7 +120,7 @@ class _ListCardState extends State<ListCard> {
               Container(
                 constraints: const BoxConstraints(minHeight: 32, maxHeight: 48),
                 child: Text(
-                  widget.title,
+                  title,
                   maxLines: 3,
                   softWrap: true,
                   style: const TextStyle(

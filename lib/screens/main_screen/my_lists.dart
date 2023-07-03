@@ -5,28 +5,34 @@ import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
-class MyLists extends StatelessWidget {
+class MyLists extends StatefulWidget {
   const MyLists({super.key});
-  // TODO: after dynamic implementation of this page, AutomaticKeepAliveClientMixin state will be added like other tabs,
+
+  @override
+  State<MyLists> createState() => _MyListsState();
+}
+
+class _MyListsState extends State<MyLists> {
+  List<String> lists = [];
+
+  @override
+  void initState() {
+    // TODO: implement get and show added lists
+    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return PageLayout(
       FABs: [
-        FAB(icon: MySvgs.cloud, onTap: (){}),
+        FAB(icon: MySvgs.cloud, onTap: () {}),
         const SizedBox(height: 12),
-        FAB(icon: MySvgs.plus, onTap: (){}),
+        FAB(icon: MySvgs.plus, onTap: () {}),
       ],
       children: [
         ListCardGrid(
-          children: [
-            ListCard(title: "Seviye 1"),
-            ListCard(title: "Seviye 2"),
-            ListCard(title: "Seviye 3"),
-            ListCard(title: "Seviye 4"),
-            ListCard(title: "Seviye 5"),
-            ListCard(title: "Seviye 6"),
-          ],
+          children: lists.map<ListCard>((e) => ListCard(title: e)).toList(),
         ),
       ],
     );

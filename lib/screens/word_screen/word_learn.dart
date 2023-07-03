@@ -2,6 +2,7 @@ import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
 import 'package:kelime_hazinem/screens/word_edit_add.dart';
@@ -154,7 +155,12 @@ class _WordLearnState extends State<WordLearn> {
                   childrenDelegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final Word currentWord = words[index];
-                      return KeepAlivePage(currentWord: currentWord, handleSetState: handleSetState);
+                      return KeepAliveWidget(
+                        child: WordLearnPage(
+                          currentWord: currentWord,
+                          handleSetState: handleSetState,
+                        ),
+                      );
                     },
                     childCount: words.length,
                   ),
@@ -199,8 +205,8 @@ class _WordLearnState extends State<WordLearn> {
   }
 }
 
-class KeepAlivePage extends StatefulWidget {
-  const KeepAlivePage({
+class WordLearnPage extends StatefulWidget {
+  const WordLearnPage({
     super.key,
     required this.currentWord,
     required this.handleSetState,
@@ -210,21 +216,16 @@ class KeepAlivePage extends StatefulWidget {
   final void Function(void Function()) handleSetState;
 
   @override
-  KeepAlivePageState createState() => KeepAlivePageState();
+  WordLearnPageState createState() => WordLearnPageState();
 }
 
-class KeepAlivePageState extends State<KeepAlivePage> with AutomaticKeepAliveClientMixin<KeepAlivePage> {
+class WordLearnPageState extends State<WordLearnPage> {
   final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
   bool isMeaningVisible = false;
   double wordFlipTurn = 0;
 
   @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     final wordWidget = Text(
       widget.currentWord.word,
       style: const TextStyle(
