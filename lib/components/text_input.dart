@@ -12,6 +12,9 @@ class MyTextInput extends StatefulWidget {
     this.keyboardAction = TextInputAction.next,
     this.validator,
     this.formatArabic = false,
+    this.autoFocus = false,
+    this.loseFocusOnTapOutside = true,
+    this.customInputFormatter,
   });
 
   final String label;
@@ -20,6 +23,9 @@ class MyTextInput extends StatefulWidget {
   final TextInputAction keyboardAction;
   final String? Function(String?)? validator;
   final bool formatArabic;
+  final bool autoFocus;
+  final bool loseFocusOnTapOutside;
+  final List<TextInputFormatter>? customInputFormatter;
 
   @override
   State<MyTextInput> createState() => MyTextInputState();
@@ -52,23 +58,26 @@ class MyTextInputState extends State<MyTextInput> {
   Widget build(BuildContext context) {
     return TextFormField(
       maxLines: null,
+      autofocus: widget.autoFocus,
       textDirection: textDirection,
       inputFormatters: widget.formatArabic
           ? <TextInputFormatter>[
               FilteringTextInputFormatter.allow(
                   RegExp(r"([\u0621-\u063A\u0641-\u06520-9٠-٩\p{P}\p{S}\s])", unicode: true))
             ]
-          : null,
+          : widget.customInputFormatter,
       focusNode: textInputFocus,
       controller: widget.textInputController,
       keyboardType: TextInputType.text,
       textInputAction: widget.keyboardAction,
       validator: widget.validator,
-      onTapOutside: (event) {
-        if (textInputFocus.hasFocus) {
-          textInputFocus.unfocus();
-        }
-      },
+      onTapOutside: widget.loseFocusOnTapOutside
+          ? (event) {
+              if (textInputFocus.hasFocus) {
+                textInputFocus.unfocus();
+              }
+            }
+          : null,
       onChanged: (value) {
         setState(() {});
       },

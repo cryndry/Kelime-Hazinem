@@ -44,10 +44,10 @@ class ListCard extends StatelessWidget {
         bool doesHaveWord = await SqlDatabase.checkIfListHaveWords(dbTitle);
         if (doesHaveWord) {
           popBottomSheet(
-            context,
-            title,
-            "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
-            <Widget>[
+            context: context,
+            title: title,
+            info: "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
+            bottomWidgets: (setSheetState) => <Widget>[
               FillColoredButton(
                   title: "Kelime Öğrenme",
                   onPressed: () {

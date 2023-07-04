@@ -21,8 +21,17 @@ abstract class SqlDatabase {
       ByteData data = await rootBundle.load(path.join("assets", _dbName));
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
+      Database db = await openDatabase(dbPath);
+      db.execute('CREATE TABLE Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
+      db.execute('''
+        CREATE TABLE IF NOT EXISTS Entries (word_id INTEGER, list_id INTEGER,
+        FOREIGN KEY(word_id) REFERENCES Words(id),
+        FOREIGN KEY(list_id) REFERENCES Lists(id)
+        );
+      ''');
+      _db = db;
+      return;
     }
-
     _db = await openDatabase(dbPath);
   }
 
@@ -83,6 +92,28 @@ abstract class SqlDatabase {
       if (result == 1) return true;
       return false;
     });
+  }
+
+  static Future<void> createList(String listName) async {
+    return await _db.transaction((txn) async {
+      await txn.execute("INSERT INTO Lists (name) VALUES ('$listName')");
+    });
+  }
+
+  static Future<void> deleteList(String listName) async {
+    return await _db.transaction((txn) async {
+      await txn.execute("DELETE FROM Lists WHERE name='$listName'");
+    });
+  }
+
+  static Future<void> renameList(String listName, String newName) async {
+    return await _db.transaction((txn) async {
+      await txn.execute("UPDATE Lists SET name='$newName' WHERE name='$listName'");
+    });
+  }
+
+  static Future<List<String>> getLists() async {
+    return (await _db.rawQuery("SELECT name FROM Lists")).map((e) => e["name"].toString()).toList();
   }
 }
 

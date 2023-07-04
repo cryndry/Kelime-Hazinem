@@ -12,7 +12,7 @@ class ListCardGrid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: LayoutGrid(
         columnSizes: repeat(3, [1.fr]),
-        rowSizes: repeat((7 ~/ 3) + 1, [auto]),
+        rowSizes: repeat((children.length ~/ 3) + 1, [auto]),
         rowGap: 20,
         columnGap: 12,
         children: children,
