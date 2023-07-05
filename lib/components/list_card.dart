@@ -11,26 +11,14 @@ class ListCard extends StatelessWidget {
     super.key,
     this.icon,
     required this.title,
+    this.dbTitle,
     this.color = const Color(0xFF4BA1FF),
   });
 
   final String title;
+  final String? dbTitle;
   final ActionButton? icon;
   final Color color;
-
-  late final String dbTitle = (() {
-    final defaults = {
-      "Öğrenecek\u200blerim": "willLearn",
-      "Favorilerim".split('').join('\ufeff'): "favorite",
-      "Öğrendik\u200blerim": "learned",
-      "Hazinem": "memorized",
-      "Temel Seviye": "basic",
-      "Orta Seviye": "intermediate",
-      "İleri Seviye": "advanced",
-    };
-
-    return defaults[title] ?? title.toLowerCase().replaceAll(" ", "_");
-  })();
 
   final ButtonStyle outlinedButtonStyle = ButtonStyle(
       foregroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
@@ -41,7 +29,9 @@ class ListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        bool doesHaveWord = await SqlDatabase.checkIfListHaveWords(dbTitle);
+        bool doesHaveWord = (dbTitle == null)
+            ? await SqlDatabase.checkIfListHaveWords(title)
+            : await SqlDatabase.checkIfIconicListHaveWords(dbTitle!);
         if (doesHaveWord) {
           popBottomSheet(
             context: context,
@@ -55,7 +45,7 @@ class ListCard extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => WordLearn(
                           listName: title,
-                          dbTitle: dbTitle,
+                          dbTitle: dbTitle ?? title,
                         ),
                       ),
                     );

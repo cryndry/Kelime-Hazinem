@@ -9,7 +9,9 @@ import 'dart:io' as io;
 abstract class SqlDatabase {
   static late Database _db;
   static const String _dbName = "hazine.db";
-  static const String _dbTableName = "Words";
+  static const String _dbWordTableName = "Words";
+  static const String _dbListTableName = "Lists";
+  static const String _dbEntryTableName = "Entries";
 
   static Future<void> initDB() async {
     io.Directory applicationDirectory = await getApplicationDocumentsDirectory();
@@ -21,23 +23,14 @@ abstract class SqlDatabase {
       ByteData data = await rootBundle.load(path.join("assets", _dbName));
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
-      Database db = await openDatabase(dbPath);
-      db.execute('CREATE TABLE Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
-      db.execute('''
-        CREATE TABLE IF NOT EXISTS Entries (word_id INTEGER, list_id INTEGER,
-        FOREIGN KEY(word_id) REFERENCES Words(id),
-        FOREIGN KEY(list_id) REFERENCES Lists(id)
-        );
-      ''');
-      _db = db;
-      return;
     }
+
     _db = await openDatabase(dbPath);
   }
 
   static Future<List<Word>> getAllWords() async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
-      final values = await txn.query(_dbTableName, columns: null);
+      final values = await txn.query(_dbWordTableName, columns: null);
       return values;
     });
     return words.map((word) => Word.fromJson(word)).toList();
@@ -45,25 +38,34 @@ abstract class SqlDatabase {
 
   static Future<List<Word>> getWordsQuery(int limit, String listName) async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
-      return await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1 LIMIT $limit");
+      return await txn.rawQuery("SELECT * FROM $_dbWordTableName WHERE $listName = 1 LIMIT $limit");
     });
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
   static Future<bool> checkIfListHaveWords(String listName) async {
-    try {
-      return await _db.transaction((txn) async {
-        final result = await txn.rawQuery("SELECT * FROM $_dbTableName WHERE $listName = 1");
-        return result.isNotEmpty;
-      });
-    } catch (e) {
-      return false;
-    }
+    return await _db.transaction((txn) async {
+      final listDataQuery = await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
+      final listData = listDataQuery.isEmpty ? null : listDataQuery.first;
+      if (listData == null) return false;
+
+      final result =
+          await txn.rawQuery("SELECT COUNT(*) as count FROM $_dbEntryTableName WHERE list_id=${listData['id']} LIMIT 1");
+      return ((result[0]["count"] as int) > 0);
+    });
+  }
+
+  static Future<bool> checkIfIconicListHaveWords(String listName) async {
+    return await _db.transaction((txn) async {
+      final result = await txn.rawQuery("SELECT COUNT(*) as count FROM $_dbWordTableName WHERE $listName=1 LIMIT 1");
+      return ((result[0]["count"] as int) > 0);
+    });
   }
 
   static Future<Word> getRandomWord() async {
     return await _db.transaction((txn) async {
-      List<Map<String, dynamic>> result = await txn.rawQuery("SELECT * FROM $_dbTableName ORDER BY random() LIMIT 1");
+      List<Map<String, dynamic>> result =
+          await txn.rawQuery("SELECT * FROM $_dbWordTableName ORDER BY random() LIMIT 1");
       return Word.fromJson(result.first);
     });
   }
@@ -71,7 +73,7 @@ abstract class SqlDatabase {
   static Future<bool> updateWord(int id, Map<String, Object?> newValue) async {
     return await _db.transaction((txn) async {
       final result = await txn.update(
-        _dbTableName,
+        _dbWordTableName,
         newValue,
         conflictAlgorithm: ConflictAlgorithm.replace,
         where: "id = ?",
@@ -85,7 +87,7 @@ abstract class SqlDatabase {
   static Future<bool> deleteWord(int id) async {
     return await _db.transaction((txn) async {
       final result = await txn.delete(
-        _dbTableName,
+        _dbWordTableName,
         where: "id = ?",
         whereArgs: [id],
       );
@@ -96,24 +98,33 @@ abstract class SqlDatabase {
 
   static Future<void> createList(String listName) async {
     return await _db.transaction((txn) async {
-      await txn.execute("INSERT INTO Lists (name) VALUES ('$listName')");
+      await txn.execute("INSERT INTO $_dbListTableName (name) VALUES ('$listName')");
     });
   }
 
   static Future<void> deleteList(String listName) async {
     return await _db.transaction((txn) async {
-      await txn.execute("DELETE FROM Lists WHERE name='$listName'");
+      await txn.execute("DELETE FROM $_dbListTableName WHERE name='$listName'");
     });
   }
 
   static Future<void> renameList(String listName, String newName) async {
     return await _db.transaction((txn) async {
-      await txn.execute("UPDATE Lists SET name='$newName' WHERE name='$listName'");
+      await txn.execute("UPDATE $_dbListTableName SET name='$newName' WHERE name='$listName'");
     });
   }
 
+  static Future<Map<String, Object?>?> getListData(listName) async {
+    final result = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
+    });
+    return result.isEmpty ? null : result.first;
+  }
+
   static Future<List<String>> getLists() async {
-    return (await _db.rawQuery("SELECT name FROM Lists")).map((e) => e["name"].toString()).toList();
+    return await _db.transaction((txn) async {
+      return (await txn.rawQuery("SELECT name FROM $_dbListTableName")).map((e) => e["name"].toString()).toList();
+    });
   }
 }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fab.dart';
@@ -28,6 +27,9 @@ class _MyListsState extends State<MyLists> {
   void initState() {
     SqlDatabase.getLists().then((result) {
       setState(() {
+        result.remove("Temel Seviye");
+        result.remove("Orta Seviye");
+        result.remove("İleri Seviye");
         lists = result;
       });
     });
@@ -119,6 +121,8 @@ class _MyListsState extends State<MyLists> {
                                   setSheetState(() {
                                     final String listName = listAddingTextInputController.text;
                                     creatingList = createList(listName).then((value) {
+                                      if (!value) return value;
+
                                       Navigator.of(context).pop();
                                       setState(() {
                                         lists.add(listName);
