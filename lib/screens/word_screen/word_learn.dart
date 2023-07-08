@@ -1,4 +1,4 @@
-import 'dart:math' show min;
+import 'dart:math' show Random, min;
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
@@ -33,6 +33,45 @@ class _WordLearnState extends State<WordLearn> {
 
   List<Word> words = [];
   List<ActionButton> appBarButtons = [];
+  bool isListRefreshed = false;
+
+  late final List<ActionButton> constAppBarButtons = [
+    const ActionButton(
+      icon: MySvgs.add2List,
+      size: 32,
+      semanticsLabel: "Add This Word To Lists",
+    ),
+    ActionButton(
+      icon: MySvgs.edit,
+      size: 32,
+      semanticsLabel: "Edit The Word Entry",
+      onTap: () async {
+        final int wordIndex = pageController.page!.toInt();
+        final result = await Navigator.of(context).push<Map<String, dynamic>>(PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => WordEditAdd(word: words[wordIndex]),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            Animatable<Offset> tween = Tween(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.ease));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        ));
+        setState(() {
+          if (result != null && result["deleted"]) {
+            words.removeAt(wordIndex);
+            if (wordIndex == words.length) {
+              textEditingController.text = wordIndex.toString();
+            }
+          }
+        });
+      },
+    ),
+  ];
 
   int intBoolInvert(int value) => (value == 1) ? 0 : 1;
   bool intAsBool(int value) => (value == 1);
@@ -60,49 +99,17 @@ class _WordLearnState extends State<WordLearn> {
 
   @override
   void initState() {
-    SqlDatabase.getWordsQuery(listLength, widget.dbTitle).then((result) {
+    SqlDatabase.getWordsQuery(
+      listLength,
+      widget.dbTitle,
+      widget.dbTitle != widget.listName,
+    ).then((result) {
       setState(() {
         words = result;
       });
     });
 
-    appBarButtons = [
-      const ActionButton(
-        icon: MySvgs.add2List,
-        size: 32,
-        semanticsLabel: "Add This Word To Lists",
-      ),
-      ActionButton(
-        icon: MySvgs.edit,
-        size: 32,
-        semanticsLabel: "Edit The Word Entry",
-        onTap: () async {
-          final int wordIndex = pageController.page!.toInt();
-          final result = await Navigator.of(context).push<Map<String, dynamic>>(PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => WordEditAdd(word: words[wordIndex]),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              Animatable<Offset> tween = Tween(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).chain(CurveTween(curve: Curves.ease));
-
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ));
-          setState(() {
-            if (result != null && result["deleted"]) {
-              words.removeAt(wordIndex);
-              if (wordIndex == words.length) {
-                textEditingController.text = wordIndex.toString();
-              }
-            }
-          });
-        },
-      ),
-    ];
+    appBarButtons = [...constAppBarButtons];
 
     super.initState();
   }
@@ -140,11 +147,36 @@ class _WordLearnState extends State<WordLearn> {
                     if (value + 1 == words.length && appBarButtons.length == 2) {
                       setState(() {
                         appBarButtons = [
-                          ...appBarButtons,
-                          const ActionButton(
+                          ...constAppBarButtons,
+                          ActionButton(
                             icon: MySvgs.refresh,
                             size: 32,
                             semanticsLabel: "Refresh The List",
+                            onTap: () async {
+                              final List<int> willRepeatIndexes = [];
+                              while (willRepeatIndexes.length < (min(5, words.length))) {
+                                final int index = Random().nextInt(words.length);
+                                if (!willRepeatIndexes.contains(index)) {
+                                  willRepeatIndexes.add(index);
+                                }
+                              }
+
+                              final List<Word> willRepeatWords = willRepeatIndexes.map((i) => words[i]).toList();
+                              final List<int> willRepeatIds = willRepeatWords.map((word) => word.id).toList();
+                              final newWords = await SqlDatabase.getWordsQuery(
+                                listLength - willRepeatIds.length,
+                                widget.dbTitle,
+                                widget.dbTitle != widget.listName,
+                                willRepeatIds,
+                              );
+
+                              setState(() {
+                                words = (willRepeatWords + newWords)..shuffle();
+                                appBarButtons = [...constAppBarButtons];
+                                pageController.jumpToPage(0);
+                                isListRefreshed = true;
+                              });
+                            },
                           )
                         ];
                       });
@@ -155,12 +187,23 @@ class _WordLearnState extends State<WordLearn> {
                   childrenDelegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final Word currentWord = words[index];
-                      return KeepAliveWidget(
-                        child: WordLearnPage(
-                          currentWord: currentWord,
-                          handleSetState: handleSetState,
-                        ),
+                      final wordPage = WordLearnPage(
+                        currentWord: currentWord,
+                        handleSetState: handleSetState,
                       );
+
+                      if (isListRefreshed) { // disposes all the states from pages 
+                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                          setState(() {
+                            isListRefreshed = false;
+                          });
+                        });
+                      }
+                      return isListRefreshed
+                          ? wordPage
+                          : KeepAliveWidget(
+                              child: wordPage,
+                            );
                     },
                     childCount: words.length,
                   ),
@@ -189,7 +232,7 @@ class _WordLearnState extends State<WordLearn> {
                     },
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      suffixText: " / ${min(listLength, words.length)}",
+                      suffixText: " / ${words.length}",
                       suffixStyle: counterTextStyle,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
@@ -223,6 +266,19 @@ class WordLearnPageState extends State<WordLearnPage> {
   final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
   bool isMeaningVisible = false;
   double wordFlipTurn = 0;
+
+  @override
+  void didUpdateWidget(covariant WordLearnPage oldWidget) {
+    // if (oldWidget.currentWord.id != widget.currentWord.id) {
+    if (oldWidget.currentWord.hashCode != widget.currentWord.hashCode) {
+      setState(() {
+        isMeaningVisible = false;
+        wordFlipTurn = 0;
+      });
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
@@ -9,6 +9,7 @@ import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/deep_map_copy.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
@@ -25,6 +26,9 @@ class WordEditAddState extends State<WordEditAdd> {
   final _formKey = GlobalKey<FormState>();
   Future<bool>? saveHandling;
   Future<void>? deleteHandling;
+  var lists = <String, dynamic>{};
+  var listsBottomSheet = <String, dynamic>{};
+  final listsInitialValue = <String, dynamic>{};
 
   String plural = "";
   String infinitive = "";
@@ -69,6 +73,14 @@ class WordEditAddState extends State<WordEditAdd> {
         infinitive = "";
       }
     }
+
+    SqlDatabase.getListsOfWord(widget.word!.id).then((value) {
+      setState(() {
+        lists.addAll(deepMapCopy(value));
+        listsBottomSheet.addAll(deepMapCopy(value));
+        listsInitialValue.addAll(deepMapCopy(value));
+      });
+    });
 
     super.initState();
   }
@@ -316,7 +328,62 @@ class WordEditAddState extends State<WordEditAdd> {
                 widthFactor: 1,
                 child: StrokeColoredButton(
                   title: "Listelere Ekle",
-                  onPressed: () {},
+                  onPressed: () {
+                    popBottomSheet<Map<String, dynamic>>(
+                      context: context,
+                      title: "Listelere Ekle",
+                      info: "Liste değişiklikleri kaydettikten sonra geri alınamaz.",
+                      bottomWidgets: (setSheetState) {
+                        return [
+                          ConstrainedBox(
+                            constraints:
+                                BoxConstraints.loose(Size.fromHeight(MediaQuery.of(context).size.height * 0.5)),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: listsBottomSheet.length,
+                              itemBuilder: (context, index) {
+                                final MapEntry listEntry = listsBottomSheet.entries.elementAt(index);
+                                return CheckboxListTile(
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  contentPadding: EdgeInsets.zero,
+                                  value: listEntry.value["is_word_in_list"],
+                                  controlAffinity: ListTileControlAffinity.leading,
+                                  onChanged: (value) {
+                                    setSheetState(() {
+                                      listsBottomSheet[listEntry.key]["is_word_in_list"] = value;
+                                    });
+                                  },
+                                  title: Text(
+                                    listEntry.key,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      height: 20 / 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          FillColoredButton(
+                            title: "Kaydet",
+                            onPressed: () async {
+                              if (widget.word != null) {
+                                // 2. düzenlemede listeler değişmiyor.
+                                await SqlDatabase.changeListsOfWord(widget.word!.id, lists, listsBottomSheet);
+                                lists = deepMapCopy(listsBottomSheet);
+                                Navigator.of(context).pop();
+                              } else {
+                                // TODO save lists for now creating word
+                              }
+                            },
+                          ),
+                        ];
+                      },
+                    );
+                  },
                 ),
               ),
             ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Future<void> popBottomSheet({
+Future<T?> popBottomSheet<T>({
   required BuildContext context,
   required String title,
   String info = "",
@@ -9,7 +9,7 @@ Future<void> popBottomSheet({
   void Function()? onSheetDismissed,
 }) async {
   const minPadding = EdgeInsets.fromLTRB(12, 16, 12, 32);
-  await showModalBottomSheet(
+  return await showModalBottomSheet<T?>(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
@@ -55,7 +55,7 @@ Future<void> popBottomSheet({
                         ),
                       ),
                     ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
                   Container(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     constraints: BoxConstraints(

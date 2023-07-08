@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -36,9 +37,84 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<List<Word>> getWordsQuery(int limit, String listName) async {
+  static Future<List<Word>> getWordsQuery(
+    int limit,
+    String listName,
+    bool isIconicList, [
+    List<int>? exceptionIds,
+  ]) async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
-      return await txn.rawQuery("SELECT * FROM $_dbWordTableName WHERE $listName = 1 LIMIT $limit");
+      if (isIconicList) {
+        if (exceptionIds == null) {
+          return await txn.rawQuery('''
+            SELECT * FROM $_dbWordTableName
+            WHERE $listName = 1
+            ORDER BY RANDOM() 
+            LIMIT $limit
+          ''');
+        } else {
+          String exceptionQuery = "";
+          for (int id in exceptionIds) {
+            exceptionQuery += " AND id != $id";
+          }
+          return await txn.rawQuery('''
+            SELECT * FROM $_dbWordTableName 
+            WHERE $listName = 1 $exceptionQuery 
+            ORDER BY RANDOM() 
+            LIMIT $limit
+          ''');
+        }
+      } else {
+        if (exceptionIds == null) {
+          return await txn.rawQuery('''
+            SELECT 
+              Words.id as id,
+              Words.word as word,
+              Words.word_search as word_search,
+              Words.meaning as meaning,
+              Words.description as description,
+              Words.description_search as description_search,
+              Words.willLearn as willLearn,
+              Words.favorite as favorite,
+              Words.learned as learned,
+              Words.memorized as memorized
+            FROM $_dbWordTableName 
+            JOIN $_dbEntryTableName 
+              ON $_dbWordTableName.id = $_dbEntryTableName.word_id
+            JOIN $_dbListTableName
+              ON $_dbListTableName.name = '$listName'
+            WHERE $_dbEntryTableName.list_id = $_dbListTableName.id
+            ORDER BY RANDOM()
+            LIMIT $limit
+          ''');
+        } else {
+          String exceptionQuery = "";
+          for (int id in exceptionIds) {
+            exceptionQuery += " AND id != $id";
+          }
+          return await txn.rawQuery('''
+            SELECT
+              Words.id as id,
+              Words.word as word,
+              Words.word_search as word_search,
+              Words.meaning as meaning,
+              Words.description as description,
+              Words.description_search as description_search,
+              Words.willLearn as willLearn,
+              Words.favorite as favorite,
+              Words.learned as learned,
+              Words.memorized as memorized
+            FROM $_dbWordTableName 
+            JOIN $_dbEntryTableName 
+              ON $_dbWordTableName.id = $_dbEntryTableName.word_id
+            JOIN $_dbListTableName
+              ON $_dbListTableName.name = '$listName'
+            WHERE $_dbEntryTableName.list_id = $_dbListTableName.id $exceptionQuery
+            ORDER BY RANDOM()
+            LIMIT $limit
+          ''');
+        }
+      }
     });
     return words.map((word) => Word.fromJson(word)).toList();
   }
@@ -49,15 +125,24 @@ abstract class SqlDatabase {
       final listData = listDataQuery.isEmpty ? null : listDataQuery.first;
       if (listData == null) return false;
 
-      final result =
-          await txn.rawQuery("SELECT COUNT(*) as count FROM $_dbEntryTableName WHERE list_id=${listData['id']} LIMIT 1");
+      final result = await txn.rawQuery('''
+        SELECT COUNT(*) as count 
+        FROM $_dbEntryTableName
+        WHERE list_id=${listData['id']}
+        LIMIT 1
+      ''');
       return ((result[0]["count"] as int) > 0);
     });
   }
 
   static Future<bool> checkIfIconicListHaveWords(String listName) async {
     return await _db.transaction((txn) async {
-      final result = await txn.rawQuery("SELECT COUNT(*) as count FROM $_dbWordTableName WHERE $listName=1 LIMIT 1");
+      final result = await txn.rawQuery('''
+        SELECT COUNT(*) as count
+        FROM $_dbWordTableName
+        WHERE $listName = 1
+        LIMIT 1
+      ''');
       return ((result[0]["count"] as int) > 0);
     });
   }
@@ -126,6 +211,70 @@ abstract class SqlDatabase {
       return (await txn.rawQuery("SELECT name FROM $_dbListTableName")).map((e) => e["name"].toString()).toList();
     });
   }
+
+  static Future<Map<String, Map<String, Object?>>> getListsOfWord(int wordId) async {
+    return await _db.transaction((txn) async {
+      final rawResult = await txn.rawQuery('''
+        SELECT
+          $_dbListTableName.id as list_id,
+          $_dbListTableName.name as list_name, 
+          $_dbEntryTableName.word_id as word_id 
+        FROM $_dbListTableName 
+        LEFT JOIN $_dbEntryTableName 
+          ON $_dbListTableName.id = $_dbEntryTableName.list_id 
+            AND $_dbEntryTableName.word_id = $wordId
+      ''');
+      final result = rawResult.map((e) => {...e, "is_word_in_list": e["word_id"] == null ? false : true}).toList();
+
+      final resultAsMap = <String, Map<String, Object?>>{};
+      for (var val in result) {
+        resultAsMap[val["list_name"] as String] = val;
+      }
+
+      return resultAsMap;
+    });
+  }
+
+  static Future<void> changeListsOfWord(
+    int wordId,
+    Map<String, dynamic> prevListsData,
+    Map<String, dynamic> newListsData,
+  ) async {
+    var changesToTrue = <int, bool>{}; // <id, willChange>
+    var changesToFalse = <int, bool>{}; // <id, willChange>
+    for (String list in prevListsData.keys) {
+      bool prevValue = prevListsData[list]["is_word_in_list"];
+      bool newValue = newListsData[list]["is_word_in_list"];
+      if (prevValue != newValue) {
+        if (newValue) {
+          changesToTrue[newListsData[list]["list_id"]] = newValue;
+        } else {
+          changesToFalse[newListsData[list]["list_id"]] = newValue;
+        }
+      }
+    }
+    if (changesToTrue.isNotEmpty || changesToFalse.isNotEmpty) {
+      final batch = _db.batch();
+
+      for (var listId in changesToTrue.keys) {
+        batch.rawInsert('''
+            INSERT INTO $_dbEntryTableName
+            (word_id, list_id) 
+            VALUES ($wordId, $listId)
+          ''');
+      }
+
+      for (var listId in changesToFalse.keys) {
+        batch.rawDelete('''
+            DELETE FROM $_dbEntryTableName
+            WHERE word_id = $wordId
+              AND list_id = $listId
+          ''');
+      }
+
+      await batch.commit();
+    }
+  }
 }
 
 abstract final class DbKeys {
@@ -156,6 +305,8 @@ abstract class KeyValueDatabase {
   static int getOtherModsListLength() => _db.getInt(DbKeys.otherModsListLength)!;
   static void setOtherModsListLength(int value) => _db.setInt(DbKeys.otherModsListLength, value);
 
-  static bool getIsAnimatable() => _db.getBool(DbKeys.isAnimatable)!;
+  static bool getIsAnimatable() =>
+      WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
+
   static void setIsAnimatable(bool value) => _db.setBool(DbKeys.isAnimatable, value);
 }
