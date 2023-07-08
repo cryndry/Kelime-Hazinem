@@ -37,62 +37,35 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<List<Word>> getWordsQuery(
-    int limit,
-    String listName,
-    bool isIconicList, [
+  static Future<List<Word>> getWordsQuery({
+    required String listName,
+    required bool isIconicList,
+    required bool isInRandomOrder,
+    int? limit,
     List<int>? exceptionIds,
-  ]) async {
+  }) async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
       if (isIconicList) {
-        if (exceptionIds == null) {
-          return await txn.rawQuery('''
-            SELECT * FROM $_dbWordTableName
-            WHERE $listName = 1
-            ORDER BY RANDOM() 
-            LIMIT $limit
-          ''');
-        } else {
-          String exceptionQuery = "";
+        String exceptionQuery = "";
+        if (exceptionIds != null) {
           for (int id in exceptionIds) {
             exceptionQuery += " AND id != $id";
           }
-          return await txn.rawQuery('''
+        }
+        return await txn.rawQuery('''
             SELECT * FROM $_dbWordTableName 
             WHERE $listName = 1 $exceptionQuery 
-            ORDER BY RANDOM() 
-            LIMIT $limit
+            ${isInRandomOrder ? "ORDER BY RANDOM()" : ""} 
+            ${limit != null ? "LIMIT $limit" : ""}
           ''');
-        }
       } else {
-        if (exceptionIds == null) {
-          return await txn.rawQuery('''
-            SELECT 
-              Words.id as id,
-              Words.word as word,
-              Words.word_search as word_search,
-              Words.meaning as meaning,
-              Words.description as description,
-              Words.description_search as description_search,
-              Words.willLearn as willLearn,
-              Words.favorite as favorite,
-              Words.learned as learned,
-              Words.memorized as memorized
-            FROM $_dbWordTableName 
-            JOIN $_dbEntryTableName 
-              ON $_dbWordTableName.id = $_dbEntryTableName.word_id
-            JOIN $_dbListTableName
-              ON $_dbListTableName.name = '$listName'
-            WHERE $_dbEntryTableName.list_id = $_dbListTableName.id
-            ORDER BY RANDOM()
-            LIMIT $limit
-          ''');
-        } else {
-          String exceptionQuery = "";
+        String exceptionQuery = "";
+        if (exceptionIds != null) {
           for (int id in exceptionIds) {
             exceptionQuery += " AND id != $id";
           }
-          return await txn.rawQuery('''
+        }
+        return await txn.rawQuery('''
             SELECT
               Words.id as id,
               Words.word as word,
@@ -110,10 +83,9 @@ abstract class SqlDatabase {
             JOIN $_dbListTableName
               ON $_dbListTableName.name = '$listName'
             WHERE $_dbEntryTableName.list_id = $_dbListTableName.id $exceptionQuery
-            ORDER BY RANDOM()
-            LIMIT $limit
+            ${isInRandomOrder ? "ORDER BY RANDOM()" : ""}
+            ${limit != null ? "LIMIT $limit" : ""}
           ''');
-        }
       }
     });
     return words.map((word) => Word.fromJson(word)).toList();

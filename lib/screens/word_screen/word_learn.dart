@@ -100,9 +100,10 @@ class _WordLearnState extends State<WordLearn> {
   @override
   void initState() {
     SqlDatabase.getWordsQuery(
-      listLength,
-      widget.dbTitle,
-      widget.dbTitle != widget.listName,
+      limit: listLength,
+      listName: widget.dbTitle,
+      isIconicList: widget.dbTitle != widget.listName,
+      isInRandomOrder: true,
     ).then((result) {
       setState(() {
         words = result;
@@ -164,10 +165,11 @@ class _WordLearnState extends State<WordLearn> {
                               final List<Word> willRepeatWords = willRepeatIndexes.map((i) => words[i]).toList();
                               final List<int> willRepeatIds = willRepeatWords.map((word) => word.id).toList();
                               final newWords = await SqlDatabase.getWordsQuery(
-                                listLength - willRepeatIds.length,
-                                widget.dbTitle,
-                                widget.dbTitle != widget.listName,
-                                willRepeatIds,
+                                listName: widget.dbTitle,
+                                isIconicList: widget.dbTitle != widget.listName,
+                                limit: listLength - willRepeatIds.length,
+                                exceptionIds: willRepeatIds,
+                                isInRandomOrder: true,
                               );
 
                               setState(() {
@@ -192,7 +194,8 @@ class _WordLearnState extends State<WordLearn> {
                         handleSetState: handleSetState,
                       );
 
-                      if (isListRefreshed) { // disposes all the states from pages 
+                      if (isListRefreshed) {
+                        // disposes all the states from pages
                         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                           setState(() {
                             isListRefreshed = false;
