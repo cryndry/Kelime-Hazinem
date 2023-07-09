@@ -4,6 +4,7 @@ import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
 import 'package:kelime_hazinem/screens/word_edit_add.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -47,20 +48,11 @@ class _WordLearnState extends State<WordLearn> {
       semanticsLabel: "Edit The Word Entry",
       onTap: () async {
         final int wordIndex = pageController.page!.toInt();
-        final result = await Navigator.of(context).push<Map<String, dynamic>>(PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => WordEditAdd(word: words[wordIndex]),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            Animatable<Offset> tween = Tween(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).chain(CurveTween(curve: Curves.ease));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
-        ));
+        final result = await Navigator.of(context).push<Map<String, dynamic>>(
+          routeAnimator(
+            page: WordEditAdd(word: words[wordIndex]),
+          ),
+        );
         setState(() {
           if (result != null && result["deleted"]) {
             words.removeAt(wordIndex);

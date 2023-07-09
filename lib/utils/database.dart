@@ -254,6 +254,8 @@ abstract final class DbKeys {
   static const String wordLearnListLength = "wordLearnListLength";
   static const String otherModsListLength = "otherModsListLength";
   static const String isAnimatable = "isAnimatable";
+  static const String darkMode = "darkMode";
+  static const String notifications = "notifications";
 }
 
 abstract class KeyValueDatabase {
@@ -266,6 +268,8 @@ abstract class KeyValueDatabase {
     if (!_db.containsKey(DbKeys.wordLearnListLength)) setWordLearnListLength(30);
     if (!_db.containsKey(DbKeys.otherModsListLength)) setOtherModsListLength(15);
     if (!_db.containsKey(DbKeys.isAnimatable)) setIsAnimatable(true);
+    if (!_db.containsKey(DbKeys.darkMode)) setDarkMode(false);
+    if (!_db.containsKey(DbKeys.notifications)) setNotifications(true);
   }
 
   static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
@@ -279,6 +283,11 @@ abstract class KeyValueDatabase {
 
   static bool getIsAnimatable() =>
       WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
-
   static void setIsAnimatable(bool value) => _db.setBool(DbKeys.isAnimatable, value);
+
+  static bool getDarkMode() => _db.getBool(DbKeys.darkMode)!;
+  static void setDarkMode(bool value) => _db.setBool(DbKeys.darkMode, value);
+
+  static bool getNotifications() => _db.getBool(DbKeys.notifications)!;
+  static void setNotifications(bool value) => _db.setBool(DbKeys.notifications, value);
 }

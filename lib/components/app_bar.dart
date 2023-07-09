@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/route_animator.dart';
+import 'package:kelime_hazinem/screens/settings.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -27,18 +29,24 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _MyAppBarState extends State<MyAppBar> {
   late List<Widget> buttons;
 
-  List<ActionButton> firstOrSecondTabButtons = const [
+  late List<ActionButton> firstOrSecondTabButtons = [
     ActionButton(
-      key: ValueKey("cloud"),
+      key: const ValueKey("cloud"),
       icon: MySvgs.cloud,
       size: 32,
       semanticsLabel: "Liste Paylaş",
+      onTap: () {},
     ),
     ActionButton(
-      key: ValueKey("settings"),
+      key: const ValueKey("settings"),
       icon: MySvgs.settings,
       size: 32,
       semanticsLabel: "Ayarlar",
+      onTap: () {
+        Navigator.of(context).push(
+          routeAnimator(page: const Settings()),
+        );
+      },
     ),
   ];
 

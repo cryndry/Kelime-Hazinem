@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
@@ -43,8 +44,9 @@ class ListCard extends StatelessWidget {
                   title: "Kelime Öğrenme",
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => WordLearn(
+                      routeAnimator(
+                        beginOffset: const Offset(0, 1),
+                        page: WordLearn(
                           listName: title,
                           dbTitle: dbTitle ?? title,
                         ),
@@ -60,8 +62,9 @@ class ListCard extends StatelessWidget {
                   title: "Tüm Kelimeler",
                   onPressed: () async {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => AllWordsOfList(
+                      routeAnimator(
+                        beginOffset: const Offset(0, 1),
+                        page: AllWordsOfList(
                           listName: title,
                           dbTitle: dbTitle ?? title,
                         ),
