@@ -5,6 +5,7 @@ import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/random_word_card.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class HomePage extends StatelessWidget {
@@ -24,37 +25,37 @@ class HomePage extends StatelessWidget {
             ListCard(
                 title: "Öğrenecek\u200blerim",
                 dbTitle: "willLearn",
-                color: const Color(0xFFB3261E),
+                color: MyColors.red,
                 icon: const ActionButton(
                   icon: MySvgs.willLearn,
-                  fillColor: Color(0xFFB3261E),
+                  fillColor: MyColors.red,
                   size: 32,
                 )),
             ListCard(
                 title: "Favorilerim".split('').join('\ufeff'),
                 dbTitle: "favorite",
-                color: const Color(0xFFFFD000),
+                color: MyColors.amber,
                 icon: const ActionButton(
                   icon: MySvgs.favorites,
-                  fillColor: Color(0xFFFFD000),
+                  fillColor: MyColors.amber,
                   size: 32,
                 )),
             ListCard(
                 title: "Öğrendik\u200blerim",
                 dbTitle: "learned",
-                color: const Color(0xFF70E000),
+                color: MyColors.green,
                 icon: const ActionButton(
                   icon: MySvgs.learned,
-                  fillColor: Color(0xFF70E000),
+                  fillColor: MyColors.green,
                   size: 32,
                 )),
             ListCard(
                 title: "Hazinem",
                 dbTitle: "memorized",
-                color: const Color(0xFF008000),
+                color: MyColors.darkGreen,
                 icon: const ActionButton(
                   icon: MySvgs.memorized,
-                  fillColor: Color(0xFF008000),
+                  fillColor: MyColors.darkGreen,
                   size: 32,
                 )),
           ],

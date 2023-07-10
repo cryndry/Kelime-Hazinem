@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 
 class StrokeColoredButton extends StatelessWidget {
   StrokeColoredButton({super.key, required this.title, required this.onPressed});
@@ -7,19 +8,13 @@ class StrokeColoredButton extends StatelessWidget {
   final void Function() onPressed;
 
   final ButtonStyle outlinedButtonStyle = OutlinedButton.styleFrom(
-    foregroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
+    foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
     backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-    side: const BorderSide(color: Color(0xFF007AFF), width: 1.5),
+    side: const BorderSide(color: MyColors.darkBlue, width: 1.5),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-  );
-
-  final TextStyle buttonTextStyle = const TextStyle(
-    fontSize: 16,
-    height: 24 / 16,
-    fontWeight: FontWeight.w500,
   );
 
   @override
@@ -27,7 +22,7 @@ class StrokeColoredButton extends StatelessWidget {
     return OutlinedButton(
       style: outlinedButtonStyle,
       onPressed: onPressed,
-      child: Text(title, style: buttonTextStyle),
+      child: Text(title, style: MyTextStyles.font_16_24_500),
     );
   }
 }

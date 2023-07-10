@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 
 class FillColoredButton extends StatelessWidget {
   FillColoredButton({super.key, this.title, required this.onPressed, this.icon});
@@ -8,18 +9,12 @@ class FillColoredButton extends StatelessWidget {
   final Widget? icon;
 
   final ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
+    backgroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
     foregroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-  );
-
-  final TextStyle buttonTextStyle = const TextStyle(
-    fontSize: 16,
-    height: 24 / 16,
-    fontWeight: FontWeight.w500,
   );
 
   @override
@@ -30,7 +25,7 @@ class FillColoredButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (title != null) Text(title!, style: buttonTextStyle),
+          if (title != null) Text(title!, style: MyTextStyles.font_16_24_500),
           if (title != null && icon != null) const SizedBox(width: 12),
           if (icon != null) icon!,
         ],

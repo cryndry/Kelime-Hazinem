@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MyTextInput extends StatefulWidget {
@@ -61,10 +62,7 @@ class MyTextInputState extends State<MyTextInput> {
       autofocus: widget.autoFocus,
       textDirection: textDirection,
       inputFormatters: widget.formatArabic
-          ? <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(
-                  RegExp(r"([\u0621-\u063A\u0641-\u06520-9٠-٩\p{P}\p{S}\s])", unicode: true))
-            ]
+          ? [FilteringTextInputFormatter.allow(MyRegExpPatterns.allArabic)]
           : widget.customInputFormatter,
       focusNode: textInputFocus,
       controller: widget.textInputController,
@@ -91,11 +89,7 @@ class MyTextInputState extends State<MyTextInput> {
         label: Text(
           widget.label,
           textDirection: textDirection,
-          style: const TextStyle(
-            fontSize: 16,
-            height: 20 / 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: MyTextStyles.font_16_20_500,
         ),
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),

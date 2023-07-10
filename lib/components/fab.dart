@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 
 class FAB extends StatelessWidget {
   const FAB({super.key, required this.icon, required this.onTap, this.semanticsLabel});
@@ -15,7 +16,7 @@ class FAB extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: const Color(0xFF008000),
+        color: MyColors.darkGreen,
         boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black26)],
       ),
       child: ActionButton(

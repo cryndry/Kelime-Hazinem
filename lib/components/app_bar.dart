@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -90,40 +91,28 @@ class _MyAppBarState extends State<MyAppBar> {
     final canPop = Navigator.canPop(context);
     return Container(
       constraints: const BoxConstraints.tightFor(height: 64),
-      color: const Color(0xFF007AFF),
+      color: MyColors.darkBlue,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: AppBar(
-        backgroundColor: const Color(0xFF007AFF),
+        backgroundColor: MyColors.darkBlue,
         foregroundColor: Colors.white,
         titleSpacing: canPop ? 12 : 0,
         title: widget.secTitle == null
             ? Text(
                 widget.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  height: 32 / 22,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: MyTextStyles.font_24_32_500,
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      height: 20 / 18,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: MyTextStyles.font_18_20_500,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     widget.secTitle!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 16 / 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: MyTextStyles.font_14_16_500,
                   ),
                 ],
               ),

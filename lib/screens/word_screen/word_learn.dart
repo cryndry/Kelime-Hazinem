@@ -7,6 +7,7 @@ import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
 import 'package:kelime_hazinem/screens/word_edit_add.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -26,11 +27,6 @@ class _WordLearnState extends State<WordLearn> {
   final PageController pageController = PageController();
   final TextEditingController textEditingController = TextEditingController(text: "1");
   final FocusNode textInputFocus = FocusNode();
-  final counterTextStyle = const TextStyle(
-    fontSize: 24,
-    height: 32 / 24,
-    fontWeight: FontWeight.w500,
-  );
 
   List<Word> words = [];
   List<ActionButton> appBarButtons = [];
@@ -130,7 +126,7 @@ class _WordLearnState extends State<WordLearn> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFF007AFF).withOpacity(0.7),
+                    color: MyColors.darkBlue.withOpacity(0.7),
                     width: 2,
                   ),
                 ),
@@ -215,7 +211,7 @@ class _WordLearnState extends State<WordLearn> {
                   child: TextField(
                     showCursor: true,
                     focusNode: textInputFocus,
-                    style: counterTextStyle,
+                    style: MyTextStyles.font_24_32_500,
                     autocorrect: false,
                     keyboardType: TextInputType.number,
                     controller: textEditingController,
@@ -228,7 +224,7 @@ class _WordLearnState extends State<WordLearn> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       suffixText: " / ${words.length}",
-                      suffixStyle: counterTextStyle,
+                      suffixStyle: MyTextStyles.font_24_32_500,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                     ),
@@ -279,11 +275,7 @@ class WordLearnPageState extends State<WordLearnPage> {
   Widget build(BuildContext context) {
     final wordWidget = Text(
       widget.currentWord.word,
-      style: const TextStyle(
-        fontSize: 28,
-        height: 36 / 28,
-        fontWeight: FontWeight.w600,
-      ),
+      style: MyTextStyles.font_28_36_600,
     );
 
     final infoWidget = Visibility(
@@ -295,25 +287,19 @@ class WordLearnPageState extends State<WordLearnPage> {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 widget.currentWord.description,
-                style: const TextStyle(
-                  fontSize: 16,
-                  height: 20 / 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color.fromRGBO(0, 0, 0, 0.6),
-                ),
+                style: MyTextStyles.font_16_20_500.merge(TextStyle(
+                  color: Colors.black.withOpacity(0.6),
+                )),
               ),
             ),
           Padding(
             padding: const EdgeInsets.only(top: 64),
             child: Text(
-              widget.currentWord.meaning.replaceAll(RegExp(r"(\|)"), ", "),
+              widget.currentWord.meaning,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                height: 28 / 20,
-                fontWeight: FontWeight.w500,
-                color: Color.fromRGBO(0, 0, 0, 0.8),
-              ),
+              style: MyTextStyles.font_20_24_500.merge(TextStyle(
+                color: Colors.black.withOpacity(0.8),
+              )),
             ),
           ),
         ],

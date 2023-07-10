@@ -5,7 +5,9 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
+import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
 class ListCard extends StatelessWidget {
@@ -14,7 +16,7 @@ class ListCard extends StatelessWidget {
     this.icon,
     required this.title,
     this.dbTitle,
-    this.color = const Color(0xFF4BA1FF),
+    this.color = MyColors.lightBlue,
   });
 
   final String title;
@@ -23,9 +25,11 @@ class ListCard extends StatelessWidget {
   final Color color;
 
   final ButtonStyle outlinedButtonStyle = ButtonStyle(
-      foregroundColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)),
+      foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
       backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-      surfaceTintColor: MaterialStateColor.resolveWith((states) => const Color(0xFF007AFF)));
+      surfaceTintColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue));
+
+  final beginOffsetForRotatingPage = const Offset(0, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -41,36 +45,51 @@ class ListCard extends StatelessWidget {
             info: "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
             bottomWidgets: (setSheetState) => <Widget>[
               FillColoredButton(
-                  title: "Kelime Öğrenme",
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      routeAnimator(
-                        beginOffset: const Offset(0, 1),
-                        page: WordLearn(
-                          listName: title,
-                          dbTitle: dbTitle ?? title,
-                        ),
+                title: "Kelime Öğrenme",
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    routeAnimator(
+                      beginOffset: beginOffsetForRotatingPage,
+                      page: WordLearn(
+                        listName: title,
+                        dbTitle: dbTitle ?? title,
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 12),
               FillColoredButton(title: "Kelime Testi", onPressed: () {}),
               const SizedBox(height: 12),
-              FillColoredButton(title: "Kelimeyi Bul", onPressed: () {}),
+              FillColoredButton(
+                title: "Kelimeyi Bul",
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    routeAnimator(
+                      beginOffset: beginOffsetForRotatingPage,
+                      page: WordGuess(
+                        listName: title,
+                        dbTitle: dbTitle ?? title,
+                      ),
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 12),
               StrokeColoredButton(
-                  title: "Tüm Kelimeler",
-                  onPressed: () async {
-                    Navigator.of(context).pushReplacement(
-                      routeAnimator(
-                        beginOffset: const Offset(0, 1),
-                        page: AllWordsOfList(
-                          listName: title,
-                          dbTitle: dbTitle ?? title,
-                        ),
+                title: "Tüm Kelimeler",
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    routeAnimator(
+                      beginOffset: beginOffsetForRotatingPage,
+                      page: AllWordsOfList(
+                        listName: title,
+                        dbTitle: dbTitle ?? title,
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
             ],
           );
         } else {
@@ -110,11 +129,8 @@ class ListCard extends StatelessWidget {
                     child: (icon == null)
                         ? Text(
                             title.substring(0, 1).toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              height: 20 / 16,
-                              fontWeight: FontWeight.w500,
+                            style: MyTextStyles.font_16_20_500.merge(
+                              const TextStyle(color: Colors.white),
                             ),
                           )
                         : icon,
@@ -128,12 +144,9 @@ class ListCard extends StatelessWidget {
                   title,
                   maxLines: 3,
                   softWrap: true,
-                  style: const TextStyle(
+                  style: MyTextStyles.font_14_16_500.merge(const TextStyle(
                     letterSpacing: -0.5,
-                    fontSize: 14,
-                    height: 16 / 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  )),
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                 ),

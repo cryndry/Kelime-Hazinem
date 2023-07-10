@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fab.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
@@ -75,7 +74,6 @@ class _MyListsState extends State<MyLists> {
               await popBottomSheet(
                 context: context,
                 title: "Yeni Listeni Oluştur",
-                info: "Listenizin adı sadece Türkçe karakterleri içerebilir.",
                 mayKeyboardAppear: true,
                 bottomWidgets: (setSheetState) => [
                   Form(
@@ -91,9 +89,6 @@ class _MyListsState extends State<MyLists> {
                           validator: inputValidator,
                           loseFocusOnTapOutside: false,
                           textInputController: listAddingTextInputController,
-                          customInputFormatter: [
-                            FilteringTextInputFormatter.allow(RegExp(r"([\w\s])", unicode: true)),
-                          ],
                         ),
                         const SizedBox(height: 16),
                         FutureBuilder(

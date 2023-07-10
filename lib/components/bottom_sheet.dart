@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 
 Future<T?> popBottomSheet<T>({
   required BuildContext context,
@@ -35,11 +36,7 @@ Future<T?> popBottomSheet<T>({
                     child: Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 20 / 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: MyTextStyles.font_16_20_500,
                     ),
                   ),
                   if (info.isNotEmpty)
@@ -48,11 +45,7 @@ Future<T?> popBottomSheet<T>({
                       child: Text(
                         info,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 18 / 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: MyTextStyles.font_14_16_400,
                       ),
                     ),
                   const SizedBox(height: 32),

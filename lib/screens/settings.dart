@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
@@ -92,20 +93,6 @@ class SettingRow extends StatelessWidget {
   final String? info;
   final Widget child;
 
-  final TextStyle titleTextStyle = const TextStyle(
-    fontSize: 18,
-    height: 22 / 18,
-    fontWeight: FontWeight.w500,
-  );
-
-  final TextStyle infoTextStyle = const TextStyle(
-    fontSize: 16,
-    height: 20 / 16,
-    fontWeight: FontWeight.w400,
-    color: Color.fromRGBO(0, 0, 0, 0.6),
-    letterSpacing: 0,
-  );
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -119,9 +106,16 @@ class SettingRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: titleTextStyle),
+                  Text(title, style: MyTextStyles.font_18_20_500),
                   if (info != null) const SizedBox(height: 4),
-                  if (info != null) Text(info!, style: infoTextStyle),
+                  if (info != null)
+                    Text(
+                      info!,
+                      style: MyTextStyles.font_16_20_400.merge(const TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 0.6),
+                        letterSpacing: 0,
+                      )),
+                    ),
                 ],
               ),
             ),
@@ -157,12 +151,6 @@ class NumericSettingState extends State<NumericSetting> {
   late final textEditingController = TextEditingController(text: widget.initialValue.toString());
   final textInputFocus = FocusNode();
 
-  final TextStyle inputTextStyle = const TextStyle(
-    fontSize: 20,
-    height: 24 / 20,
-    fontWeight: FontWeight.w500,
-  );
-
   void changeHandler() {
     final int value = int.parse(textEditingController.text);
     if (value < widget.min || value > widget.max) {
@@ -194,7 +182,7 @@ class NumericSettingState extends State<NumericSetting> {
         child: TextField(
           showCursor: true,
           focusNode: textInputFocus,
-          style: inputTextStyle,
+          style: MyTextStyles.font_20_24_500,
           autocorrect: false,
           keyboardType: TextInputType.number,
           controller: textEditingController,
@@ -239,7 +227,7 @@ class SwitchSettingState extends State<SwitchSetting> {
       height: 32,
       width: 56,
       child: Switch(
-        activeTrackColor: const Color(0xFF007AFF),
+        activeTrackColor: MyColors.darkBlue,
         inactiveTrackColor: Colors.black.withOpacity(0.6),
         thumbColor: const MaterialStatePropertyAll(Colors.white),
         value: state,
@@ -273,12 +261,7 @@ class SelectableSetting<T> extends StatefulWidget {
 class SelectableSettingState<T> extends State<SelectableSetting<T>> {
   late T state = widget.initialValue;
 
-  final TextStyle textStyle = const TextStyle(
-    fontSize: 16,
-    height: 20 / 16,
-    fontWeight: FontWeight.w400,
-    color: Colors.black,
-  );
+  final TextStyle textStyle = MyTextStyles.font_16_20_400.merge(const TextStyle(color: Colors.black));
 
   @override
   Widget build(BuildContext context) {

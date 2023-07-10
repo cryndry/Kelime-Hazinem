@@ -8,6 +8,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/deep_map_copy.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -108,12 +109,10 @@ class WordEditAddState extends State<WordEditAdd> {
       String infinitiveNew = infinitiveInputController.text;
       if (pluralNew.isNotEmpty) {
         widget.word!.description = "Ç. $pluralNew";
-        widget.word!.descriptionSearch =
-            pluralNew.replaceAll(RegExp(r"(^[\u0621-\u063A\u0641-\u064A0-9٠-٩\p{P}\p{S}\s])", unicode: true), "");
+        widget.word!.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(pluralNew);
       } else if (infinitiveNew.isNotEmpty) {
         widget.word!.description = "M. $infinitiveNew";
-        widget.word!.descriptionSearch =
-            infinitiveNew.replaceAll(RegExp(r"(^[\u0621-\u063A\u0641-\u064A0-9٠-٩\p{P}\p{S}\s])", unicode: true), "");
+        widget.word!.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(infinitiveNew);
       } else {
         widget.word!.description = "";
         widget.word!.descriptionSearch = "";
@@ -140,21 +139,13 @@ class WordEditAddState extends State<WordEditAdd> {
         const Text(
           "Kelime Silinecek",
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20,
-            height: 24 / 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: MyTextStyles.font_20_24_600,
         ),
         const SizedBox(height: 12),
         const Text(
           "Kelime tüm listelerden kalıcı olarak silinecek. Bu işlem geri alınamaz.",
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            height: 16 / 14,
-            fontWeight: FontWeight.w400,
-          ),
+          style: MyTextStyles.font_14_16_400,
         ),
         const SizedBox(height: 24),
         Row(
@@ -356,11 +347,7 @@ class WordEditAddState extends State<WordEditAdd> {
                                   },
                                   title: Text(
                                     listEntry.key,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      height: 20 / 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    style: MyTextStyles.font_16_20_500,
                                   ),
                                 );
                               },

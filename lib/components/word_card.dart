@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
 
@@ -8,30 +9,21 @@ class WordCard extends StatefulWidget {
   final Word word;
 
   @override
-  State<WordCard> createState() => _WordCardState();
+  State<WordCard> createState() => WordCardState();
 }
 
-class _WordCardState extends State<WordCard> {
-  final TextStyle wordTextStyle = const TextStyle(
-    fontSize: 20,
-    height: 24 / 20,
-    fontWeight: FontWeight.w600,
-    color: Color.fromRGBO(255, 255, 255, 1),
-  );
+class WordCardState extends State<WordCard> {
+  final TextStyle wordTextStyle = MyTextStyles.font_20_24_600.merge(const TextStyle(
+    color: Colors.white,
+  ));
 
-  final TextStyle infoTextStyle = const TextStyle(
-    fontSize: 14,
-    height: 16 / 14,
-    fontWeight: FontWeight.w500,
-    color: Color.fromRGBO(255, 255, 255, 0.6),
-  );
+  final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.merge(const TextStyle(
+    color: Colors.white60,
+  ));
 
-  final TextStyle meaningTextStyle = const TextStyle(
-    fontSize: 16,
-    height: 20 / 16,
-    fontWeight: FontWeight.w500,
-    color: Color.fromRGBO(255, 255, 255, 0.9),
-  );
+  final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.merge(TextStyle(
+    color: Colors.white.withOpacity(0.9),
+  ));
 
   int intBoolInvert(int value) => (value == 1) ? 0 : 1;
   bool intAsBool(int value) => (value == 1);
@@ -48,7 +40,7 @@ class _WordCardState extends State<WordCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: const Color.fromARGB(255, 75, 161, 255),
+        color: MyColors.lightBlue,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/color_animated_icon.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
@@ -32,7 +33,7 @@ class WordActionButtonRow extends StatelessWidget {
             size: eachIconSize,
             icon: MySvgs.willLearn,
             isActive: intAsBool(word.willLearn),
-            activeFillColor: const Color(0xFFB3261E),
+            activeFillColor: MyColors.red,
             strokeColor: iconStrokeColor,
             semanticsLabel: "Öğreneceklerime Ekle",
             onTap: () {
@@ -44,7 +45,7 @@ class WordActionButtonRow extends StatelessWidget {
             size: eachIconSize,
             icon: MySvgs.favorites,
             isActive: intAsBool(word.favorite),
-            activeFillColor: const Color(0xFFFFD000),
+            activeFillColor: MyColors.amber,
             strokeColor: iconStrokeColor,
             semanticsLabel: "Favorilerime Ekle",
             onTap: () {
@@ -56,7 +57,7 @@ class WordActionButtonRow extends StatelessWidget {
             size: eachIconSize,
             icon: MySvgs.learned,
             isActive: intAsBool(word.learned),
-            activeFillColor: const Color(0xFF70E000),
+            activeFillColor: MyColors.green,
             strokeColor: iconStrokeColor,
             semanticsLabel: "Öğrendiklerime Ekle",
             onTap: () {
@@ -68,7 +69,7 @@ class WordActionButtonRow extends StatelessWidget {
             size: eachIconSize,
             icon: MySvgs.memorized,
             isActive: intAsBool(word.memorized),
-            activeFillColor: const Color(0xFF008000),
+            activeFillColor: MyColors.darkGreen,
             strokeColor: iconStrokeColor,
             semanticsLabel: "Hazineme Ekle",
             onTap: () {
