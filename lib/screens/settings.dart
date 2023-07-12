@@ -51,6 +51,15 @@ class Settings extends StatelessWidget {
               ),
             ),
             SettingRow(
+              title: "Animasyonlar",
+              child: SwitchSetting(
+                initialValue: KeyValueDatabase.getIsAnimatable(),
+                onChange: (bool newValue) {
+                  KeyValueDatabase.setIsAnimatable(newValue);
+                },
+              ),
+            ),
+            SettingRow(
               title: "Kelime Öğrenme modu liste uzunluğu",
               info: "(en\xA0az\xA020 - en\xA0fazla\xA0200)",
               child: NumericSetting(

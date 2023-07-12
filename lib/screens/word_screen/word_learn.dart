@@ -75,14 +75,47 @@ class _WordLearnState extends State<WordLearn> {
 
     int currentValue = int.parse(textEditingController.text);
     if (currentValue > 0 && currentValue <= words.length) {
-      pageController.animateToPage(
-        currentValue - 1,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.bounceOut,
-      );
+      final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
+
+      if (isAnimatable) {
+        pageController.animateToPage(
+          currentValue - 1,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.bounceOut,
+        );
+      } else {
+        pageController.jumpToPage(currentValue - 1);
+      }
     } else {
       textEditingController.text = (pageController.page! + 1).toInt().toString();
     }
+  }
+
+  void refreshList() async {
+    final List<int> willRepeatIndexes = [];
+    while (willRepeatIndexes.length < (min(5, words.length))) {
+      final int index = Random().nextInt(words.length);
+      if (!willRepeatIndexes.contains(index)) {
+        willRepeatIndexes.add(index);
+      }
+    }
+
+    final List<Word> willRepeatWords = willRepeatIndexes.map((i) => words[i]).toList();
+    final List<int> willRepeatIds = willRepeatWords.map((word) => word.id).toList();
+    final newWords = await SqlDatabase.getWordsQuery(
+      listName: widget.dbTitle,
+      isIconicList: widget.dbTitle != widget.listName,
+      limit: listLength - willRepeatIds.length,
+      exceptionIds: willRepeatIds,
+      isInRandomOrder: true,
+    );
+
+    setState(() {
+      words = (willRepeatWords + newWords)..shuffle();
+      appBarButtons = [...constAppBarButtons];
+      pageController.jumpToPage(0);
+      isListRefreshed = true;
+    });
   }
 
   @override
@@ -141,32 +174,7 @@ class _WordLearnState extends State<WordLearn> {
                             icon: MySvgs.refresh,
                             size: 32,
                             semanticsLabel: "Refresh The List",
-                            onTap: () async {
-                              final List<int> willRepeatIndexes = [];
-                              while (willRepeatIndexes.length < (min(5, words.length))) {
-                                final int index = Random().nextInt(words.length);
-                                if (!willRepeatIndexes.contains(index)) {
-                                  willRepeatIndexes.add(index);
-                                }
-                              }
-
-                              final List<Word> willRepeatWords = willRepeatIndexes.map((i) => words[i]).toList();
-                              final List<int> willRepeatIds = willRepeatWords.map((word) => word.id).toList();
-                              final newWords = await SqlDatabase.getWordsQuery(
-                                listName: widget.dbTitle,
-                                isIconicList: widget.dbTitle != widget.listName,
-                                limit: listLength - willRepeatIds.length,
-                                exceptionIds: willRepeatIds,
-                                isInRandomOrder: true,
-                              );
-
-                              setState(() {
-                                words = (willRepeatWords + newWords)..shuffle();
-                                appBarButtons = [...constAppBarButtons];
-                                pageController.jumpToPage(0);
-                                isListRefreshed = true;
-                              });
-                            },
+                            onTap: refreshList,
                           )
                         ];
                       });

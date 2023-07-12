@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
@@ -15,7 +14,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PageLayout(
       children: [
-        const KeepAliveWidget(child: RandomWordCard()),
+        const  RandomWordCard(),
         const SizedBox(height: 12),
         ListCardGrid(
           children: [

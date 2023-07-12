@@ -13,6 +13,8 @@ class RandomWordCard extends StatefulWidget {
 }
 
 class _RandomWordCardState extends State<RandomWordCard> {
+  double turns = 0;
+
   Word word = Word(
     id: -1,
     word: "Yükleniyor...",
@@ -42,6 +44,7 @@ class _RandomWordCardState extends State<RandomWordCard> {
 
   @override
   Widget build(BuildContext context) {
+    bool isAnimatable = KeyValueDatabase.getIsAnimatable();
     return Stack(
       children: [
         WordCard(word: word),
@@ -50,12 +53,28 @@ class _RandomWordCardState extends State<RandomWordCard> {
           right: 16,
           width: 32,
           height: 32,
-          child: ActionButton(
-            icon: MySvgs.refresh,
-            size: 32,
-            semanticsLabel: "Kelimeyi Yenile",
-            onTap: getRandomWord,
-          ),
+          child: isAnimatable
+              ? AnimatedRotation(
+                  turns: turns,
+                  duration: const Duration(milliseconds: 300),
+                  onEnd: getRandomWord,
+                  child: ActionButton(
+                    icon: MySvgs.refresh,
+                    size: 32,
+                    semanticsLabel: "Kelimeyi Yenile",
+                    onTap: () {
+                      setState(() {
+                        turns += 0.5;
+                      });
+                    },
+                  ),
+                )
+              : ActionButton(
+                  icon: MySvgs.refresh,
+                  size: 32,
+                  semanticsLabel: "Kelimeyi Yenile",
+                  onTap: getRandomWord,
+                ),
         ),
       ],
     );
