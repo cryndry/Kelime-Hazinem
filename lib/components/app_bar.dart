@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/screens/share_lists.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
@@ -36,7 +37,11 @@ class _MyAppBarState extends State<MyAppBar> {
       icon: MySvgs.cloud,
       size: 32,
       semanticsLabel: "Liste Paylaş",
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(
+          routeAnimator(page: const ShareLists()),
+        );
+      },
     ),
     ActionButton(
       key: const ValueKey("settings"),

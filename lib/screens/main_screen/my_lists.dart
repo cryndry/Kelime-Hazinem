@@ -5,7 +5,9 @@ import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
+import 'package:kelime_hazinem/screens/share_lists.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
@@ -66,7 +68,11 @@ class _MyListsState extends State<MyLists> {
   Widget build(BuildContext context) {
     return PageLayout(
       FABs: [
-        FAB(icon: MySvgs.cloud, onTap: () {}),
+        FAB(
+            icon: MySvgs.cloud,
+            onTap: () {
+              Navigator.of(context).push(routeAnimator(page: const ShareLists()));
+            }),
         const SizedBox(height: 12),
         FAB(
             icon: MySvgs.plus,
