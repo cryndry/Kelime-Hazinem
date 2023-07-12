@@ -174,7 +174,7 @@ class WordEditState extends State<WordEdit> {
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(
-          title: "Kelime Ekle",
+          title: "Düzenle",
           buttons: [
             ActionButton(
               icon: MySvgs.undo,
@@ -251,13 +251,16 @@ class WordEditState extends State<WordEdit> {
                       if (snapshot.connectionState == ConnectionState.waiting ||
                           snapshot.connectionState == ConnectionState.active) {
                         return FillColoredButton(
-                          icon: const SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
-                              semanticsLabel: "Siliniyor...",
+                          icon: const Padding(
+                            padding: EdgeInsets.all(4),
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                                semanticsLabel: "Siliniyor...",
+                              ),
                             ),
                           ),
                           onPressed: () {},
@@ -285,13 +288,16 @@ class WordEditState extends State<WordEdit> {
                             snapshot.connectionState == ConnectionState.active) {
                           return FillColoredButton(
                             title: "Kaydediliyor",
-                            icon: const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                                semanticsLabel: "Kaydediliyor...",
+                            icon: const Padding(
+                              padding: EdgeInsets.all(4),
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                  semanticsLabel: "Kaydediliyor...",
+                                ),
                               ),
                             ),
                             onPressed: () {},
