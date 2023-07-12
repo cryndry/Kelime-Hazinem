@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
+import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
 void main() async {
@@ -19,6 +20,7 @@ class KelimeHazinem extends StatelessWidget {
       theme: ThemeData(
         fontFamily: "Manrope",
         useMaterial3: true,
+        colorSchemeSeed: MyColors.darkBlue,
       ),
       home: MainScreen(),
     );

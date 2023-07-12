@@ -6,7 +6,7 @@ import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
-import 'package:kelime_hazinem/screens/word_edit_add.dart';
+import 'package:kelime_hazinem/screens/word_screen/word_edit.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -46,7 +46,7 @@ class _WordLearnState extends State<WordLearn> {
         final int wordIndex = pageController.page!.toInt();
         final result = await Navigator.of(context).push<Map<String, dynamic>>(
           routeAnimator(
-            page: WordEditAdd(word: words[wordIndex]),
+            page: WordEdit(word: words[wordIndex]),
           ),
         );
         setState(() {

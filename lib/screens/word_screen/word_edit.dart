@@ -14,16 +14,16 @@ import 'package:kelime_hazinem/utils/deep_map_copy.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
-class WordEditAdd extends StatefulWidget {
-  const WordEditAdd({super.key, this.word});
+class WordEdit extends StatefulWidget {
+  const WordEdit({super.key, required this.word});
 
-  final Word? word;
+  final Word word;
 
   @override
-  State<WordEditAdd> createState() => WordEditAddState();
+  State<WordEdit> createState() => WordEditState();
 }
 
-class WordEditAddState extends State<WordEditAdd> {
+class WordEditState extends State<WordEdit> {
   final _formKey = GlobalKey<FormState>();
   Future<bool>? saveHandling;
   Future<void>? deleteHandling;
@@ -33,8 +33,8 @@ class WordEditAddState extends State<WordEditAdd> {
 
   String plural = "";
   String infinitive = "";
-  late String word = widget.word?.word ?? "";
-  late String meaning = widget.word?.meaning.replaceAll("|", ", ") ?? "";
+  late String word = widget.word.word;
+  late String meaning = widget.word.meaning;
 
   late TextEditingController wordInputController = TextEditingController(text: word);
   late TextEditingController pluralInputController = TextEditingController(text: plural);
@@ -64,18 +64,16 @@ class WordEditAddState extends State<WordEditAdd> {
 
   @override
   void initState() {
-    if (widget.word != null) {
-      final description = widget.word!.description;
-      if (description.contains("M.")) {
-        infinitive = description.substring(3);
-        plural = "";
-      } else if (description.contains("Ç.")) {
-        plural = description.substring(3);
-        infinitive = "";
-      }
+    final description = widget.word.description;
+    if (description.contains("M.")) {
+      infinitive = description.substring(3);
+      plural = "";
+    } else if (description.contains("Ç.")) {
+      plural = description.substring(3);
+      infinitive = "";
     }
 
-    SqlDatabase.getListsOfWord(widget.word!.id).then((value) {
+    SqlDatabase.getListsOfWord(widget.word.id).then((value) {
       setState(() {
         lists.addAll(deepMapCopy(value));
         listsBottomSheet.addAll(deepMapCopy(value));
@@ -101,35 +99,30 @@ class WordEditAddState extends State<WordEditAdd> {
     bool validationResult = _formKey.currentState!.validate();
     if (!validationResult) return false;
 
-    if (widget.word != null) {
-      widget.word!.word = wordInputController.text;
-      widget.word!.meaning = meaningInputController.text;
+    widget.word.word = wordInputController.text;
+    widget.word.meaning = meaningInputController.text;
 
-      String pluralNew = pluralInputController.text;
-      String infinitiveNew = infinitiveInputController.text;
-      if (pluralNew.isNotEmpty) {
-        widget.word!.description = "Ç. $pluralNew";
-        widget.word!.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(pluralNew);
-      } else if (infinitiveNew.isNotEmpty) {
-        widget.word!.description = "M. $infinitiveNew";
-        widget.word!.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(infinitiveNew);
-      } else {
-        widget.word!.description = "";
-        widget.word!.descriptionSearch = "";
-      }
-
-      await SqlDatabase.updateWord(widget.word!.id, {
-        "word": widget.word!.word,
-        "word_search": widget.word!.wordSearch,
-        "meaning": widget.word!.meaning,
-        "description": widget.word!.description,
-        "description_search": widget.word!.descriptionSearch
-      });
-      return true;
+    String pluralNew = pluralInputController.text;
+    String infinitiveNew = infinitiveInputController.text;
+    if (pluralNew.isNotEmpty) {
+      widget.word.description = "Ç. $pluralNew";
+      widget.word.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(pluralNew);
+    } else if (infinitiveNew.isNotEmpty) {
+      widget.word.description = "M. $infinitiveNew";
+      widget.word.descriptionSearch = MyRegExpPatterns.getWithoutHaraka(infinitiveNew);
     } else {
-      return true;
-      // TODO Ekle menüsünde yeni kelime oluşturulacak.
+      widget.word.description = "";
+      widget.word.descriptionSearch = "";
     }
+
+    await SqlDatabase.updateWord(widget.word.id, {
+      "word": widget.word.word,
+      "word_search": widget.word.wordSearch,
+      "meaning": widget.word.meaning,
+      "description": widget.word.description,
+      "description_search": widget.word.descriptionSearch
+    });
+    return true;
   }
 
   Future<void> deleteHandler() async {
@@ -162,7 +155,7 @@ class WordEditAddState extends State<WordEditAdd> {
             FillColoredButton(
               title: "Onayla",
               onPressed: () async {
-                final bool deleted = await SqlDatabase.deleteWord(widget.word!.id);
+                final bool deleted = await SqlDatabase.deleteWord(widget.word.id);
                 Navigator.of(context).pop(deleted);
               },
             ),
@@ -181,7 +174,7 @@ class WordEditAddState extends State<WordEditAdd> {
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(
-          title: widget.word == null ? "Kelime Ekle" : "Düzenle",
+          title: "Kelime Ekle",
           buttons: [
             ActionButton(
               icon: MySvgs.undo,
@@ -193,7 +186,6 @@ class WordEditAddState extends State<WordEditAdd> {
                   pluralInputController.text = plural;
                   infinitiveInputController.text = infinitive;
                   meaningInputController.text = meaning;
-                  // TODO initial values of selected lists also will be recorded
                 });
               },
             ),
@@ -208,30 +200,38 @@ class WordEditAddState extends State<WordEditAdd> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    MyTextInput(
-                      label: "Kelime",
-                      hintText: word,
-                      textInputController: wordInputController,
-                      validator: wordValidator,
-                      formatArabic: true,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: MyTextInput(
+                        label: "Kelime",
+                        hintText: word,
+                        textInputController: wordInputController,
+                        validator: wordValidator,
+                        formatArabic: true,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    MyTextInput(
-                      label: "Çoğul",
-                      hintText: plural,
-                      textInputController: pluralInputController,
-                      validator: pluralInfinitiveValidator,
-                      formatArabic: true,
-                    ),
-                    const SizedBox(height: 16),
-                    MyTextInput(
-                      label: "Mastar",
-                      hintText: infinitive,
-                      textInputController: infinitiveInputController,
-                      validator: pluralInfinitiveValidator,
-                      formatArabic: true,
-                    ),
-                    const SizedBox(height: 16),
+                    if (plural.isNotEmpty || (plural.isEmpty && infinitive.isEmpty))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: MyTextInput(
+                          label: "Çoğul",
+                          hintText: plural,
+                          textInputController: pluralInputController,
+                          validator: pluralInfinitiveValidator,
+                          formatArabic: true,
+                        ),
+                      ),
+                    if (infinitive.isNotEmpty || (plural.isEmpty && infinitive.isEmpty))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: MyTextInput(
+                          label: "Mastar",
+                          hintText: infinitive,
+                          textInputController: infinitiveInputController,
+                          validator: pluralInfinitiveValidator,
+                          formatArabic: true,
+                        ),
+                      ),
                     MyTextInput(
                       label: "Anlam",
                       hintText: meaning,
@@ -357,14 +357,10 @@ class WordEditAddState extends State<WordEditAdd> {
                           FillColoredButton(
                             title: "Kaydet",
                             onPressed: () async {
-                              if (widget.word != null) {
-                                // 2. düzenlemede listeler değişmiyor.
-                                await SqlDatabase.changeListsOfWord(widget.word!.id, lists, listsBottomSheet);
-                                lists = deepMapCopy(listsBottomSheet);
-                                Navigator.of(context).pop();
-                              } else {
-                                // TODO save lists for now creating word
-                              }
+                              // 2. düzenlemede listeler değişmiyor.
+                              await SqlDatabase.changeListsOfWord(widget.word.id, lists, listsBottomSheet);
+                              lists = deepMapCopy(listsBottomSheet);
+                              Navigator.of(context).pop();
                             },
                           ),
                         ];

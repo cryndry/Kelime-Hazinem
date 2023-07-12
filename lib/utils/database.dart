@@ -127,6 +127,12 @@ abstract class SqlDatabase {
     });
   }
 
+  static Future<int> createWord(Map<String, Object?> word) async {
+    return await _db.transaction((txn) async {
+      return await txn.insert(_dbWordTableName, word);
+    });
+  }
+
   static Future<bool> updateWord(int id, Map<String, Object?> newValue) async {
     return await _db.transaction((txn) async {
       final result = await txn.update(
