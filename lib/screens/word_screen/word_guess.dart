@@ -21,8 +21,6 @@ class WordGuess extends StatefulWidget {
 }
 
 class WordGuessState extends State<WordGuess> {
-  final key = GlobalKey<WordGuessPageState>();
-  
   final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
   final int listLength = KeyValueDatabase.getOtherModsListLength();
   final PageController pageController = PageController();
@@ -30,8 +28,21 @@ class WordGuessState extends State<WordGuess> {
   final FocusNode textInputFocus = FocusNode();
 
   List<Word> words = [];
-  List<Widget> appBarButtons = [];
+  final List<Widget> appBarButtons = [];
   bool isListRefreshed = false;
+  bool isTipButtonVisible = true;
+  List<int> tipButtonUsedIndexes = [];
+
+  late final ActionButton tipButton = ActionButton(
+    icon: MySvgs.tip,
+    size: 32,
+    onTap: () {
+      setState(() {
+        tipButtonUsedIndexes.add(pageController.page!.toInt());
+        isTipButtonVisible = false;
+      });
+    },
+  );
 
   void animateToPageHandler() {
     textInputFocus.unfocus();
@@ -107,23 +118,6 @@ class WordGuessState extends State<WordGuess> {
       });
     });
 
-    ActionButton tipButton = ActionButton(
-      icon: MySvgs.tip,
-      size: 32,
-      onTap: () {},
-    );
-
-    appBarButtons = [
-      (isAnimatable)
-          ? AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              child: Visibility(
-                visible: true,
-                child: tipButton,
-              ))
-          : tipButton,
-    ];
-
     super.initState();
   }
 
@@ -138,6 +132,21 @@ class WordGuessState extends State<WordGuess> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget tipButtonBuild = isAnimatable
+        ? Visibility(
+            visible: isTipButtonVisible,
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              child: tipButton,
+            ),
+          )
+        : tipButton;
+    if (appBarButtons.isEmpty) {
+      appBarButtons.insert(0, tipButtonBuild);
+    } else {
+      appBarButtons[0] = tipButtonBuild;
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(title: "Kelimeyi Bul", secTitle: widget.listName, buttons: appBarButtons),
@@ -157,8 +166,10 @@ class WordGuessState extends State<WordGuess> {
                 child: PageView.custom(
                   onPageChanged: (value) {
                     textEditingController.value = TextEditingValue(text: (value + 1).toString());
-                    if (value + 1 == words.length && appBarButtons.length == 1) {
-                      setState(() {
+                    bool shouldBeVisible = !tipButtonUsedIndexes.contains(value);
+                    setState(() {
+                      isTipButtonVisible = shouldBeVisible;
+                      if (value + 1 == words.length && appBarButtons.length == 1) {
                         appBarButtons.add(
                           ActionButton(
                             icon: MySvgs.refresh,
@@ -166,8 +177,8 @@ class WordGuessState extends State<WordGuess> {
                             onTap: refreshList,
                           ),
                         );
-                      });
-                    }
+                      }
+                    });
                   },
                   controller: pageController,
                   scrollDirection: Axis.horizontal,
@@ -178,6 +189,7 @@ class WordGuessState extends State<WordGuess> {
                         currentWord: currentWord,
                         getToNextPage: getToNextPage,
                         isAnimatable: isAnimatable,
+                        isTipButtonUsed: (!isTipButtonVisible) && (tipButtonUsedIndexes.last == index),
                       );
 
                       if (isListRefreshed) {
@@ -243,54 +255,20 @@ class WordGuessPage extends StatefulWidget {
     required this.currentWord,
     required this.getToNextPage,
     required this.isAnimatable,
+    required this.isTipButtonUsed,
   });
 
   final Word currentWord;
   final void Function() getToNextPage;
   final bool isAnimatable;
+  final bool isTipButtonUsed;
 
   @override
   WordGuessPageState createState() => WordGuessPageState();
 }
 
 class WordGuessPageState extends State<WordGuessPage> {
-  final allLetters = [
-    'ء',
-    'أ',
-    'إ',
-    'ؤ',
-    'ئ',
-    'ا',
-    'ب',
-    'ت',
-    'ث',
-    'ج',
-    'ح',
-    'خ',
-    'د',
-    'ذ',
-    'ر',
-    'ز',
-    'س',
-    'ش',
-    'ص',
-    'ض',
-    'ط',
-    'ظ',
-    'ع',
-    'غ',
-    'ف',
-    'ق',
-    'ک',
-    'ل',
-    'م',
-    'ن',
-    'و',
-    'ه',
-    'ة',
-    'ي',
-    'ى'
-  ];
+  final allLetters = ['ء','أ','إ','ؤ','ئ','ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','ل','م','ن','و','ه','ة','ي','ى'];
 
   bool isCompleted = false;
   late bool isAnimatable = widget.isAnimatable;
@@ -386,6 +364,36 @@ class WordGuessPageState extends State<WordGuessPage> {
     ];
 
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant WordGuessPage oldWidget) {
+    if (!oldWidget.isTipButtonUsed && widget.isTipButtonUsed) {
+      if (revealedIndexes.length == wordLetters.length) return;
+
+      bool isAdded = false;
+      while (!isAdded) {
+        int index = Random().nextInt(wordLetters.length);
+        if (!revealedIndexes.contains(index)) {
+          setState(() {
+            for (var element in letters.entries) {
+              if (element.value.contains(index)) {
+                letters[element.key]!.remove(index);
+              }
+            }
+
+            revealedIndexes.add(index);
+            if (revealedIndexes.length == wordLetters.length) {
+              isCompleted = true;
+              widget.getToNextPage();
+            }
+          });
+          isAdded = true;
+        }
+      }
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
