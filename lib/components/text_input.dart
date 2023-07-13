@@ -16,6 +16,7 @@ class MyTextInput extends StatefulWidget {
     this.autoFocus = false,
     this.loseFocusOnTapOutside = true,
     this.customInputFormatter,
+    this.onChange,
   });
 
   final String label;
@@ -27,6 +28,7 @@ class MyTextInput extends StatefulWidget {
   final bool autoFocus;
   final bool loseFocusOnTapOutside;
   final List<TextInputFormatter>? customInputFormatter;
+  final void Function(String)? onChange;
 
   @override
   State<MyTextInput> createState() => MyTextInputState();
@@ -76,14 +78,12 @@ class MyTextInputState extends State<MyTextInput> {
               }
             }
           : null,
-      onChanged: (value) {
-        setState(() {});
-      },
+      onChanged: widget.onChange,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintTextDirection: textDirection,
         errorMaxLines: 3,
-        contentPadding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
+        contentPadding: const EdgeInsets.all(16),
         suffixIcon: widget.textInputController.text.isNotEmpty && !widget.formatArabic ? clearIcon : null,
         prefixIcon: widget.textInputController.text.isNotEmpty && widget.formatArabic ? clearIcon : null,
         label: Text(
@@ -92,7 +92,7 @@ class MyTextInputState extends State<MyTextInput> {
           style: MyTextStyles.font_16_20_500,
         ),
         border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
           borderSide: BorderSide(
             width: 1,
             color: Color.fromRGBO(0, 0, 0, 0.6),

@@ -30,8 +30,7 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _MyAppBarState extends State<MyAppBar> {
   late List<Widget> buttons;
-
-  late List<ActionButton> firstOrSecondTabButtons = [
+  late List<ActionButton> mainScreenButtons = [
     ActionButton(
       key: const ValueKey("cloud"),
       icon: MySvgs.cloud,
@@ -56,36 +55,16 @@ class _MyAppBarState extends State<MyAppBar> {
     ),
   ];
 
-  late List<ActionButton> thirdTabButtons = [
-    ActionButton(
-      key: const ValueKey("search"),
-      icon: MySvgs.search,
-      size: 32,
-      semanticsLabel: "Kelime Ara",
-      onTap: () {},
-    ),
-    ...firstOrSecondTabButtons,
-  ];
-
   @override
   void initState() {
-    if (widget.activeTabIndex != null) {
-      buttons = (widget.activeTabIndex == 2) ? thirdTabButtons : firstOrSecondTabButtons;
-    } else {
-      buttons = widget.buttons;
-    }
-
+    buttons = (widget.activeTabIndex == null) ? widget.buttons : mainScreenButtons;
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant MyAppBar oldWidget) {
     setState(() {
-      if (widget.activeTabIndex != null) {
-        buttons = (widget.activeTabIndex == 2) ? thirdTabButtons : firstOrSecondTabButtons;
-      } else {
-        buttons = widget.buttons;
-      }
+      buttons = (widget.activeTabIndex == null) ? widget.buttons : mainScreenButtons;
     });
 
     super.didUpdateWidget(oldWidget);
@@ -93,7 +72,7 @@ class _MyAppBarState extends State<MyAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    final canPop = Navigator.canPop(context);
+    final canPop = (widget.activeTabIndex == null) ? Navigator.canPop(context) : false;
     return Container(
       constraints: const BoxConstraints.tightFor(height: 64),
       color: MyColors.darkBlue,
