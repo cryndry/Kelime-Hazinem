@@ -213,45 +213,28 @@ abstract class SqlDatabase {
     });
   }
 
-  static Future<void> changeListsOfWord(
-    int wordId,
-    Map<String, dynamic> prevListsData,
-    Map<String, dynamic> newListsData,
-  ) async {
-    var changesToTrue = <int, bool>{}; // <id, willChange>
-    var changesToFalse = <int, bool>{}; // <id, willChange>
-    for (String list in prevListsData.keys) {
-      bool prevValue = prevListsData[list]["is_word_in_list"];
-      bool newValue = newListsData[list]["is_word_in_list"];
-      if (prevValue != newValue) {
-        if (newValue) {
-          changesToTrue[newListsData[list]["list_id"]] = newValue;
-        } else {
-          changesToFalse[newListsData[list]["list_id"]] = newValue;
+  static Future<void> changeListsOfWord(int wordId, Map<String, dynamic> listsData) async {
+    final batch = _db.batch();
+    await _db.transaction((txn) async {
+      for (var listData in listsData.entries) {
+        int listId = listData.value["list_id"];
+        bool isWordInList = listData.value["is_word_in_list"];
+
+        final query = await txn.rawQuery('''
+          SELECT * FROM $_dbEntryTableName
+          WHERE word_id = $wordId
+            AND list_id = $listId
+        ''');
+
+        if (query.isEmpty && isWordInList) {
+          batch.rawInsert("INSERT INTO $_dbEntryTableName (word_id, list_id) VALUES ($wordId, $listId)");
+        } else if (query.isNotEmpty && !isWordInList) {
+          batch.rawDelete("DELETE FROM $_dbEntryTableName WHERE word_id = $wordId AND list_id = $listId");
         }
       }
-    }
-    if (changesToTrue.isNotEmpty || changesToFalse.isNotEmpty) {
-      final batch = _db.batch();
+    });
 
-      for (var listId in changesToTrue.keys) {
-        batch.rawInsert('''
-            INSERT INTO $_dbEntryTableName
-            (word_id, list_id) 
-            VALUES ($wordId, $listId)
-          ''');
-      }
-
-      for (var listId in changesToFalse.keys) {
-        batch.rawDelete('''
-            DELETE FROM $_dbEntryTableName
-            WHERE word_id = $wordId
-              AND list_id = $listId
-          ''');
-      }
-
-      await batch.commit();
-    }
+    await batch.commit();
   }
 }
 

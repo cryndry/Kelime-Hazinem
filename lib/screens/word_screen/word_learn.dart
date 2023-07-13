@@ -1,5 +1,6 @@
 import 'dart:math' show Random, min;
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/components/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/keep_alive_widget.dart';
@@ -33,10 +34,13 @@ class _WordLearnState extends State<WordLearn> {
   bool isListRefreshed = false;
 
   late final List<ActionButton> constAppBarButtons = [
-    const ActionButton(
+    ActionButton(
       icon: MySvgs.add2List,
       size: 32,
       semanticsLabel: "Add This Word To Lists",
+      onTap: () {
+        addWordToLists(context: context, wordId: words[pageController.page!.toInt()].id);
+      },
     ),
     ActionButton(
       icon: MySvgs.edit,

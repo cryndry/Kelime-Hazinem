@@ -8,6 +8,7 @@ Future<T?> popBottomSheet<T>({
   bool mayKeyboardAppear = false,
   required List<Widget> Function(StateSetter) bottomWidgets,
   void Function()? onSheetDismissed,
+  Object? stateObject,
 }) async {
   const minPadding = EdgeInsets.fromLTRB(12, 16, 12, 32);
   return await showModalBottomSheet<T?>(
