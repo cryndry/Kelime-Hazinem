@@ -14,6 +14,7 @@ class MyTextInput extends StatefulWidget {
     this.validator,
     this.formatArabic = false,
     this.autoFocus = false,
+    this.focusNode,
     this.loseFocusOnTapOutside = true,
     this.customInputFormatter,
     this.onChange,
@@ -26,6 +27,7 @@ class MyTextInput extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool formatArabic;
   final bool autoFocus;
+  final FocusNode? focusNode;
   final bool loseFocusOnTapOutside;
   final List<TextInputFormatter>? customInputFormatter;
   final void Function(String)? onChange;
@@ -35,8 +37,8 @@ class MyTextInput extends StatefulWidget {
 }
 
 class MyTextInputState extends State<MyTextInput> {
-  final FocusNode textInputFocus = FocusNode();
-  late final textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
+  late final FocusNode textInputFocus = (widget.focusNode == null) ? FocusNode() : widget.focusNode!;
+  late TextDirection textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
   late final clearIcon = Align(
     widthFactor: 1,
     heightFactor: 1,
@@ -55,6 +57,15 @@ class MyTextInputState extends State<MyTextInput> {
     textInputFocus.dispose();
 
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MyTextInput oldWidget) {
+    setState(() {
+      textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
+    });
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
