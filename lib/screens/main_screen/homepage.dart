@@ -12,10 +12,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageLayout(
+    return const PageLayout(
       children: [
-        const  RandomWordCard(),
-        const SizedBox(height: 12),
+        RandomWordCard(),
+        SizedBox(height: 12),
         ListCardGrid(
           children: [
             ListCard(title: "Temel Seviye"),
@@ -25,16 +25,16 @@ class HomePage extends StatelessWidget {
                 title: "Öğrenecek\u200blerim",
                 dbTitle: "willLearn",
                 color: MyColors.red,
-                icon: const ActionButton(
+                icon: ActionButton(
                   icon: MySvgs.willLearn,
                   fillColor: MyColors.red,
                   size: 32,
                 )),
             ListCard(
-                title: "Favorilerim".split('').join('\ufeff'),
+                title: "F\ufeffa\ufeffv\ufeffo\ufeffr\ufeffi\ufeffl\ufeffe\ufeffr\ufeffi\ufeffm",
                 dbTitle: "favorite",
                 color: MyColors.amber,
-                icon: const ActionButton(
+                icon: ActionButton(
                   icon: MySvgs.favorites,
                   fillColor: MyColors.amber,
                   size: 32,
@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
                 title: "Öğrendik\u200blerim",
                 dbTitle: "learned",
                 color: MyColors.green,
-                icon: const ActionButton(
+                icon: ActionButton(
                   icon: MySvgs.learned,
                   fillColor: MyColors.green,
                   size: 32,
@@ -52,7 +52,7 @@ class HomePage extends StatelessWidget {
                 title: "Hazinem",
                 dbTitle: "memorized",
                 color: MyColors.darkGreen,
-                icon: const ActionButton(
+                icon: ActionButton(
                   icon: MySvgs.memorized,
                   fillColor: MyColors.darkGreen,
                   size: 32,

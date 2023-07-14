@@ -11,7 +11,7 @@ import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
 class ListCard extends StatelessWidget {
-  ListCard({
+  const ListCard({
     super.key,
     this.icon,
     required this.title,
@@ -23,12 +23,6 @@ class ListCard extends StatelessWidget {
   final String? dbTitle;
   final ActionButton? icon;
   final Color color;
-
-  final ButtonStyle outlinedButtonStyle = ButtonStyle(
-      foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
-      backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-      surfaceTintColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue));
-
   final beginOffsetForRotatingPage = const Offset(0, 1);
 
   @override

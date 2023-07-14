@@ -45,7 +45,6 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
   @override
   void dispose() {
     textInputController.dispose();
-    textInputFocusNode.dispose();
     
     super.dispose();
   }
