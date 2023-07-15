@@ -36,8 +36,13 @@ class _AllWordsState extends State<AllWords> {
         FAB(
           icon: MySvgs.plus,
           semanticsLabel: "Yeni Kelime Ekle",
-          onTap: () {
-            Navigator.of(context).push(routeAnimator(page: const WordAdd()));
+          onTap: () async {
+            final result = await Navigator.of(context).push(routeAnimator(page: const WordAdd()));
+            if (result is Map) {
+              setState(() {
+                words.add(Word.fromJson(result as Map<String, dynamic>));
+              });
+            }
           },
         ),
       ],

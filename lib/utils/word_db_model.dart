@@ -32,10 +32,10 @@ class Word {
         meaning: json["meaning"],
         description: json["description"],
         descriptionSearch: json["description_search"],
-        willLearn: json["willLearn"],
-        favorite: json["favorite"],
-        learned: json["learned"],
-        memorized: json["memorized"],
+        willLearn: json["willLearn"] ?? 0,
+        favorite: json["favorite"] ?? 0,
+        learned: json["learned"] ?? 0,
+        memorized: json["memorized"] ?? 0,
       );
 
   // unused for now

@@ -18,10 +18,7 @@ class WordAdd extends StatefulWidget {
 
 class WordAddState extends State<WordAdd> {
   final _formKey = GlobalKey<FormState>();
-  Future<bool>? saveHandling;
-  var lists = <String, dynamic>{};
-  var listsBottomSheet = <String, dynamic>{};
-  final listsInitialValue = <String, dynamic>{};
+  Future? saveHandling;
 
   String word = "";
   String meaning = "";
@@ -64,7 +61,7 @@ class WordAddState extends State<WordAdd> {
     super.dispose();
   }
 
-  Future<bool> saveHandler() async {
+  Future saveHandler() async {
     await Future.delayed(const Duration(seconds: 1));
     bool validationResult = _formKey.currentState!.validate();
     if (!validationResult) return false;
@@ -90,15 +87,35 @@ class WordAddState extends State<WordAdd> {
       descriptionSearch = "";
     }
 
-    final wordId = await SqlDatabase.createWord({
+    final wordData = {
       "word": word,
       "word_search": wordSearch,
       "meaning": meaning,
       "description": description,
       "description_search": descriptionSearch,
-    });
+    };
+    final wordId = await SqlDatabase.createWord(wordData);
+    if (wordId != 0) {
+      return {...wordData, "id": wordId};
+    }
+    return false;
+  }
 
-    return wordId != 0;
+  void saveButtonOnTap() async {
+    setState(() {
+      saveHandling = saveHandler();
+    });
+    final saveResult = await saveHandling;
+    if (saveResult is Map) {
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          Navigator.of(context).pop(saveResult);
+        },
+      );
+    } else {
+      saveButtonOnTap();
+    }
   }
 
   @override
@@ -192,25 +209,14 @@ class WordAddState extends State<WordAdd> {
                             onPressed: () {},
                           );
                         }
+
                         return FillColoredButton(
                           title: "Kaydet",
                           icon: const ActionButton(
                             icon: MySvgs.save,
                             size: 32,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              saveHandling = saveHandler();
-                              saveHandling!.then((result) {
-                                if (result) {
-                                  Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                    Navigator.of(context).pop,
-                                  );
-                                }
-                              });
-                            });
-                          },
+                          onPressed: saveButtonOnTap,
                         );
                       },
                     ),
