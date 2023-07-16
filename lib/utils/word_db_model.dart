@@ -55,8 +55,14 @@ class Word {
   int intBoolInvert(int value) => (value == 1) ? 0 : 1;
   bool intAsBool(int value) => (value == 1);
 
-  void willLearnToggle() {
-    willLearn = intBoolInvert(willLearn);
+  Future<void> willLearnToggle({int? setValue}) async {
+    if (setValue != null) {
+      if (setValue == willLearn) return;
+      
+      willLearn = setValue;
+    } else {
+      willLearn = intBoolInvert(willLearn);
+    }
     var changes = {"willLearn": willLearn};
     if (willLearn == 1) {
       if (intAsBool(learned)) {

@@ -7,6 +7,7 @@ import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
+import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
@@ -53,7 +54,20 @@ class ListCard extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
-              FillColoredButton(title: "Kelime Testi", onPressed: () {}),
+              FillColoredButton(
+                title: "Kelime Testi",
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    routeAnimator(
+                      beginOffset: beginOffsetForRotatingPage,
+                      page: WordTest(
+                        listName: title,
+                        dbTitle: dbTitle ?? title,
+                      ),
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 12),
               FillColoredButton(
                 title: "Kelimeyi Bul",

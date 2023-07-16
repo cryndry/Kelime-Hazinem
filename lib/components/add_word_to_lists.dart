@@ -16,7 +16,6 @@ Future<void> addWordToLists({required BuildContext context, required int wordId}
     context: context,
     title: "Listelere Ekle",
     info: "Liste değişiklikleri kaydettikten sonra geri alınamaz.",
-    stateObject: listsBottomSheet,
     bottomWidgets: (setSheetState) {
       return [
         ConstrainedBox(
