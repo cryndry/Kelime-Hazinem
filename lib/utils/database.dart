@@ -227,7 +227,8 @@ abstract class SqlDatabase {
         ''');
 
         if (query.isEmpty && isWordInList) {
-          batch.rawInsert("INSERT INTO $_dbEntryTableName (word_id, list_id) VALUES ($wordId, $listId)");
+          final timeCreated = DateTime.now().toString().split(".")[0];
+          batch.rawInsert("INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
         } else if (query.isNotEmpty && !isWordInList) {
           batch.rawDelete("DELETE FROM $_dbEntryTableName WHERE word_id = $wordId AND list_id = $listId");
         }
