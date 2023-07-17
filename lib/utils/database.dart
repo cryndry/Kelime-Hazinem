@@ -62,21 +62,21 @@ abstract class SqlDatabase {
         String exceptionQuery = "";
         if (exceptionIds != null) {
           for (int id in exceptionIds) {
-            exceptionQuery += " AND id != $id";
+            exceptionQuery += " AND $_dbWordTableName.id != $id";
           }
         }
         return await txn.rawQuery('''
             SELECT
-              Words.id as id,
-              Words.word as word,
-              Words.word_search as word_search,
-              Words.meaning as meaning,
-              Words.description as description,
-              Words.description_search as description_search,
-              Words.willLearn as willLearn,
-              Words.favorite as favorite,
-              Words.learned as learned,
-              Words.memorized as memorized
+              $_dbWordTableName.id as id,
+              $_dbWordTableName.word as word,
+              $_dbWordTableName.word_search as word_search,
+              $_dbWordTableName.meaning as meaning,
+              $_dbWordTableName.description as description,
+              $_dbWordTableName.description_search as description_search,
+              $_dbWordTableName.willLearn as willLearn,
+              $_dbWordTableName.favorite as favorite,
+              $_dbWordTableName.learned as learned,
+              $_dbWordTableName.memorized as memorized
             FROM $_dbWordTableName 
             JOIN $_dbEntryTableName 
               ON $_dbWordTableName.id = $_dbEntryTableName.word_id

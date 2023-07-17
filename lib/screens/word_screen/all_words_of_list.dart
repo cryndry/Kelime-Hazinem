@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
-import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/utils/database.dart';
-import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class AllWordsOfList extends StatefulWidget {
@@ -45,9 +43,6 @@ class _AllWordsOfListState extends State<AllWordsOfList> {
         appBar: MyAppBar(
           title: "Tüm Kelimeler",
           secTitle: widget.listName,
-          buttons: const [
-            ActionButton(icon: MySvgs.search, size: 32),
-          ],
         ),
         body: AllWordsPageLayout(words: words),
       ),

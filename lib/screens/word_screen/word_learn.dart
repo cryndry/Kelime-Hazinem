@@ -1,4 +1,4 @@
-import 'dart:math' show Random, min;
+import 'dart:math' show Random;
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
@@ -96,15 +96,50 @@ class _WordLearnState extends State<WordLearn> {
   }
 
   void refreshList() async {
-    final List<int> willRepeatIndexes = [];
-    while (willRepeatIndexes.length < (min(5, words.length))) {
+    final List<Word> willRepeatWords = [];
+    final bool isCurrentListIconic = widget.dbTitle != widget.listName;
+
+    int loopCounter = 0;
+    while (loopCounter < 10) {
       final int index = Random().nextInt(words.length);
-      if (!willRepeatIndexes.contains(index)) {
-        willRepeatIndexes.add(index);
+      final Word word = words[index];
+      if (willRepeatWords.contains(word)) {
+        loopCounter++;
+        continue;
       }
+
+      bool isWordStillInList;
+      if (isCurrentListIconic) {
+        switch (widget.dbTitle) {
+          case "willLearn":
+            isWordStillInList = word.willLearn == 1;
+            break;
+          case "favorite":
+            isWordStillInList = word.favorite == 1;
+            break;
+          case "learned":
+            isWordStillInList = word.learned == 1;
+            break;
+          case "memorized":
+            isWordStillInList = word.memorized == 1;
+            break;
+          default:
+            isWordStillInList = true;
+            break;
+        }
+      } else {
+        final wordListData = await SqlDatabase.getListsOfWord(word.id);
+        isWordStillInList = wordListData[widget.listName]!["is_word_in_list"] as bool;
+      }
+
+      if (isWordStillInList) {
+        willRepeatWords.add(word);
+      }
+
+      if (willRepeatWords.length == 5) break;
+      loopCounter++;
     }
 
-    final List<Word> willRepeatWords = willRepeatIndexes.map((i) => words[i]).toList();
     final List<int> willRepeatIds = willRepeatWords.map((word) => word.id).toList();
     final newWords = await SqlDatabase.getWordsQuery(
       listName: widget.dbTitle,
