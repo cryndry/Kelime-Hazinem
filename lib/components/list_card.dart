@@ -110,57 +110,53 @@ class ListCard extends StatelessWidget {
         }
       },
       child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(8.0),
+        constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 360) ? 80 : 100),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [BoxShadow(blurRadius: 4, color: color.withOpacity(0.25))],
         ),
-        constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 350) ? 80 : 90),
-        alignment: Alignment.center,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: (icon == null)
-                        ? Text(
-                            title.substring(0, 1).toUpperCase(),
-                            style: MyTextStyles.font_16_20_500.merge(
-                              const TextStyle(color: Colors.white),
-                            ),
-                          )
-                        : icon,
-                  )
-                ],
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: (icon == null)
+                      ? Text(
+                          title.substring(0, 1).toUpperCase(),
+                          style: MyTextStyles.font_16_20_500.merge(
+                            const TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : icon,
+                )
+              ],
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 32, maxHeight: 48),
+              child: Text(
+                title,
+                maxLines: 3,
+                softWrap: true,
+                style: MyTextStyles.font_14_16_500.merge(const TextStyle(
+                  letterSpacing: -0.5,
+                )),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
-              Container(
-                constraints: const BoxConstraints(minHeight: 32, maxHeight: 48),
-                child: Text(
-                  title,
-                  maxLines: 3,
-                  softWrap: true,
-                  style: MyTextStyles.font_14_16_500.merge(const TextStyle(
-                    letterSpacing: -0.5,
-                  )),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
