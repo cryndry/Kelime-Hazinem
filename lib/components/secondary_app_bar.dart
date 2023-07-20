@@ -121,6 +121,7 @@ class SecondaryAppBarState extends ConsumerState {
                     await popBottomSheet(
                       context: context,
                       title: "Listeni Yeniden Adlandır",
+                      routeName: "RenameListBottomSheet",
                       mayKeyboardAppear: true,
                       onSheetDismissed: () {
                         setState(() {
@@ -173,12 +174,6 @@ class SecondaryAppBarState extends ConsumerState {
                                         renamingList!.then((value) {
                                           setSheetState(() {});
                                           if (!value) return value;
-
-                                          ref.read(selectedListsProvider.notifier).update((state) {
-                                            final newState = [...state];
-                                            newState.first = newName;
-                                            return newState;
-                                          });
 
                                           ref.read(myListsProvider.notifier).update((state) {
                                             final newState = [...state];

@@ -5,6 +5,7 @@ import 'package:kelime_hazinem/components/secondary_app_bar.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 
 class MyAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -25,7 +26,7 @@ class MyAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canPop = Navigator.canPop(context);
+    final canPop = MyNavigatorObserver.stack.length > 1;
     final isAnimatable = KeyValueDatabase.getIsAnimatable();
     final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
     final activeTabIndex = ref.watch(activeTabIndexProvider);

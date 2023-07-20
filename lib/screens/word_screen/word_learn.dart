@@ -5,9 +5,7 @@ import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
-import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
-import 'package:kelime_hazinem/screens/word_screen/word_edit.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -48,13 +46,12 @@ class _WordLearnState extends State<WordLearn> {
       semanticsLabel: "Edit The Word Entry",
       onTap: () async {
         final int wordIndex = pageController.page!.toInt();
-        final result = await Navigator.of(context).push<Map<String, dynamic>>(
-          routeAnimator(
-            page: WordEdit(word: words[wordIndex]),
-          ),
+        final result = await Navigator.of(context).pushNamed(
+          "WordEdit",
+          arguments: {"word": words[wordIndex]},
         );
         setState(() {
-          if (result != null && result["deleted"]) {
+          if (result != null && (result as Map)["deleted"]) {
             words.removeAt(wordIndex);
             if (wordIndex == words.length) {
               textEditingController.text = wordIndex.toString();

@@ -3,7 +3,9 @@ import 'package:kelime_hazinem/utils/database.dart';
 
 PageRouteBuilder<T> routeAnimator<T>({required Widget page, Offset? beginOffset}) {
   final Duration animationDuration = KeyValueDatabase.getIsAnimatable() ? const Duration(milliseconds: 300) : Duration.zero;
+  
   return PageRouteBuilder<T>(
+    settings: RouteSettings(name: page.toString()),
     pageBuilder: (context, animation, secondaryAnimation) => page,
     transitionDuration: animationDuration,
     reverseTransitionDuration: animationDuration,

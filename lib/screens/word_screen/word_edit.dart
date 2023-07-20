@@ -116,6 +116,7 @@ class WordEditState extends State<WordEdit> {
   Future<void> deleteHandler() async {
     bool? isDeleted = await popDialog<bool>(
       context: context,
+      routeName: "DeleteWordDialog",
       children: [
         const Text(
           "Kelime Silinecek",

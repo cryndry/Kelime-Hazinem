@@ -3,12 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
-import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
-import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
-import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
-import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
@@ -63,64 +58,49 @@ class ListCardState extends ConsumerState<ListCard> {
             context: context,
             title: widget.title,
             info: "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
+            routeName: "ListActionsBottomSheet",
             bottomWidgets: (setSheetState) => <Widget>[
               FillColoredButton(
                 title: "Kelime Öğrenme",
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    routeAnimator(
-                      beginOffset: beginOffsetForRotatingPage,
-                      page: WordLearn(
-                        listName: widget.title,
-                        dbTitle: widget.dbTitle ?? widget.title,
-                      ),
-                    ),
-                  );
+                  Navigator.of(context).pushReplacementNamed("WordLearn", arguments: {
+                    "listName": widget.title,
+                    "dbTitle": widget.dbTitle ?? widget.title,
+                    "beginOffset": beginOffsetForRotatingPage,
+                  });
                 },
               ),
               const SizedBox(height: 12),
               FillColoredButton(
                 title: "Kelime Testi",
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    routeAnimator(
-                      beginOffset: beginOffsetForRotatingPage,
-                      page: WordTest(
-                        listName: widget.title,
-                        dbTitle: widget.dbTitle ?? widget.title,
-                      ),
-                    ),
-                  );
+                  Navigator.of(context).pushReplacementNamed("WordTest", arguments: {
+                    "listName": widget.title,
+                    "dbTitle": widget.dbTitle ?? widget.title,
+                    "beginOffset": beginOffsetForRotatingPage,
+                  });
                 },
               ),
               const SizedBox(height: 12),
               FillColoredButton(
                 title: "Kelimeyi Bul",
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    routeAnimator(
-                      beginOffset: beginOffsetForRotatingPage,
-                      page: WordGuess(
-                        listName: widget.title,
-                        dbTitle: widget.dbTitle ?? widget.title,
-                      ),
-                    ),
-                  );
+                  Navigator.of(context).pushReplacementNamed("WordGuess", arguments: {
+                    "listName": widget.title,
+                    "dbTitle": widget.dbTitle ?? widget.title,
+                    "beginOffset": beginOffsetForRotatingPage,
+                  });
                 },
               ),
               const SizedBox(height: 12),
               StrokeColoredButton(
                 title: "Tüm Kelimeler",
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    routeAnimator(
-                      beginOffset: beginOffsetForRotatingPage,
-                      page: AllWordsOfList(
-                        listName: widget.title,
-                        dbTitle: widget.dbTitle ?? widget.title,
-                      ),
-                    ),
-                  );
+                  Navigator.of(context).pushReplacementNamed("AllWordsOfList", arguments: {
+                    "listName": widget.title,
+                    "dbTitle": widget.dbTitle ?? widget.title,
+                    "beginOffset": beginOffsetForRotatingPage,
+                  });
                 },
               ),
             ],

@@ -214,6 +214,7 @@ class WordTestState extends State<WordTest> {
             )
           : null,
       info: (wrongCount > 0) ? "Yanlış yaptığınız kelimeleri Öğreneceklerim listesine ekleyebilirsiniz." : "",
+      routeName: "TestCompletedBottomSheet",
       bottomWidgets: (setSheetState) => [
         FillColoredButton(
           title: "Yeni Sete Başla",
@@ -266,7 +267,7 @@ class WordTestState extends State<WordTest> {
         StrokeColoredButton(
           title: "Anasayfaya Dön",
           onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).popUntil(ModalRoute.withName("/"));
           },
         ),
       ],

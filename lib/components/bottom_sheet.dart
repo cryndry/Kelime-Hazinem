@@ -9,9 +9,11 @@ Future<T?> popBottomSheet<T>({
   bool mayKeyboardAppear = false,
   required List<Widget> Function(StateSetter) bottomWidgets,
   void Function()? onSheetDismissed,
+  String? routeName,
 }) async {
   const minPadding = EdgeInsets.fromLTRB(12, 16, 12, 32);
   return await showModalBottomSheet<T?>(
+    routeSettings: RouteSettings(name: routeName),
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
