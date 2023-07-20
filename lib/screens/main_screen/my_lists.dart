@@ -22,6 +22,7 @@ class MyListsState extends ConsumerState<MyLists> {
   final _formKey = GlobalKey<FormState>();
   final listAddingTextInputController = TextEditingController();
   Future<bool>? creatingList;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -43,22 +44,29 @@ class MyListsState extends ConsumerState<MyLists> {
     super.dispose();
   }
 
-  String? inputValidator(String? value) {
-    if (value == null || (value.trim().length < 2)) {
-      return 'Liste adı en az iki karakterden oluşmalıdır.';
-    }
-    return null;
-  }
-
   Future<bool> createList(String listName) async {
-    final validationResult = _formKey.currentState!.validate();
-    if (!validationResult) return false;
+    if (listName.trim().length < 2) {
+      setState(() {
+        errorMessage = "Liste adı en az iki karakterden oluşmalıdır.";
+      });
+      return false;
+    }
 
-    await Future.delayed(
-      const Duration(seconds: 1),
-      () async => await SqlDatabase.createList(listName),
-    );
+    await Future.delayed(const Duration(seconds: 1));
 
+    final doesListExist = await SqlDatabase.checkIfListExists(listName);
+    if (doesListExist) {
+      setState(() {
+        errorMessage = "Bu isimde bir liste zaten var.";
+      });
+      return false;
+    }
+
+    setState(() {
+      errorMessage = null;
+    });
+
+    await SqlDatabase.createList(listName);
     return true;
   }
 
@@ -85,6 +93,11 @@ class MyListsState extends ConsumerState<MyLists> {
                       title: "Yeni Listeni Oluştur",
                       routeName: "CreateListBottomSheet",
                       mayKeyboardAppear: true,
+                      onSheetDismissed: () {
+                        setState(() {
+                          errorMessage = null;
+                        });
+                      },
                       bottomWidgets: (setSheetState) => [
                         Form(
                           key: _formKey,
@@ -96,7 +109,7 @@ class MyListsState extends ConsumerState<MyLists> {
                                 hintText: "Yeni Listem",
                                 autoFocus: true,
                                 keyboardAction: TextInputAction.done,
-                                validator: inputValidator,
+                                errormessage: errorMessage,
                                 loseFocusOnTapOutside: false,
                                 textInputController: listAddingTextInputController,
                               ),
@@ -123,15 +136,22 @@ class MyListsState extends ConsumerState<MyLists> {
                                   return FillColoredButton(
                                       title: "Oluştur",
                                       onPressed: () {
-                                        setSheetState(() {
-                                          final String listName = listAddingTextInputController.text;
-                                          creatingList = createList(listName).then((value) {
-                                            if (!value) return value;
-
-                                            ref.read(myListsProvider.notifier).update((state) => [...state, listName]);
-                                            Navigator.of(context).pop();
-                                            return value;
+                                        final String listName = listAddingTextInputController.text;
+                                        setState(() {
+                                          setSheetState(() {
+                                            errorMessage = null;
                                           });
+                                          creatingList = createList(listName);
+                                          setSheetState(() {});
+                                        });
+
+                                        creatingList!.then((value) {
+                                          setSheetState(() {});
+                                          if (!value) return value;
+
+                                          ref.read(myListsProvider.notifier).update((state) => [...state, listName]);
+                                          Navigator.of(context).pop();
+                                          return value;
                                         });
                                       });
                                 },

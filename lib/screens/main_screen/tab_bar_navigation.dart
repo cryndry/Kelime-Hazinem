@@ -19,7 +19,7 @@ class MainScreenTabBar extends ConsumerWidget {
       child: Builder(builder: (context) {
         final controller = DefaultTabController.of(context);
         controller.addListener(() {
-          if (controller.indexIsChanging) {
+          if (!controller.indexIsChanging) {
             ref.read(activeTabIndexProvider.notifier).update((state) => controller.index);
           }
         });

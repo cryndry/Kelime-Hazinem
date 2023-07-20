@@ -167,8 +167,12 @@ class SecondaryAppBarState extends ConsumerState {
                                       title: "Kaydet",
                                       onPressed: () {
                                         final String newName = listRenameTextInputController.text;
-                                        setSheetState(() {
+                                        setState(() {
+                                          setSheetState(() {
+                                            errorMessage = null;
+                                          });
                                           renamingList = renameList(listName, newName);
+                                          setSheetState(() {});
                                         });
 
                                         renamingList!.then((value) {

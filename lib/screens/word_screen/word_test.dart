@@ -267,7 +267,7 @@ class WordTestState extends State<WordTest> {
         StrokeColoredButton(
           title: "Anasayfaya Dön",
           onPressed: () {
-            Navigator.of(context).popUntil(ModalRoute.withName("/"));
+            Navigator.of(context).popUntil(ModalRoute.withName("MainScreen"));
           },
         ),
       ],

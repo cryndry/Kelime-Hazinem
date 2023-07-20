@@ -53,6 +53,7 @@ class _WordLearnState extends State<WordLearn> {
         setState(() {
           if (result != null && (result as Map)["deleted"]) {
             words.removeAt(wordIndex);
+            if (words.isEmpty) Navigator.of(context).pop();
             if (wordIndex == words.length) {
               textEditingController.text = wordIndex.toString();
             }
