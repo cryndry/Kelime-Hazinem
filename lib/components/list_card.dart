@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
@@ -10,33 +11,57 @@ import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
-class ListCard extends StatelessWidget {
+class ListCard extends ConsumerStatefulWidget {
   const ListCard({
     super.key,
     this.icon,
     required this.title,
     this.dbTitle,
     this.color = MyColors.lightBlue,
+    this.isDefaultList = false,
   });
 
   final String title;
   final String? dbTitle;
   final ActionButton? icon;
   final Color color;
+  final bool isDefaultList;
+
+  @override
+  ListCardState createState() => ListCardState();
+}
+
+class ListCardState extends ConsumerState<ListCard> {
   final beginOffsetForRotatingPage = const Offset(0, 1);
+  Border? border;
 
   @override
   Widget build(BuildContext context) {
+    final isListSelected = ref.watch(selectedListsProvider).contains(widget.title);
+
     return GestureDetector(
+      onLongPress: () {
+        if (widget.isDefaultList) return;
+
+        activateSelectionMode(ref);
+        updateSelectedLists(ref, widget.title);
+      },
       onTap: () async {
-        bool doesHaveWord = (dbTitle == null)
-            ? await SqlDatabase.checkIfListHaveWords(title)
-            : await SqlDatabase.checkIfIconicListHaveWords(dbTitle!);
+        bool isSelectionModeActive = !widget.isDefaultList && getIsSelectionModeActive(ref);
+        if (isSelectionModeActive) {
+          updateSelectedLists(ref, widget.title);
+          return;
+        }
+
+        bool doesHaveWord = (widget.dbTitle == null)
+            ? await SqlDatabase.checkIfListHaveWords(widget.title)
+            : await SqlDatabase.checkIfIconicListHaveWords(widget.dbTitle!);
         if (doesHaveWord) {
           popBottomSheet(
             context: context,
-            title: title,
+            title: widget.title,
             info: "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
             bottomWidgets: (setSheetState) => <Widget>[
               FillColoredButton(
@@ -46,8 +71,8 @@ class ListCard extends StatelessWidget {
                     routeAnimator(
                       beginOffset: beginOffsetForRotatingPage,
                       page: WordLearn(
-                        listName: title,
-                        dbTitle: dbTitle ?? title,
+                        listName: widget.title,
+                        dbTitle: widget.dbTitle ?? widget.title,
                       ),
                     ),
                   );
@@ -61,8 +86,8 @@ class ListCard extends StatelessWidget {
                     routeAnimator(
                       beginOffset: beginOffsetForRotatingPage,
                       page: WordTest(
-                        listName: title,
-                        dbTitle: dbTitle ?? title,
+                        listName: widget.title,
+                        dbTitle: widget.dbTitle ?? widget.title,
                       ),
                     ),
                   );
@@ -76,8 +101,8 @@ class ListCard extends StatelessWidget {
                     routeAnimator(
                       beginOffset: beginOffsetForRotatingPage,
                       page: WordGuess(
-                        listName: title,
-                        dbTitle: dbTitle ?? title,
+                        listName: widget.title,
+                        dbTitle: widget.dbTitle ?? widget.title,
                       ),
                     ),
                   );
@@ -91,8 +116,8 @@ class ListCard extends StatelessWidget {
                     routeAnimator(
                       beginOffset: beginOffsetForRotatingPage,
                       page: AllWordsOfList(
-                        listName: title,
-                        dbTitle: dbTitle ?? title,
+                        listName: widget.title,
+                        dbTitle: widget.dbTitle ?? widget.title,
                       ),
                     ),
                   );
@@ -114,9 +139,16 @@ class ListCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 360) ? 80 : 100),
         decoration: BoxDecoration(
+          border: isListSelected
+              ? Border.all(
+                  width: 2,
+                  color: MyColors.darkBlue,
+                  strokeAlign: BorderSide.strokeAlignOutside,
+                )
+              : null,
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(blurRadius: 4, color: color.withOpacity(0.25))],
+          boxShadow: [BoxShadow(blurRadius: 4, color: widget.color.withOpacity(0.25))],
         ),
         child: Column(
           children: [
@@ -128,17 +160,17 @@ class ListCard extends StatelessWidget {
                   height: 48,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: color,
+                    color: widget.color,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: (icon == null)
+                  child: (widget.icon == null)
                       ? Text(
-                          title.substring(0, 1).toUpperCase(),
+                          widget.title.substring(0, 1).toUpperCase(),
                           style: MyTextStyles.font_16_20_500.merge(
                             const TextStyle(color: Colors.white),
                           ),
                         )
-                      : icon,
+                      : widget.icon,
                 )
               ],
             ),
@@ -146,7 +178,7 @@ class ListCard extends StatelessWidget {
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 32, maxHeight: 48),
               child: Text(
-                title,
+                widget.title,
                 maxLines: 3,
                 softWrap: true,
                 style: MyTextStyles.font_14_16_500.merge(const TextStyle(

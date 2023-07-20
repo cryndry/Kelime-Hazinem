@@ -18,12 +18,13 @@ class HomePage extends StatelessWidget {
         SizedBox(height: 12),
         ListCardGrid(
           children: [
-            ListCard(title: "Temel Seviye"),
-            ListCard(title: "Orta Seviye"),
-            ListCard(title: "İleri Seviye"),
+            ListCard(title: "Temel Seviye", isDefaultList: true),
+            ListCard(title: "Orta Seviye", isDefaultList: true),
+            ListCard(title: "İleri Seviye", isDefaultList: true),
             ListCard(
                 title: "Öğrenecek\u200blerim",
                 dbTitle: "willLearn",
+                isDefaultList: true,
                 color: MyColors.red,
                 icon: ActionButton(
                   icon: MySvgs.willLearn,
@@ -33,6 +34,7 @@ class HomePage extends StatelessWidget {
             ListCard(
                 title: "F\ufeffa\ufeffv\ufeffo\ufeffr\ufeffi\ufeffl\ufeffe\ufeffr\ufeffi\ufeffm",
                 dbTitle: "favorite",
+                isDefaultList: true,
                 color: MyColors.amber,
                 icon: ActionButton(
                   icon: MySvgs.favorites,
@@ -42,6 +44,7 @@ class HomePage extends StatelessWidget {
             ListCard(
                 title: "Öğrendik\u200blerim",
                 dbTitle: "learned",
+                isDefaultList: true,
                 color: MyColors.green,
                 icon: ActionButton(
                   icon: MySvgs.learned,
@@ -51,6 +54,7 @@ class HomePage extends StatelessWidget {
             ListCard(
                 title: "Hazinem",
                 dbTitle: "memorized",
+                isDefaultList: true,
                 color: MyColors.darkGreen,
                 icon: ActionButton(
                   icon: MySvgs.memorized,

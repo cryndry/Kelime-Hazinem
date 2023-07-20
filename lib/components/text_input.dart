@@ -12,6 +12,7 @@ class MyTextInput extends StatefulWidget {
     required this.textInputController,
     this.keyboardAction = TextInputAction.next,
     this.validator,
+    this.errormessage,
     this.formatArabic = false,
     this.autoFocus = false,
     this.focusNode,
@@ -25,6 +26,7 @@ class MyTextInput extends StatefulWidget {
   final TextEditingController textInputController;
   final TextInputAction keyboardAction;
   final String? Function(String?)? validator;
+  final String? errormessage;
   final bool formatArabic;
   final bool autoFocus;
   final FocusNode? focusNode;
@@ -61,9 +63,15 @@ class MyTextInputState extends State<MyTextInput> {
 
   @override
   void didUpdateWidget(covariant MyTextInput oldWidget) {
-    setState(() {
-      textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
-    });
+    if (oldWidget.errormessage == widget.errormessage) {
+      setState(() {});
+    }
+
+    if (oldWidget.formatArabic == widget.formatArabic) {
+      setState(() {
+        textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
+      });
+    }
 
     super.didUpdateWidget(oldWidget);
   }
@@ -94,6 +102,7 @@ class MyTextInputState extends State<MyTextInput> {
         hintText: widget.hintText,
         hintTextDirection: textDirection,
         errorMaxLines: 3,
+        errorText: widget.errormessage,
         contentPadding: const EdgeInsets.all(16),
         suffixIcon: widget.textInputController.text.isNotEmpty && !widget.formatArabic ? clearIcon : null,
         prefixIcon: widget.textInputController.text.isNotEmpty && widget.formatArabic ? clearIcon : null,

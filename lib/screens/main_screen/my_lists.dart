@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fab.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
@@ -10,29 +11,28 @@ import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/screens/share_lists.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
-class MyLists extends StatefulWidget {
+class MyLists extends ConsumerStatefulWidget {
   const MyLists({super.key});
 
   @override
-  State<MyLists> createState() => _MyListsState();
+  ConsumerState<MyLists> createState() => MyListsState();
 }
 
-class _MyListsState extends State<MyLists> {
+class MyListsState extends ConsumerState<MyLists> {
   final _formKey = GlobalKey<FormState>();
   final listAddingTextInputController = TextEditingController();
   Future<bool>? creatingList;
-  List<String> lists = [];
 
   @override
   void initState() {
     SqlDatabase.getLists().then((result) {
-      setState(() {
-        result.remove("Temel Seviye");
-        result.remove("Orta Seviye");
-        result.remove("İleri Seviye");
-        lists = result;
-      });
+      result.remove("Temel Seviye");
+      result.remove("Orta Seviye");
+      result.remove("İleri Seviye");
+
+      ref.read(myListsProvider.notifier).update((state) => result);
     });
 
     super.initState();
@@ -57,7 +57,7 @@ class _MyListsState extends State<MyLists> {
     if (!validationResult) return false;
 
     await Future.delayed(
-      const Duration(seconds: 3),
+      const Duration(seconds: 1),
       () async => await SqlDatabase.createList(listName),
     );
 
@@ -66,6 +66,8 @@ class _MyListsState extends State<MyLists> {
 
   @override
   Widget build(BuildContext context) {
+    final lists = ref.watch(myListsProvider);
+
     return PageLayout(
       FABs: [
         FAB(
@@ -124,10 +126,8 @@ class _MyListsState extends State<MyLists> {
                                     creatingList = createList(listName).then((value) {
                                       if (!value) return value;
 
+                                      ref.read(myListsProvider.notifier).update((state) => [...state, listName]);
                                       Navigator.of(context).pop();
-                                      setState(() {
-                                        lists.add(listName);
-                                      });
                                       return value;
                                     });
                                   });

@@ -92,7 +92,7 @@ class WordTestState extends State<WordTest> {
         loopCounter++;
         continue;
       }
-      
+
       bool isWordStillInList;
       if (isCurrentListIconic) {
         switch (widget.dbTitle) {
@@ -266,8 +266,7 @@ class WordTestState extends State<WordTest> {
         StrokeColoredButton(
           title: "Anasayfaya Dön",
           onPressed: () {
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
+            Navigator.of(context).popUntil((route) => route.isFirst);
           },
         ),
       ],

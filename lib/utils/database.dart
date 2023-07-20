@@ -159,6 +159,13 @@ abstract class SqlDatabase {
     });
   }
 
+  static Future<bool> checkIfWordExists(String word) async {
+    final result = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbWordTableName WHERE word='$word'");
+    });
+    return result.isNotEmpty;
+  }
+
   static Future<void> createList(String listName) async {
     return await _db.transaction((txn) async {
       await txn.execute("INSERT INTO $_dbListTableName (name) VALUES ('$listName')");
@@ -175,6 +182,13 @@ abstract class SqlDatabase {
     return await _db.transaction((txn) async {
       await txn.execute("UPDATE $_dbListTableName SET name='$newName' WHERE name='$listName'");
     });
+  }
+
+  static Future<bool> checkIfListExists(String listName) async {
+    final result = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
+    });
+    return result.isNotEmpty;
   }
 
   static Future<Map<String, Object?>?> getListData(listName) async {
@@ -228,7 +242,8 @@ abstract class SqlDatabase {
 
         if (query.isEmpty && isWordInList) {
           final timeCreated = DateTime.now().toString().split(".")[0];
-          batch.rawInsert("INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
+          batch.rawInsert(
+              "INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
         } else if (query.isNotEmpty && !isWordInList) {
           batch.rawDelete("DELETE FROM $_dbEntryTableName WHERE word_id = $wordId AND list_id = $listId");
         }

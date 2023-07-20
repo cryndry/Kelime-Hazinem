@@ -41,7 +41,7 @@ abstract final class MySvgs {
   static const add2List = """
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14.6667 16H4M21.3333 8H4M21.3333 24H4M24 12V20M28 16H20" 
-    stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 """;
   static const backArrow = """
@@ -71,7 +71,7 @@ abstract final class MySvgs {
   static const edit = """
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14.7349 6.53024H6.38553C5.75285 6.53024 5.14608 6.78157 4.69871 7.22894C4.25133 7.67631 4 8.28308 4 8.91577V25.6145C4 26.2472 4.25133 26.8539 4.69871 27.3013C5.14608 27.7487 5.75285 28 6.38553 28H23.0842C23.7169 28 24.3237 27.7487 24.7711 27.3013C25.2184 26.8539 25.4698 26.2472 25.4698 25.6145V17.2651M23.6806 4.74109C24.1551 4.26658 24.7987 4 25.4698 4C26.1408 4 26.7844 4.26658 27.2589 4.74109C27.7334 5.2156 28 5.85918 28 6.53024C28 7.2013 27.7334 7.84487 27.2589 8.31938L15.9276 19.6506L11.1566 20.8434L12.3494 16.0724L23.6806 4.74109Z"
-    stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 """;
   static const littleDownArrow = """
@@ -103,6 +103,12 @@ abstract final class MySvgs {
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M28 28L22.2 22.2M25.3333 14.6667C25.3333 20.5577 20.5577 25.3333 14.6667 25.3333C8.77563 25.3333 4 20.5577 4 14.6667C4 8.77563 8.77563 4 14.6667 4C20.5577 4 25.3333 8.77563 25.3333 14.6667Z"
     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+""";
+  static const share = """
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.4533 18.3467L20.56 23.6533M20.5467 9.01333L11.4533 14.32M28 7C28 9.20914 26.2091 11 24 11C21.7909 11 20 9.20914 20 7C20 4.79086 21.7909 3 24 3C26.2091 3 28 4.79086 28 7ZM12 16.3333C12 18.5425 10.2091 20.3333 8 20.3333C5.79086 20.3333 4 18.5425 4 16.3333C4 14.1242 5.79086 12.3333 8 12.3333C10.2091 12.3333 12 14.1242 12 16.3333ZM28 25.6667C28 27.8758 26.2091 29.6667 24 29.6667C21.7909 29.6667 20 27.8758 20 25.6667C20 23.4575 21.7909 21.6667 24 21.6667C26.2091 21.6667 28 23.4575 28 25.6667Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
 """;
   static const settings = """
