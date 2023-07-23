@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 
 Future<T?> popDialog<T>({
   required BuildContext context,
-  required List<Widget> children,
+  required List<Widget> Function(StateSetter) builder,
   int? fadeDurationInMiliSecs,
   String? routeName,
+  void Function()? onDialogDissmissed,
 }) async {
   return await showDialog<T>(
     context: context,
@@ -18,13 +19,20 @@ Future<T?> popDialog<T>({
           }
         });
       }
-      return SimpleDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.all(24),
-        contentPadding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        surfaceTintColor: Colors.white70,
-        children: children,
-      );
+      return StatefulBuilder(builder: (context, setDialogState) {
+        return SimpleDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.all(24),
+          contentPadding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+          surfaceTintColor: Colors.white70,
+          children: builder(setDialogState),
+        );
+      });
     },
-  );
+  ).then((dialogPopResult) {
+    if (onDialogDissmissed != null) {
+      onDialogDissmissed();
+    }
+    return dialogPopResult;
+  });
 }

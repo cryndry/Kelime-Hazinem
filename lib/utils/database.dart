@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +12,7 @@ import 'dart:io' as io;
 abstract class SqlDatabase {
   static late Database _db;
   static const String _dbName = "hazine.db";
+  static const String _cacheDbName = "cache.db";
   static const String _dbWordTableName = "Words";
   static const String _dbListTableName = "Lists";
   static const String _dbEntryTableName = "Entries";
@@ -252,6 +255,92 @@ abstract class SqlDatabase {
 
     await batch.commit();
   }
+
+  static Future<io.File> shareLists(List<String> lists) async {
+    final sharableData = await _db.transaction((txn) async {
+      final listsAsString = lists.map((e) => "'$e'").join(", ");
+      final wordsData = await txn.rawQuery('''
+        SELECT DISTINCT
+          $_dbWordTableName.id as id,
+          $_dbWordTableName.word as word,
+          $_dbWordTableName.word_search as word_search,
+          $_dbWordTableName.meaning as meaning,
+          $_dbWordTableName.description as description,
+          $_dbWordTableName.description_search as description_search
+        FROM $_dbWordTableName 
+        JOIN $_dbEntryTableName 
+          ON $_dbWordTableName.id = $_dbEntryTableName.word_id
+        JOIN $_dbListTableName
+          ON $_dbListTableName.name IN ($listsAsString)
+        WHERE $_dbEntryTableName.list_id = $_dbListTableName.id
+      ''');
+
+      final listsData = await txn.rawQuery('''
+        SELECT * FROM $_dbListTableName
+        WHERE name IN ($listsAsString)
+      ''');
+
+      final listIds = listsData.map((e) => e["id"]).join(", ");
+      final entriesData = await txn.rawQuery('''
+        SELECT word_id, list_id FROM $_dbEntryTableName
+        WHERE list_id IN ($listIds)
+      ''');
+
+      return {
+        _dbWordTableName: wordsData,
+        _dbListTableName: listsData,
+        _dbEntryTableName: entriesData,
+      };
+    });
+
+    final io.Directory applicationDirectory = await getApplicationDocumentsDirectory();
+    final String cacheDbPath = path.join(applicationDirectory.path, _cacheDbName);
+    final cacheDbFile = io.File(cacheDbPath);
+    final bool cacheDbExists = await cacheDbFile.exists();
+    if (cacheDbExists) cacheDbFile.deleteSync();
+
+    final cacheDb = await openDatabase(cacheDbPath, version: 1, onCreate: (db, version) async {
+      await db.execute("""
+        CREATE TABLE $_dbWordTableName (
+          "id" INTEGER NOT NULL UNIQUE PRIMARY KEY,
+          "word_search" TEXT,
+          "word" TEXT,
+          "meaning" TEXT,
+          "description" TEXT,
+          "description_search" TEXT
+        )
+      """);
+      await db.execute('''
+        CREATE TABLE $_dbListTableName (
+          id INTEGER PRIMARY KEY,
+          name TEXT UNIQUE
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE Entries (
+          word_id INTEGER,
+          list_id INTEGER
+        )
+      ''');
+
+      final batch = db.batch();
+
+      for (var word in sharableData[_dbWordTableName]!) {
+        batch.insert(_dbWordTableName, word);
+      }
+      for (var list in sharableData[_dbListTableName]!) {
+        batch.insert(_dbListTableName, list);
+      }
+      for (var entry in sharableData[_dbEntryTableName]!) {
+        batch.insert(_dbEntryTableName, entry);
+      }
+
+      await batch.commit();
+    });
+
+    cacheDb.close();
+    return cacheDbFile;
+  }
 }
 
 abstract final class DbKeys {
@@ -295,4 +384,20 @@ abstract class KeyValueDatabase {
 
   static bool getNotifications() => _db.getBool(DbKeys.notifications)!;
   static void setNotifications(bool value) => _db.setBool(DbKeys.notifications, value);
+}
+
+abstract class FirebaseDatabase {
+  static final _firestore = FirebaseFirestore.instance;
+  static final _storage = FirebaseStorage.instance;
+  static const _collectionName = "sharedLists";
+
+  static Future<String> addSharedFileData(Map<String, dynamic> data) async {
+    DocumentReference doc = await _firestore.collection(_collectionName).add(data);
+    return doc.id;
+  }
+
+  static UploadTask uploadFile(io.File file, String path) {
+    final fileRef = _storage.ref(path);
+    return fileRef.putFile(file);
+  }
 }

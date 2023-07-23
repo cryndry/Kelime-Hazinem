@@ -109,14 +109,17 @@ class ListCardState extends ConsumerState<ListCard> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               duration: Duration(milliseconds: 1200),
-              content: Text("Listede hiç kelime yok!"),
+              content: Text(
+                "Listede hiç kelime yok!",
+                style: MyTextStyles.font_16_20_400,
+              ),
             ),
           );
         }
       },
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width < 360) ? 80 : 100),
         decoration: BoxDecoration(
           border: isListSelected

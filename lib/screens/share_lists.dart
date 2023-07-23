@@ -1,16 +1,20 @@
 import 'dart:math' show pi;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
-class ShareLists extends StatelessWidget {
+class ShareLists extends ConsumerWidget {
   const ShareLists({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lists = ref.watch(myListsProvider);
+
     return SafeArea(
       child: Scaffold(
         appBar: const MyAppBar(title: "Listelerini Paylaş"),
@@ -76,7 +80,21 @@ class ShareLists extends StatelessWidget {
                 const SizedBox(height: 24),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      if (lists.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(milliseconds: 1200),
+                            content: Text(
+                              "Hiç listen yok. Kelimelerini paylaşmak istiyorsan yeni bir liste oluşturabilirsin.",
+                              style: MyTextStyles.font_16_20_400,
+                            ),
+                          ),
+                        );
+                      } else {
+                        Navigator.of(context).pushNamed("MyLists");
+                      }
+                    },
                     child: Stack(
                       alignment: Alignment.topCenter,
                       children: [

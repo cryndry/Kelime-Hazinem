@@ -23,6 +23,8 @@ class MyListsState extends ConsumerState<MyLists> {
   final listAddingTextInputController = TextEditingController();
   Future<bool>? creatingList;
   String? errorMessage;
+  late final bool isUsedInListSharePage =
+      context.findAncestorWidgetOfExactType<Scaffold>()!.body.toString() == "MyLists";
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class MyListsState extends ConsumerState<MyLists> {
       result.remove("İleri Seviye");
 
       ref.read(myListsProvider.notifier).update((state) => result);
+      if (isUsedInListSharePage) activateSelectionMode(ref);
     });
 
     super.initState();
@@ -75,8 +78,15 @@ class MyListsState extends ConsumerState<MyLists> {
     final lists = ref.watch(myListsProvider);
     final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (isUsedInListSharePage && lists.isEmpty) {
+        deactivateSelectionMode(ref);
+        Navigator.of(context).pop();
+      }
+    });
+
     return PageLayout(
-      FABs: isSelectionModeActive
+      FABs: (isSelectionModeActive || isUsedInListSharePage)
           ? null
           : [
               FAB(

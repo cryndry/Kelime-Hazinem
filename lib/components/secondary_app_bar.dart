@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
+import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
@@ -8,6 +11,8 @@ import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SecondaryAppBar extends ConsumerStatefulWidget {
   const SecondaryAppBar({super.key});
@@ -55,6 +60,12 @@ class SecondaryAppBarState extends ConsumerState {
     return true;
   }
 
+  void deactivateShareMode() {
+    final bool isUsedInListSharePage = context.findAncestorWidgetOfExactType<Scaffold>()!.body.toString() == "MyLists";
+    if (isUsedInListSharePage) Navigator.of(context).pop();
+    deactivateSelectionMode(ref);
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedLists = ref.watch(selectedListsProvider);
@@ -76,9 +87,7 @@ class SecondaryAppBarState extends ConsumerState {
             ActionButton(
               icon: MySvgs.clearText,
               size: 40,
-              onTap: () {
-                deactivateSelectionMode(ref);
-              },
+              onTap: deactivateShareMode,
             ),
             const SizedBox(width: 12),
             Text(
@@ -208,7 +217,123 @@ class SecondaryAppBarState extends ConsumerState {
               ActionButton(
                 icon: MySvgs.share,
                 size: 32,
-                onTap: () {},
+                onTap: () {
+                  popDialog(
+                      context: context,
+                      routeName: "ShareListsDialog",
+                      onDialogDissmissed: deactivateShareMode,
+                      builder: (setDialogState) {
+                        Widget progressWidget(double progress) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("Yükleniyor", style: MyTextStyles.font_16_20_500),
+                              const SizedBox(height: 12),
+                              LinearProgressIndicator(value: progress, minHeight: 8, color: MyColors.darkBlue),
+                            ],
+                          );
+                        }
+
+                        Stream<Widget> uploadingStream() async* {
+                          yield const Text("Liste verisi alınıyor...", style: MyTextStyles.font_16_20_500);
+                          final cacheDbFile = await SqlDatabase.shareLists(selectedLists);
+                          await Future.delayed(const Duration(milliseconds: 500));
+
+                          yield const Text("Yükleme başlatılıyor", style: MyTextStyles.font_16_20_500);
+                          final sharedFileId = await FirebaseDatabase.addSharedFileData({
+                            "creation_time": Timestamp.now(),
+                          });
+                          await Future.delayed(const Duration(milliseconds: 500));
+
+                          final uploadTask = FirebaseDatabase.uploadFile(cacheDbFile, "$sharedFileId/data.db");
+                          final uploadStream = uploadTask.snapshotEvents;
+
+                          double progress = 0;
+                          yield progressWidget(progress);
+
+                          await for (TaskSnapshot taskSnapshot in uploadStream) {
+                            if (taskSnapshot.state == TaskState.running) {
+                              progress = taskSnapshot.bytesTransferred / taskSnapshot.totalBytes;
+                              yield progressWidget(progress);
+                            } else if (taskSnapshot.state == TaskState.success) {
+                              yield progressWidget(progress);
+                              await Future.delayed(const Duration(milliseconds: 500));
+                              Future<void>? clipboardActionFuture;
+
+                              yield Column(
+                                children: [
+                                  const Text(
+                                    "Seçtiğiniz listeleri aşağıdaki kod ile paylaşabilirsiniz",
+                                    style: MyTextStyles.font_16_20_500,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  StatefulBuilder(builder: (context, setCopyButtonState) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        if (clipboardActionFuture != null) return;
+                                        setCopyButtonState(() {
+                                          clipboardActionFuture = Clipboard.setData(ClipboardData(text: sharedFileId));
+                                        });
+                                      },
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          color: Colors.black12,
+                                        ),
+                                        child: FutureBuilder(
+                                          future: clipboardActionFuture,
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.done) {
+                                              return const Text("Kopyalandı!", style: MyTextStyles.font_16_24_500);
+                                            }
+                                            return Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Text(sharedFileId, style: MyTextStyles.font_16_24_500),
+                                                const SizedBox(width: 16),
+                                                const Icon(Icons.copy, size: 24),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              );
+                            }
+                          }
+                        }
+
+                        return [
+                          StreamBuilder(
+                            stream: uploadingStream(),
+                            builder: (context, snapshot) {
+                              if (snapshot.data != null) {
+                                final dialogWidget = Container(
+                                  alignment: Alignment.center,
+                                  constraints: const BoxConstraints(minHeight: 48),
+                                  child: snapshot.data!,
+                                );
+
+                                final isAnimatable = KeyValueDatabase.getIsAnimatable();
+                                return isAnimatable
+                                    ? AnimatedSize(
+                                        duration: const Duration(milliseconds: 300),
+                                        child: dialogWidget,
+                                      )
+                                    : dialogWidget;
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ];
+                      });
+                },
               ),
           ],
         ),

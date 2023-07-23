@@ -1,7 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
+import 'package:kelime_hazinem/firebase_options.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
+import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
 import 'package:kelime_hazinem/screens/share_lists.dart';
 import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
@@ -18,6 +22,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: KelimeHazinem()));
 }
 
@@ -42,6 +47,15 @@ class KelimeHazinem extends StatelessWidget {
         switch (routeName) {
           case "/":
             return routeAnimator(page: const MainScreen());
+          case "MyLists":
+            return routeAnimator(
+              page: const SafeArea(
+                child: Scaffold(
+                  appBar: MyAppBar(title: "Listelerim"),
+                  body: MyLists(),
+                ),
+              ),
+            );
           case "WordLearn":
             return routeAnimator(
               beginOffset: arguments!["beginOffset"],

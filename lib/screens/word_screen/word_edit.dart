@@ -117,7 +117,7 @@ class WordEditState extends State<WordEdit> {
     bool? isDeleted = await popDialog<bool>(
       context: context,
       routeName: "DeleteWordDialog",
-      children: [
+      builder: (setDialogState) => [
         const Text(
           "Kelime Silinecek",
           textAlign: TextAlign.center,
