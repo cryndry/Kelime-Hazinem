@@ -1,22 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/secondary_app_bar.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
 final isSelectionModeActiveProvider = StateProvider((ref) => false);
-final secondaryAppBarProvider = StateProvider<Widget?>((ref) => null);
 final selectedListsProvider = StateProvider((ref) => <String>[]);
 final myListsProvider = StateProvider((ref) => <String>[]);
 final activeTabIndexProvider = StateProvider((ref) => KeyValueDatabase.getFirstTabIndex());
 
 void activateSelectionMode(WidgetRef ref) {
   ref.read(isSelectionModeActiveProvider.notifier).update((state) => true);
-  ref.read(secondaryAppBarProvider.notifier).update((state) => const SecondaryAppBar());
 }
 
 void deactivateSelectionMode(WidgetRef ref) {
   ref.read(isSelectionModeActiveProvider.notifier).update((state) => false);
-  ref.read(secondaryAppBarProvider.notifier).update((state) => null);
   ref.read(selectedListsProvider.notifier).update((state) => []);
 }
 

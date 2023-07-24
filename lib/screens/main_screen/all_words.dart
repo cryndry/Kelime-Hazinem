@@ -18,9 +18,11 @@ class _AllWordsState extends State<AllWords> {
   @override
   void initState() {
     SqlDatabase.getAllWords().then((result) {
-      setState(() {
-        words = result;
-      });
+      if (mounted) {
+        setState(() {
+          words = result;
+        });
+      }
     });
 
     super.initState();

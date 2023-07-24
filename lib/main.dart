@@ -1,13 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
-import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
 import 'package:kelime_hazinem/screens/share_lists.dart';
+import 'package:kelime_hazinem/screens/share_my_lists.dart';
 import 'package:kelime_hazinem/screens/word_screen/all_words_of_list.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_add.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_edit.dart';
@@ -17,6 +16,7 @@ import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +26,21 @@ void main() async {
   runApp(const ProviderScope(child: KelimeHazinem()));
 }
 
-class KelimeHazinem extends StatelessWidget {
+class KelimeHazinem extends ConsumerWidget {
   const KelimeHazinem({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      SqlDatabase.getLists().then((result) {
+        result.remove("Temel Seviye");
+        result.remove("Orta Seviye");
+        result.remove("İleri Seviye");
+
+        ref.read(myListsProvider.notifier).update((state) => result);
+      });
+    });
+    
     return MaterialApp(
       title: 'Kelime Hazinem',
       theme: ThemeData(
@@ -48,14 +58,7 @@ class KelimeHazinem extends StatelessWidget {
           case "/":
             return routeAnimator(page: const MainScreen());
           case "MyLists":
-            return routeAnimator(
-              page: const SafeArea(
-                child: Scaffold(
-                  appBar: MyAppBar(title: "Listelerim"),
-                  body: MyLists(),
-                ),
-              ),
-            );
+            return routeAnimator(page: const ShareMyLists());
           case "WordLearn":
             return routeAnimator(
               beginOffset: arguments!["beginOffset"],

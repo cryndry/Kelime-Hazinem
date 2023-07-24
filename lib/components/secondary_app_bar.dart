@@ -10,6 +10,7 @@ import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -61,7 +62,7 @@ class SecondaryAppBarState extends ConsumerState {
   }
 
   void deactivateShareMode() {
-    final bool isUsedInListSharePage = context.findAncestorWidgetOfExactType<Scaffold>()!.body.toString() == "MyLists";
+    final isUsedInListSharePage = MyNavigatorObserver.stack.first == "ShareMyLists";
     if (isUsedInListSharePage) Navigator.of(context).pop();
     deactivateSelectionMode(ref);
   }
@@ -69,6 +70,7 @@ class SecondaryAppBarState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     final selectedLists = ref.watch(selectedListsProvider);
+    final isUsedInListSharePage = MyNavigatorObserver.stack.first == "ShareMyLists";
 
     return WillPopScope(
       onWillPop: () async {
@@ -95,7 +97,7 @@ class SecondaryAppBarState extends ConsumerState {
               style: MyTextStyles.font_24_32_500.apply(color: Colors.white),
             ),
             const Spacer(),
-            if (selectedLists.isNotEmpty)
+            if (selectedLists.isNotEmpty && !isUsedInListSharePage)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ActionButton(
@@ -117,7 +119,7 @@ class SecondaryAppBarState extends ConsumerState {
                   },
                 ),
               ),
-            if (selectedLists.length == 1)
+            if (selectedLists.length == 1 && !isUsedInListSharePage)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ActionButton(

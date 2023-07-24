@@ -31,7 +31,7 @@ class MyAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
     final activeTabIndex = ref.watch(activeTabIndexProvider);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final bool isUsedInListSharePage = context.findAncestorWidgetOfExactType<Scaffold>()!.body.toString() == "MyLists";
+      final bool isUsedInListSharePage = MyNavigatorObserver.stack.first == "ShareMyLists";
       if (!(activeTabIndex == 1 || isUsedInListSharePage)) {
         deactivateSelectionMode(ref);
       }

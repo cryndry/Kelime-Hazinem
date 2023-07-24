@@ -9,6 +9,7 @@ import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 
 class MyLists extends ConsumerStatefulWidget {
@@ -23,18 +24,23 @@ class MyListsState extends ConsumerState<MyLists> {
   final listAddingTextInputController = TextEditingController();
   Future<bool>? creatingList;
   String? errorMessage;
-  late final bool isUsedInListSharePage =
-      context.findAncestorWidgetOfExactType<Scaffold>()!.body.toString() == "MyLists";
+  final bool isUsedInListSharePage = MyNavigatorObserver.stack.first == "ShareMyLists";
 
   @override
   void initState() {
-    SqlDatabase.getLists().then((result) {
-      result.remove("Temel Seviye");
-      result.remove("Orta Seviye");
-      result.remove("İleri Seviye");
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (isUsedInListSharePage) {
+        activateSelectionMode(ref);
+      }
+    });
 
-      ref.read(myListsProvider.notifier).update((state) => result);
-      if (isUsedInListSharePage) activateSelectionMode(ref);
+    ref.listenManual(myListsProvider, (previous, next) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        if (next.isEmpty && isUsedInListSharePage) {
+          deactivateSelectionMode(ref);
+          Navigator.of(context).pop();
+        }
+      });
     });
 
     super.initState();
@@ -77,13 +83,6 @@ class MyListsState extends ConsumerState<MyLists> {
   Widget build(BuildContext context) {
     final lists = ref.watch(myListsProvider);
     final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (isUsedInListSharePage && lists.isEmpty) {
-        deactivateSelectionMode(ref);
-        Navigator.of(context).pop();
-      }
-    });
 
     return PageLayout(
       FABs: (isSelectionModeActive || isUsedInListSharePage)
