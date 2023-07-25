@@ -11,11 +11,13 @@ Future<T?> popBottomSheet<T>({
   void Function()? onSheetDismissed,
   String? routeName,
 }) async {
-  const minPadding = EdgeInsets.fromLTRB(12, 16, 12, 32);
+  const minPadding = EdgeInsets.fromLTRB(32, 16, 32, 32);
+  final vievport = MediaQuery.of(context).size;
   return await showModalBottomSheet<T?>(
-    routeSettings: RouteSettings(name: routeName),
     context: context,
+    useSafeArea: true,
     isScrollControlled: true,
+    routeSettings: RouteSettings(name: routeName),
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setSheetState) {
@@ -31,11 +33,16 @@ Future<T?> popBottomSheet<T>({
               boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
               color: Colors.white,
             ),
+            constraints: BoxConstraints(
+              minWidth: vievport.width,
+              maxWidth: vievport.width,
+              maxHeight: vievport.height,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     title,
                     textAlign: TextAlign.center,
@@ -45,7 +52,7 @@ Future<T?> popBottomSheet<T>({
                 if (widgetBetweenTitleAndInfo != null) widgetBetweenTitleAndInfo,
                 if (info.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
                       info,
                       textAlign: TextAlign.center,
@@ -53,18 +60,7 @@ Future<T?> popBottomSheet<T>({
                     ),
                   ),
                 const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width,
-                    maxWidth: MediaQuery.of(context).size.width,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.max,
-                    children: bottomWidgets(setSheetState),
-                  ),
-                ),
+                ...bottomWidgets(setSheetState),
               ],
             ),
           );

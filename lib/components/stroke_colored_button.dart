@@ -20,9 +20,13 @@ class StrokeColoredButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      style: outlinedButtonStyle,
-      onPressed: onPressed,
-      child: Text(title, style: MyTextStyles.font_16_24_500),
-    );
+        style: outlinedButtonStyle,
+        onPressed: onPressed,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(title, style: MyTextStyles.font_16_24_500),
+          ],
+        ));
   }
 }
