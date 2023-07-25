@@ -2,21 +2,60 @@ import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/bottom_sheet.dart';
+import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 
-class ShareLists extends ConsumerWidget {
+class ShareLists extends ConsumerStatefulWidget {
   const ShareLists({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ShareListsState createState() => ShareListsState();
+}
+
+class ShareListsState extends ConsumerState {
+  final importListsTextInputController = TextEditingController();
+  bool willCopyNewMeanings = false;
+  bool willExtendExistingLists = false;
+  Future<bool>? importingLists;
+  String? errorMessage;
+
+  Future<bool> checkIfCodeExists(String importCode) async {
+    return await FirebaseDatabase.checkIfCodeExists(importCode);
+  }
+
+  Future<bool> importLists(String importCode) async {
+    final doesCodeExist = await checkIfCodeExists(importCode);
+    if (!doesCodeExist) {
+      setState(() {
+        errorMessage = "Hatalı giriş yaptınız ya da kodun karşılığı yok.";
+      });
+      return false;
+    }
+
+    await FirebaseDatabase.downloadFile(importCode);
+    final importedLists = await SqlDatabase.importLists(willCopyNewMeanings, willExtendExistingLists);
+    ref.read(myListsProvider.notifier).update((state) => [...state, ...importedLists]);
+
+    setState(() {
+      errorMessage = null;
+    });
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lists = ref.watch(myListsProvider);
 
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: const MyAppBar(title: "Listelerini Paylaş"),
         body: NonScrollablePageLayout(
           child: Padding(
@@ -25,7 +64,115 @@ class ShareLists extends ConsumerWidget {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      popBottomSheet(
+                        context: context,
+                        title: "Yeni Listeler Ekle",
+                        info: "Arkadaşlarından aldığın kodlarla yeni listeler oluşturabilirsin",
+                        routeName: "ImportListsBottomSheet",
+                        mayKeyboardAppear: true,
+                        onSheetDismissed: () {
+                          setState(() {
+                            errorMessage = null;
+                            importListsTextInputController.clear();
+                          });
+                        },
+                        bottomWidgets: (setSheetState) => [
+                          MyTextInput(
+                            label: "Paylaşım Kodu",
+                            hintText: "Kodunu Buraya Girebilirsin",
+                            autoFocus: true,
+                            keyboardAction: TextInputAction.done,
+                            errormessage: errorMessage,
+                            loseFocusOnTapOutside: false,
+                            textInputController: importListsTextInputController,
+                          ),
+                          const SizedBox(height: 8),
+                          Flexible(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  CheckboxListTile(
+                                    dense: true,
+                                    visualDensity: VisualDensity.compact,
+                                    contentPadding: EdgeInsets.zero,
+                                    value: willCopyNewMeanings,
+                                    controlAffinity: ListTileControlAffinity.leading,
+                                    onChanged: (value) {
+                                      setSheetState(() {
+                                        willCopyNewMeanings = value!;
+                                      });
+                                    },
+                                    title: const Text(
+                                      "Var olan kelimelerin anlam bilgilerini yenileriyle güncelle",
+                                      style: MyTextStyles.font_16_20_500,
+                                    ),
+                                  ),
+                                  CheckboxListTile(
+                                    dense: true,
+                                    visualDensity: VisualDensity.compact,
+                                    contentPadding: EdgeInsets.zero,
+                                    value: willExtendExistingLists,
+                                    controlAffinity: ListTileControlAffinity.leading,
+                                    onChanged: (value) {
+                                      setSheetState(() {
+                                        willExtendExistingLists = value!;
+                                      });
+                                    },
+                                    title: const Text(
+                                      "Liste isimleri çakışıyorsa listeleri birleştir",
+                                      style: MyTextStyles.font_16_20_500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          FutureBuilder(
+                            future: importingLists,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting ||
+                                  snapshot.connectionState == ConnectionState.active) {
+                                return FillColoredButton(
+                                  title: "Yükleniyor",
+                                  icon: const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                      semanticsLabel: "Yükleniyor...",
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                );
+                              }
+                              return FillColoredButton(
+                                  title: "Listeleri Yükle",
+                                  onPressed: () {
+                                    final String importCode = importListsTextInputController.text;
+                                    setState(() {
+                                      setSheetState(() {
+                                        errorMessage = null;
+                                      });
+                                      importingLists = importLists(importCode);
+                                      setSheetState(() {});
+                                    });
+
+                                    importingLists!.then((value) {
+                                      setSheetState(() {});
+                                      if (!value) return value;
+
+                                      Navigator.of(context).pop();
+                                      return value;
+                                    });
+                                  });
+                            },
+                          ),
+                        ],
+                      );
+                    },
                     child: Stack(
                       alignment: Alignment.topCenter,
                       children: [
@@ -48,7 +195,7 @@ class ShareLists extends ConsumerWidget {
                                 Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Text(
-                                    "Diğer kullanıcılardan aldığın kodlarla yeni listeler oluşturabilirsin",
+                                    "Arkadaşlarından aldığın kodlarla yeni listeler oluşturabilirsin",
                                     textAlign: TextAlign.center,
                                     style: MyTextStyles.font_16_24_500,
                                   ),

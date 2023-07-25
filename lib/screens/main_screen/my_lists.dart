@@ -96,8 +96,8 @@ class MyListsState extends ConsumerState<MyLists> {
               const SizedBox(height: 12),
               FAB(
                   icon: MySvgs.plus,
-                  onTap: () async {
-                    await popBottomSheet(
+                  onTap: () {
+                    popBottomSheet(
                       context: context,
                       title: "Yeni Listeni Oluştur",
                       routeName: "CreateListBottomSheet",
@@ -105,6 +105,7 @@ class MyListsState extends ConsumerState<MyLists> {
                       onSheetDismissed: () {
                         setState(() {
                           errorMessage = null;
+                          listAddingTextInputController.clear();
                         });
                       },
                       bottomWidgets: (setSheetState) => [
@@ -170,7 +171,6 @@ class MyListsState extends ConsumerState<MyLists> {
                         ),
                       ],
                     );
-                    listAddingTextInputController.clear();
                   }),
             ],
       children: [

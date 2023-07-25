@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/firebase_options.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -11,15 +13,16 @@ import 'dart:io' as io;
 
 abstract class SqlDatabase {
   static late Database _db;
+  static late io.Directory _applicationDirectory;
   static const String _dbName = "hazine.db";
-  static const String _cacheDbName = "cache.db";
+  static const String _cacheDbName = "data.db";
   static const String _dbWordTableName = "Words";
   static const String _dbListTableName = "Lists";
   static const String _dbEntryTableName = "Entries";
 
   static Future<void> initDB() async {
-    io.Directory applicationDirectory = await getApplicationDocumentsDirectory();
-    String dbPath = path.join(applicationDirectory.path, _dbName);
+    _applicationDirectory = (await getApplicationDocumentsDirectory()).absolute;
+    String dbPath = path.join(_applicationDirectory.path, _dbName);
 
     bool dbExists = await io.File(dbPath).exists();
     if (!dbExists) {
@@ -130,6 +133,13 @@ abstract class SqlDatabase {
     });
   }
 
+  static Future<Map<String, Object?>?> getWordData(String word) async {
+    final result = await _db.transaction((txn) async {
+      return await txn.rawQuery("SELECT * FROM $_dbWordTableName WHERE word='$word'");
+    });
+    return result.isEmpty ? null : result.first;
+  }
+
   static Future<int> createWord(Map<String, Object?> word) async {
     return await _db.transaction((txn) async {
       return await txn.insert(_dbWordTableName, word);
@@ -169,9 +179,9 @@ abstract class SqlDatabase {
     return result.isNotEmpty;
   }
 
-  static Future<void> createList(String listName) async {
+  static Future<int> createList(String listName) async {
     return await _db.transaction((txn) async {
-      await txn.execute("INSERT INTO $_dbListTableName (name) VALUES ('$listName')");
+      return await txn.rawInsert("INSERT INTO $_dbListTableName (name) VALUES ('$listName')");
     });
   }
 
@@ -194,7 +204,7 @@ abstract class SqlDatabase {
     return result.isNotEmpty;
   }
 
-  static Future<Map<String, Object?>?> getListData(listName) async {
+  static Future<Map<String, Object?>?> getListData(String listName) async {
     final result = await _db.transaction((txn) async {
       return await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
     });
@@ -341,6 +351,98 @@ abstract class SqlDatabase {
     cacheDb.close();
     return cacheDbFile;
   }
+
+  static Future<List<String>> importLists(bool willCopyNewMeanings, bool willExtendExistingLists) async {
+    final String cacheDbPath = path.join(_applicationDirectory.path, _cacheDbName);
+    final cacheDbFile = io.File(cacheDbPath);
+    final cacheDb = await openDatabase(cacheDbPath);
+
+    final cacheDbData = await cacheDb.transaction((txn) async {
+      final listData = await txn.query(_dbListTableName);
+      final wordData = await txn.query(_dbWordTableName);
+      final entryData = await txn.query(_dbEntryTableName);
+
+      return {
+        "listData": List.of(listData.map((e) => Map.of(e))),
+        "wordData": List.of(wordData.map((e) => Map.of(e))),
+        "entryData": List.of(entryData.map((e) => Map.of(e))),
+      };
+    });
+    cacheDb.close();
+    cacheDbFile.delete();
+
+    int listIndex = 0;
+    final extendedExistingList = [];
+    for (var list in cacheDbData["listData"]!) {
+      final listIdInDbFile = list["id"] as int;
+      final listName = list["name"] as String;
+      final listData = await getListData(listName);
+      final doesListExist = listData != null;
+
+      int listId;
+      if (doesListExist && willExtendExistingLists) {
+        listId = listData["id"] as int;
+        extendedExistingList.add(listData["name"]);
+      } else {
+        final newListName = "${doesListExist ? "_" : ""}$listName";
+        listId = await createList(newListName);
+        cacheDbData["listData"]![listIndex]["name"] = newListName;
+      }
+
+      for (int index = 0; index < cacheDbData["entryData"]!.length; index++) {
+        if (cacheDbData["entryData"]![index]["list_id"] == listIdInDbFile) {
+          cacheDbData["entryData"]![index].update("list_id", (value) => listId);
+        }
+      }
+      listIndex++;
+    }
+
+    for (var word in cacheDbData["wordData"]!) {
+      final wordIdInDbFile = word["id"] as int;
+      final wordData = await getWordData(word["word"] as String);
+      final doesWordExist = wordData != null;
+      word.remove("id");
+
+      int wordId;
+      if (doesWordExist) {
+        wordId = wordData["id"] as int;
+        if (willCopyNewMeanings) await updateWord(wordId, word);
+      } else {
+        wordId = await createWord(word);
+      }
+
+      for (int index = 0; index < cacheDbData["entryData"]!.length; index++) {
+        if (cacheDbData["entryData"]![index]["word_id"] == wordIdInDbFile) {
+          cacheDbData["entryData"]![index].update("word_id", (value) => wordId);
+        }
+      }
+    }
+
+    await _db.transaction((txn) async {
+      final batch = txn.batch();
+
+      for (var entry in cacheDbData["entryData"]!) {
+        final query = await txn.rawQuery('''
+          SELECT * FROM $_dbEntryTableName
+          WHERE word_id = ${entry["word_id"]}
+            AND list_id = ${entry["list_id"]}
+        ''');
+        final doesEntryExist = query.isNotEmpty;
+        if (doesEntryExist) continue;
+
+        final timeCreated = DateTime.now().toString().split(".")[0];
+        batch.rawInsert('''
+        INSERT INTO $_dbEntryTableName (word_id, list_id, time_created)
+        VALUES (${entry["word_id"]}, ${entry["list_id"]}, '$timeCreated')
+      ''');
+      }
+
+      await batch.commit();
+    });
+
+    return cacheDbData["listData"]!.map((e) => e["name"] as String).toList()
+      ..removeWhere((list) => extendedExistingList.contains(list));
+  }
 }
 
 abstract final class DbKeys {
@@ -388,16 +490,35 @@ abstract class KeyValueDatabase {
 
 abstract class FirebaseDatabase {
   static final _firestore = FirebaseFirestore.instance;
-  static final _storage = FirebaseStorage.instance;
+  static final _storage = FirebaseStorage.instance.ref();
+  static late final io.Directory _applicationDirectory;
   static const _collectionName = "sharedLists";
+  static const _dbFileName = "data.db";
+
+  static Future<void> initDB() async {
+    _applicationDirectory = (await getApplicationDocumentsDirectory()).absolute;
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  }
 
   static Future<String> addSharedFileData(Map<String, dynamic> data) async {
     DocumentReference doc = await _firestore.collection(_collectionName).add(data);
     return doc.id;
   }
 
-  static UploadTask uploadFile(io.File file, String path) {
-    final fileRef = _storage.ref(path);
+  static Future<bool> checkIfCodeExists(String importCode) async {
+    final snapshot = await _firestore.collection(_collectionName).doc(importCode).get();
+    return snapshot.exists;
+  }
+
+  static UploadTask uploadFile(io.File file, String exportCode) {
+    final fileRef = _storage.child("$exportCode/$_dbFileName");
     return fileRef.putFile(file);
+  }
+
+  static DownloadTask downloadFile(String importCode) {
+    final fileRef = _storage.child("$importCode/$_dbFileName");
+    final String cacheDbPath = path.join(_applicationDirectory.path, _dbFileName);
+    final cacheDbFile = io.File(cacheDbPath);
+    return fileRef.writeToFile(cacheDbFile);
   }
 }

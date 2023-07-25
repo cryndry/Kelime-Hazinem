@@ -247,7 +247,7 @@ class SecondaryAppBarState extends ConsumerState {
                           });
                           await Future.delayed(const Duration(milliseconds: 500));
 
-                          final uploadTask = FirebaseDatabase.uploadFile(cacheDbFile, "$sharedFileId/data.db");
+                          final uploadTask = FirebaseDatabase.uploadFile(cacheDbFile, sharedFileId);
                           final uploadStream = uploadTask.snapshotEvents;
 
                           double progress = 0;

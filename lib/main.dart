@@ -1,8 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
-import 'package:kelime_hazinem/firebase_options.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
 import 'package:kelime_hazinem/screens/share_lists.dart';
@@ -22,7 +20,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseDatabase.initDB();
   runApp(const ProviderScope(child: KelimeHazinem()));
 }
 
