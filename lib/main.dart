@@ -10,6 +10,7 @@ import 'package:kelime_hazinem/screens/word_screen/word_add.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_edit.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
+import 'package:kelime_hazinem/screens/word_screen/word_show.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -93,6 +94,8 @@ class KelimeHazinem extends ConsumerWidget {
             return routeAnimator(page: const WordAdd());
           case "WordEdit":
             return routeAnimator(page: WordEdit(word: arguments!["word"]));
+          case "WordShow":
+            return routeAnimator(page: WordShow(word: arguments!["word"]));
           case "ShareLists":
             return routeAnimator(page: const ShareLists());
           case "Settings":

@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 final isSelectionModeActiveProvider = StateProvider((ref) => false);
 final selectedListsProvider = StateProvider((ref) => <String>[]);
 final myListsProvider = StateProvider((ref) => <String>[]);
 final activeTabIndexProvider = StateProvider((ref) => KeyValueDatabase.getFirstTabIndex());
+final allWordsProvider = StateProvider((ref) => <Word>[]);
+final allWordsOfListProvider = StateProvider((ref) => <Word>[]);
 
 void activateSelectionMode(WidgetRef ref) {
   ref.read(isSelectionModeActiveProvider.notifier).update((state) => true);

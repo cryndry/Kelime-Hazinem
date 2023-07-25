@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/fab.dart';
 import 'package:kelime_hazinem/components/all_words_page_layout.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
-class AllWords extends StatefulWidget {
+class AllWords extends ConsumerStatefulWidget {
   const AllWords({super.key});
 
   @override
-  State<AllWords> createState() => _AllWordsState();
+  AllWordsState createState() => AllWordsState();
 }
 
-class _AllWordsState extends State<AllWords> {
+class AllWordsState extends ConsumerState<AllWords> {
   List<Word> words = [];
 
   @override
   void initState() {
-    SqlDatabase.getAllWords().then((result) {
-      if (mounted) {
-        setState(() {
-          words = result;
-        });
-      }
+    if (words.isEmpty) {
+      SqlDatabase.getAllWords().then((result) {
+        ref.read(allWordsProvider.notifier).update((state) => result);
+      });
+    }
+
+    ref.listenManual(allWordsProvider, (previous, next) {
+      setState(() {
+        words = next;
+      });
     });
 
     super.initState();
@@ -32,16 +38,15 @@ class _AllWordsState extends State<AllWords> {
   Widget build(BuildContext context) {
     return AllWordsPageLayout(
       words: words,
+      type: "AllWords",
       FABs: [
         FAB(
           icon: MySvgs.plus,
           semanticsLabel: "Yeni Kelime Ekle",
           onTap: () async {
             final result = await Navigator.of(context).pushNamed("WordAdd");
-            if (result is Map) {
-              setState(() {
-                words.add(Word.fromJson(result as Map<String, dynamic>));
-              });
+            if (result is Map<String, dynamic>) {
+              ref.read(allWordsProvider.notifier).update((state) => [...state, Word.fromJson(result)]);
             }
           },
         ),

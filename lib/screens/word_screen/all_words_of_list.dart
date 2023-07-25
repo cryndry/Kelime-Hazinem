@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/utils/database.dart';
-import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
-class AllWordsOfList extends StatefulWidget {
+class AllWordsOfList extends ConsumerStatefulWidget {
   const AllWordsOfList({
     super.key,
     required this.listName,
@@ -15,21 +16,19 @@ class AllWordsOfList extends StatefulWidget {
   final String dbTitle;
 
   @override
-  State<AllWordsOfList> createState() => _AllWordsOfListState();
+  AllWordsOfListState createState() => AllWordsOfListState();
 }
 
-class _AllWordsOfListState extends State<AllWordsOfList> {
-  List<Word> words = [];
-
+class AllWordsOfListState extends ConsumerState<AllWordsOfList> {
   @override
   void initState() {
     SqlDatabase.getWordsQuery(
       listName: widget.dbTitle,
       isIconicList: widget.dbTitle != widget.listName,
       isInRandomOrder: false,
-    ).then((value) {
-      setState(() {
-        words = value;
+    ).then((result) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(allWordsOfListProvider.notifier).update((state) => result);
       });
     });
 
@@ -38,13 +37,18 @@ class _AllWordsOfListState extends State<AllWordsOfList> {
 
   @override
   Widget build(BuildContext context) {
+    final words = ref.watch(allWordsOfListProvider);
+
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(
           title: "Tüm Kelimeler",
           secTitle: widget.listName,
         ),
-        body: AllWordsPageLayout(words: words),
+        body: AllWordsPageLayout(
+          words: words,
+          type: "AllWordsOfList",
+        ),
       ),
     );
   }

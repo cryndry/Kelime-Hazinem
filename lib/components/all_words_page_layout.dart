@@ -1,21 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/components/word_card.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
-class AllWordsPageLayout extends StatefulWidget {
-  const AllWordsPageLayout({super.key, required this.words, this.FABs});
+class AllWordsPageLayout extends ConsumerStatefulWidget {
+  const AllWordsPageLayout({super.key, required this.words, required this.type, this.FABs});
 
   final List<Word> words;
+  final String type;
   final List<Widget>? FABs;
 
   @override
-  State<AllWordsPageLayout> createState() => AllWordsPageLayoutState();
+  AllWordsPageLayoutState createState() => AllWordsPageLayoutState();
 }
 
-class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
+class AllWordsPageLayoutState extends ConsumerState<AllWordsPageLayout> {
   final TextEditingController textInputController = TextEditingController();
   final FocusNode textInputFocusNode = FocusNode();
   List<Word> words = [];
@@ -24,11 +27,9 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
 
   @override
   void didUpdateWidget(covariant AllWordsPageLayout oldWidget) {
-    if (oldWidget.words.isEmpty && widget.words.isNotEmpty) {
-      setState(() {
-        words = widget.words;
-      });
-    }
+    setState(() {
+      words = widget.words;
+    });
 
     super.didUpdateWidget(oldWidget);
   }
@@ -45,7 +46,7 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
   @override
   void dispose() {
     textInputController.dispose();
-    
+
     super.dispose();
   }
 
@@ -75,11 +76,14 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
               final searchTextExact = "$searchTextNotExact,";
 
               final queryExact = widget.words.where((element) => element.meaning.contains(searchTextExact)).toList();
-              queryExact.sort((a, b) => a.meaning.indexOf(searchTextExact).compareTo(b.meaning.indexOf(searchTextExact)));
+              queryExact
+                  .sort((a, b) => a.meaning.indexOf(searchTextExact).compareTo(b.meaning.indexOf(searchTextExact)));
               searchedWordsWithMeaning.addAll(queryExact);
 
-              final queryNotExact = widget.words.where((element) => element.meaning.contains(searchTextNotExact)).toList();
-              queryNotExact.sort((a, b) => a.meaning.indexOf(searchTextNotExact).compareTo(b.meaning.indexOf(searchTextNotExact)));
+              final queryNotExact =
+                  widget.words.where((element) => element.meaning.contains(searchTextNotExact)).toList();
+              queryNotExact.sort(
+                  (a, b) => a.meaning.indexOf(searchTextNotExact).compareTo(b.meaning.indexOf(searchTextNotExact)));
               for (Word word in queryNotExact) {
                 if (!queryExact.contains(word)) {
                   searchedWordsWithMeaning.add(word);
@@ -92,6 +96,31 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
           });
         },
       );
+    }
+  }
+
+  void wordRemove(int id) {
+    bool shouldPop = false;
+    if (widget.type == "AllWords") {
+      ref.read(allWordsProvider.notifier).update((state) {
+        final newState = [...state];
+        newState.removeWhere((word) => word.id == id);
+        return newState;
+      });
+    } else if (widget.type == "AllWordsOfList") {
+      ref.read(allWordsOfListProvider.notifier).update((state) {
+        final newState = [...state];
+        newState.removeWhere((word) => word.id == id);
+        if (newState.isEmpty) shouldPop = true;
+        return newState;
+      });
+    }
+    words.removeWhere((word) => word.id == id);
+
+    if (shouldPop) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() {});
     }
   }
 
@@ -139,7 +168,11 @@ class AllWordsPageLayoutState extends State<AllWordsPageLayout> {
             SliverPadding(
               padding: const EdgeInsets.all(16),
               sliver: SliverList.separated(
-                itemBuilder: (context, index) => WordCard(key: ValueKey(words[index].id), word: words[index]),
+                itemBuilder: (context, index) => WordCard(
+                  key: ValueKey(words[index].id),
+                  word: words[index],
+                  wordRemove: wordRemove,
+                ),
                 separatorBuilder: (context, index) => const SizedBox(height: 12),
                 itemCount: words.length,
               ),

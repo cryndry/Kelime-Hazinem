@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/screens/main_screen/all_words.dart';
 import 'package:kelime_hazinem/screens/main_screen/homepage.dart';
 import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
@@ -48,7 +49,9 @@ class MainScreenTabBar extends ConsumerWidget {
             children: [
               HomePage(),
               MyLists(),
-              AllWords(),
+              KeepAliveWidget(
+                child: AllWords(),
+              ),
             ],
           ),
         );
