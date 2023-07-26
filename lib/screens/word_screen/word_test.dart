@@ -170,9 +170,9 @@ class WordTestState extends State<WordTest> {
   }
 
   Future<void> handleMistakenAnswers() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1200));
     for (int index in mistakenIndexes) {
-      await words[index].willLearnToggle(setValue: 1);
+      words[index].willLearnToggle(setValue: 1);
     }
     return;
   }

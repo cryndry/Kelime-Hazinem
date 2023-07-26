@@ -37,6 +37,8 @@ class WordCardState extends State<WordCard> {
         );
         if (result != null && (result as Map)["deleted"] && widget.wordRemove != null) {
           widget.wordRemove!(widget.word.id);
+        } else {
+          setState(() {});
         }
       },
       child: Container(
