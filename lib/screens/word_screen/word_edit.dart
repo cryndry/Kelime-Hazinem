@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/dialog.dart';
@@ -11,18 +12,19 @@ import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
-class WordEdit extends StatefulWidget {
+class WordEdit extends ConsumerStatefulWidget {
   const WordEdit({super.key, required this.word});
 
   final Word word;
 
   @override
-  State<WordEdit> createState() => WordEditState();
+  WordEditState createState() => WordEditState();
 }
 
-class WordEditState extends State<WordEdit> {
+class WordEditState extends ConsumerState<WordEdit> {
   final _formKey = GlobalKey<FormState>();
   Future<bool>? saveHandling;
   Future<void>? deleteHandling;
@@ -153,6 +155,17 @@ class WordEditState extends State<WordEdit> {
       ],
     );
     if (isDeleted != null && isDeleted) {
+      ref.read(allWordsProvider.notifier).update((state) {
+        int index = state.indexWhere((word) => word.id == widget.word.id);
+        if (index == -1) return state;
+        return [...state]..removeAt(index);
+      });
+      ref.read(allWordsOfListProvider.notifier).update((state) {
+        int index = state.indexWhere((word) => word.id == widget.word.id);
+        if (index == -1) return state;
+        return [...state]..removeAt(index);
+      });
+
       await Future.delayed(const Duration(seconds: 1));
       Navigator.of(context).pop({"deleted": isDeleted});
     }

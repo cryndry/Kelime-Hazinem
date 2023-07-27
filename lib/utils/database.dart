@@ -32,7 +32,9 @@ abstract class SqlDatabase {
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
     }
 
-    _db = await openDatabase(dbPath);
+    _db = await openDatabase(dbPath, onOpen: (db) {
+      db.execute("PRAGMA foreign_keys = ON");
+    });
   }
 
   static Future<List<Word>> getAllWords() async {
