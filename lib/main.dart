@@ -25,6 +25,8 @@ void main() async {
   runApp(const ProviderScope(child: KelimeHazinem()));
 }
 
+final routeObserver = RouteObserver();
+
 class KelimeHazinem extends ConsumerWidget {
   const KelimeHazinem({super.key});
 
@@ -47,7 +49,7 @@ class KelimeHazinem extends ConsumerWidget {
         useMaterial3: true,
         colorSchemeSeed: MyColors.darkBlue,
       ),
-      navigatorObservers: [MyNavigatorObserver()],
+      navigatorObservers: [MyNavigatorObserver(), routeObserver],
       initialRoute: "/",
       onGenerateRoute: (settings) {
         final String? routeName = settings.name;
