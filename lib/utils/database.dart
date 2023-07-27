@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cr_file_saver/file_saver.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -444,6 +445,20 @@ abstract class SqlDatabase {
 
     return cacheDbData["listData"]!.map((e) => e["name"] as String).toList()
       ..removeWhere((list) => extendedExistingList.contains(list));
+  }
+
+  static Future<void> exportDBFile() async {
+    final isPermitted = await CRFileSaver.requestWriteExternalStoragePermission();
+    debugPrint("isPermitted: $isPermitted");
+    if (isPermitted) {
+      String dbPath = path.join(_applicationDirectory.path, _dbName);
+      final timeCreated = DateTime.now().toString().split(".")[0];
+      final result = await CRFileSaver.saveFileWithDialog(SaveFileDialogParams(
+        sourceFilePath: dbPath,
+        destinationFileName: "$timeCreated.db",
+      ));
+      debugPrint(result);
+    }
   }
 }
 
