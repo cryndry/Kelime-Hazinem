@@ -1,14 +1,21 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/notifications/notifications.dart';
 import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
 
+  @override
+  SettingsState createState() => SettingsState();
+}
+
+class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,32 +40,38 @@ class Settings extends StatelessWidget {
               ),
             ),
             SettingRow(
-              title: "Bildirimler",
-              child: SwitchSetting(
-                initialValue: KeyValueDatabase.getNotifications(),
-                onChange: (bool newValue) {
-                  KeyValueDatabase.setNotifications(newValue);
-                },
-              ),
-            ),
-            SettingRow(
-              title: "Karanlık Mod",
-              child: SwitchSetting(
-                initialValue: KeyValueDatabase.getDarkMode(),
-                onChange: (bool newValue) {
-                  KeyValueDatabase.setDarkMode(newValue);
-                },
-              ),
-            ),
-            SettingRow(
               title: "Animasyonlar",
               child: SwitchSetting(
                 initialValue: KeyValueDatabase.getIsAnimatable(),
                 onChange: (bool newValue) {
-                  KeyValueDatabase.setIsAnimatable(newValue);
+                  return KeyValueDatabase.setIsAnimatable(newValue);
                 },
               ),
             ),
+            SettingRow(
+              title: "Bildirimler",
+              child: SwitchSetting(
+                initialValue: KeyValueDatabase.getNotifications(),
+                onChange: (bool newValue) {
+                  final change = KeyValueDatabase.setNotifications(newValue);
+                  change.then((value) {
+                    setState(() {});
+                  });
+                  return change;
+                },
+              ),
+            ),
+            if (KeyValueDatabase.getNotifications())
+              SettingRow(
+                title: "Bildirim Saati",
+                child: TimePickSetting(
+                  initialValue: KeyValueDatabase.getNotificationTime(),
+                  onChange: (value) {
+                    Notifications.createDailyWordNotification(value);
+                    KeyValueDatabase.setNotificationTime(value);
+                  },
+                ),
+              ),
             SettingRow(
               title: "Kelime Öğrenme modu liste uzunluğu",
               info: "(en\xA0az\xA020 - en\xA0fazla\xA0200)",
@@ -221,7 +234,7 @@ class SwitchSetting extends StatefulWidget {
   });
 
   final bool initialValue;
-  final void Function(bool) onChange;
+  final Future<bool> Function(bool) onChange;
 
   @override
   State<SwitchSetting> createState() => SwitchSettingState();
@@ -240,10 +253,10 @@ class SwitchSettingState extends State<SwitchSetting> {
         inactiveTrackColor: Colors.black.withOpacity(0.6),
         thumbColor: const MaterialStatePropertyAll(Colors.white),
         value: state,
-        onChanged: (value) {
+        onChanged: (value) async {
+          final newState = await widget.onChange(value);
           setState(() {
-            widget.onChange(value);
-            state = value;
+            state = newState;
           });
         },
       ),
@@ -315,6 +328,75 @@ class SelectableSettingState<T> extends State<SelectableSetting<T>> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TimePickSetting extends StatefulWidget {
+  const TimePickSetting({
+    super.key,
+    required this.initialValue,
+    required this.onChange,
+  });
+
+  final String initialValue;
+  final void Function(String) onChange;
+
+  @override
+  TimePickSettingState createState() => TimePickSettingState();
+}
+
+class TimePickSettingState extends State<TimePickSetting> {
+  late TimeOfDay state;
+
+  @override
+  void initState() {
+    state = Notifications.stringToTimeOfDay(widget.initialValue);
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final result = await showTimePicker(
+          context: context,
+          initialTime: state,
+          helpText: "",
+          cancelText: "Vazgeç",
+          confirmText: "Uygula",
+          hourLabelText: "Saat",
+          minuteLabelText: "Dakika",
+          errorInvalidText: "Lütfen geçerli bir aralık girin",
+          routeSettings: const RouteSettings(name: "NotificationTimePicker"),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+        if (result is TimeOfDay) {
+          widget.onChange(Notifications.timeOfDayToString(result));
+          setState(() {
+            state = result;
+          });
+        }
+      },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(blurRadius: 4, color: Colors.black26),
+          ],
+        ),
+        child: Text(Notifications.timeOfDayToString(state), style: MyTextStyles.font_24_32_500),
       ),
     );
   }

@@ -16,6 +16,7 @@ import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
+import 'package:kelime_hazinem/notifications/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,12 +24,19 @@ void main() async {
   await KeyValueDatabase.initDB();
   await FirebaseDatabase.initDB();
   runApp(const ProviderScope(child: KelimeHazinem()));
+  await Notifications.initService();
+  if (await Notifications.isNotificationAllowed()) {
+    final time = KeyValueDatabase.getNotificationTime();
+    await Notifications.createDailyWordNotification(time);
+  }
 }
 
 final routeObserver = RouteObserver();
 
 class KelimeHazinem extends ConsumerWidget {
   const KelimeHazinem({super.key});
+
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +49,7 @@ class KelimeHazinem extends ConsumerWidget {
         ref.read(myListsProvider.notifier).update((state) => result);
       });
     });
-    
+
     return MaterialApp(
       title: 'Kelime Hazinem',
       theme: ThemeData(
@@ -49,6 +57,7 @@ class KelimeHazinem extends ConsumerWidget {
         useMaterial3: true,
         colorSchemeSeed: MyColors.darkBlue,
       ),
+      navigatorKey: navigatorKey,
       navigatorObservers: [MyNavigatorObserver(), routeObserver],
       initialRoute: "/",
       onGenerateRoute: (settings) {

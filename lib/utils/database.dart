@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cr_file_saver/file_saver.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
+import 'package:kelime_hazinem/notifications/notifications.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -128,8 +131,8 @@ abstract class SqlDatabase {
     });
   }
 
-  static Future<Word> getRandomWord() async {
-    return await _db.transaction((txn) async {
+  static Future<Word> getRandomWord([Database? db]) async {
+    return await (db ?? _db).transaction((txn) async {
       List<Map<String, dynamic>> result =
           await txn.rawQuery("SELECT * FROM $_dbWordTableName ORDER BY random() LIMIT 1");
       return Word.fromJson(result.first);
@@ -149,8 +152,8 @@ abstract class SqlDatabase {
     });
   }
 
-  static Future<bool> updateWord(int id, Map<String, Object?> newValue) async {
-    return await _db.transaction((txn) async {
+  static Future<bool> updateWord(int id, Map<String, Object?> newValue, [Database? db]) async {
+    return await (db ?? _db).transaction((txn) async {
       final result = await txn.update(
         _dbWordTableName,
         newValue,
@@ -460,6 +463,16 @@ abstract class SqlDatabase {
       debugPrint(result);
     }
   }
+
+  static Future<void> execTempOperation({required FutureOr Function(Database) action}) async {
+    _applicationDirectory = (await getApplicationDocumentsDirectory()).absolute;
+    String dbPath = path.join(_applicationDirectory.path, _dbName);
+
+    await openDatabase(dbPath).then((db) async {
+      await db.execute("PRAGMA foreign_keys = ON");
+      await action(db);
+    });
+  }
 }
 
 abstract final class DbKeys {
@@ -469,6 +482,7 @@ abstract final class DbKeys {
   static const String isAnimatable = "isAnimatable";
   static const String darkMode = "darkMode";
   static const String notifications = "notifications";
+  static const String notificationTime = "notificationTime";
 }
 
 abstract class KeyValueDatabase {
@@ -482,7 +496,8 @@ abstract class KeyValueDatabase {
     if (!_db.containsKey(DbKeys.otherModsListLength)) setOtherModsListLength(15);
     if (!_db.containsKey(DbKeys.isAnimatable)) setIsAnimatable(true);
     if (!_db.containsKey(DbKeys.darkMode)) setDarkMode(false);
-    if (!_db.containsKey(DbKeys.notifications)) setNotifications(true);
+    if (!_db.containsKey(DbKeys.notifications)) setNotifications(false);
+    if (!_db.containsKey(DbKeys.notificationTime)) setNotificationTime("12:00");
   }
 
   static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
@@ -494,15 +509,34 @@ abstract class KeyValueDatabase {
   static int getOtherModsListLength() => _db.getInt(DbKeys.otherModsListLength)!;
   static void setOtherModsListLength(int value) => _db.setInt(DbKeys.otherModsListLength, value);
 
-  static bool getIsAnimatable() =>
-      WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
-  static void setIsAnimatable(bool value) => _db.setBool(DbKeys.isAnimatable, value);
+  static bool getIsAnimatable() {
+    return WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
+  }
+
+  static Future<bool> setIsAnimatable(bool value) async {
+    await _db.setBool(DbKeys.isAnimatable, value);
+    return value;
+  }
 
   static bool getDarkMode() => _db.getBool(DbKeys.darkMode)!;
-  static void setDarkMode(bool value) => _db.setBool(DbKeys.darkMode, value);
+  static Future<bool> setDarkMode(bool value) async {
+    await _db.setBool(DbKeys.darkMode, value);
+    return value;
+  }
 
   static bool getNotifications() => _db.getBool(DbKeys.notifications)!;
-  static void setNotifications(bool value) => _db.setBool(DbKeys.notifications, value);
+  static Future<bool> setNotifications(bool value) async {
+    if (value) {
+      final isAllowed = await Notifications.requestPermission();
+      await _db.setBool(DbKeys.notifications, isAllowed);
+      return isAllowed;
+    }
+    await _db.setBool(DbKeys.notifications, value);
+    return value;
+  }
+
+  static String getNotificationTime() => _db.getString(DbKeys.notificationTime)!;
+  static void setNotificationTime(String value) => _db.setString(DbKeys.notificationTime, value);
 }
 
 abstract class FirebaseDatabase {

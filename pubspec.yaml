@@ -24,6 +24,7 @@ dependencies:
   cloud_firestore: ^4.8.3
   firebase_storage: ^11.2.5
   cr_file_saver: ^0.0.2+1
+  awesome_notifications: ^0.7.4+1
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +37,7 @@ flutter:
 
   assets:
     - assets/
+    - android/app/src/main/res/drawable/
 
   fonts:
     - family: Manrope

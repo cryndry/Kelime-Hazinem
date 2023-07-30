@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Word {
   Word({
@@ -24,6 +27,19 @@ class Word {
   int favorite;
   int learned;
   int memorized;
+
+  factory Word.placeholder() => Word(
+        id: -1,
+        word: "Yükleniyor...",
+        meaning: "Yükleniyor...",
+        description: "Yükleniyor...",
+        wordSearch: "",
+        descriptionSearch: "",
+        willLearn: 0,
+        favorite: 0,
+        learned: 0,
+        memorized: 0,
+      );
 
   factory Word.fromJson(Map<String, dynamic> json) => Word(
         id: json["id"],
@@ -55,7 +71,7 @@ class Word {
   int intBoolInvert(int value) => (value == 1) ? 0 : 1;
   bool intAsBool(int value) => (value == 1);
 
-  void willLearnToggle({int? setValue}) {
+  FutureOr<void> willLearnToggle({int? setValue, Database? db}) async {
     if (setValue != null) {
       if (setValue == willLearn) return;
 
@@ -73,7 +89,7 @@ class Word {
         changes["memorized"] = 0;
       }
     }
-    SqlDatabase.updateWord(id, changes);
+    await SqlDatabase.updateWord(id, changes, db);
   }
 
   void favoriteToggle() {

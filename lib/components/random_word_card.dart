@@ -9,24 +9,12 @@ class RandomWordCard extends StatefulWidget {
   const RandomWordCard({super.key});
 
   @override
-  State<RandomWordCard> createState() => _RandomWordCardState();
+  RandomWordCardState createState() => RandomWordCardState();
 }
 
-class _RandomWordCardState extends State<RandomWordCard> {
+class RandomWordCardState extends State<RandomWordCard> {
   double turns = 0;
-
-  Word word = Word(
-    id: -1,
-    word: "Yükleniyor...",
-    meaning: "Yükleniyor...",
-    description: "Yükleniyor...",
-    wordSearch: "",
-    descriptionSearch: "",
-    willLearn: 0,
-    favorite: 0,
-    learned: 0,
-    memorized: 0,
-  );
+  Word word = Word.placeholder();
 
   void getRandomWord() {
     SqlDatabase.getRandomWord().then((randomWord) {
