@@ -8,17 +8,26 @@ class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
     final word = Word.fromJson(json.decode(receivedAction.payload!["word"]!));
-    if (receivedAction.actionType == ActionType.Default) {
-      KelimeHazinem.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        'WordShow',
-        (route) => (route.settings.name == 'MainScreen') || route.isFirst,
-        arguments: {"word": word},
-      );
-    }
-    if (receivedAction.buttonKeyPressed == "willLearn") {
-      await SqlDatabase.execTempOperation(action: (db) async {
-        await word.willLearnToggle(setValue: 1, db: db);
-      });
+    switch (receivedAction.buttonKeyPressed) {
+      case "willLearn":
+        await SqlDatabase.execTempOperation(action: (db) async {
+          await word.willLearnToggle(setValue: 1, db: db);
+        });
+      case "favorite":
+        await SqlDatabase.execTempOperation(action: (db) async {
+          await word.favoriteToggle(setValue: 1, db: db);
+        });
+      case "":
+        if (receivedAction.actionType == ActionType.Default) {
+          KelimeHazinem.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            'WordShow',
+            (route) => (route.settings.name == 'MainScreen') || route.isFirst,
+            arguments: {"word": word},
+          );
+        }
+        break;
+      default:
+        break;
     }
   }
 

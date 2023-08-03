@@ -7,22 +7,34 @@ import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class Notifications {
+  static late final String _timeZone;
+  static const int _dailyWordChannelId = 1;
+  static const String _dailyWordChannelKey = "word_daily";
+  static const String _dailyWordChannelName = "Günün Kelimesi";
+  static const String _dailyWordChannelDescription = "Her gün bir yeni kelime";
+  static const String _wordNotificationGroupKey = "word_group";
+  static const String _wordNotificationGroupName = "Yepyeni Kelimeler";
+
   static Future<void> initService() async {
+    _timeZone = await AwesomeNotifications().getLocalTimeZoneIdentifier();
     await AwesomeNotifications().initialize(
       null,
       [
         NotificationChannel(
-          channelGroupKey: 'word_group',
-          channelKey: 'word_daily',
-          channelName: 'Günlük Kelime',
-          channelDescription: 'Her gün bir yeni kelime',
+          channelGroupKey: _wordNotificationGroupKey,
+          channelKey: _dailyWordChannelKey,
+          channelName: _dailyWordChannelName,
+          channelDescription: _dailyWordChannelDescription,
           importance: NotificationImportance.Max,
           defaultColor: MyColors.darkBlue,
           playSound: false,
         ),
       ],
       channelGroups: [
-        NotificationChannelGroup(channelGroupKey: 'word_group', channelGroupName: 'Yeni Kelimeler'),
+        NotificationChannelGroup(
+          channelGroupKey: _wordNotificationGroupKey,
+          channelGroupName: _wordNotificationGroupName,
+        ),
       ],
       debug: true,
     );
@@ -57,10 +69,9 @@ class Notifications {
   }
 
   static Future<void> createDailyWordNotification(String time) async {
-    const dailyWordNotificationId = 1;
     final notifications = await AwesomeNotifications().listScheduledNotifications();
     final List<NotificationModel> dailyWordNotification = notifications.isNotEmpty
-        ? notifications.where((notification) => notification.content?.channelKey == "word_daily").toList()
+        ? notifications.where((notification) => notification.content?.channelKey == _dailyWordChannelKey).toList()
         : [];
     final dailyWordNotificationSchedule = dailyWordNotification.firstOrNull?.schedule;
     if (dailyWordNotificationSchedule != null) {
@@ -68,19 +79,20 @@ class Notifications {
       if (previousScheduleTime == time) return;
     }
 
-    AwesomeNotifications().cancel(dailyWordNotificationId);
     late Word word;
-    final newSchedule = stringToTimeOfDay(time);
     await SqlDatabase.execTempOperation(action: (db) async {
       word = await SqlDatabase.getRandomWord();
     });
+
+    AwesomeNotifications().cancel(_dailyWordChannelId);
+    final newSchedule = stringToTimeOfDay(time);
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: dailyWordNotificationId,
+        id: _dailyWordChannelId,
         wakeUpScreen: true,
         showWhen: false,
-        channelKey: "word_daily",
-        title: "Günün Kelimesi",
+        channelKey: _dailyWordChannelKey,
+        title: _dailyWordChannelName,
         body: """
           <big><b>${word.word}</b></big>
           <br>
@@ -99,7 +111,7 @@ class Notifications {
         repeats: false,
         preciseAlarm: true,
         allowWhileIdle: true,
-        timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
+        timeZone: _timeZone,
       ),
       actionButtons: [
         NotificationActionButton(
@@ -107,6 +119,12 @@ class Notifications {
           label: "Öğreneceklerime Ekle",
           actionType: ActionType.SilentBackgroundAction,
           color: MyColors.darkBlue,
+        ),
+        NotificationActionButton(
+          key: "favorite",
+          label: "Favorilerime Ekle",
+          actionType: ActionType.SilentBackgroundAction,
+          color: MyColors.amber,
         ),
       ],
     );

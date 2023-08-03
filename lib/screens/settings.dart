@@ -63,7 +63,8 @@ class SettingsState extends State<Settings> {
             ),
             if (KeyValueDatabase.getNotifications())
               SettingRow(
-                title: "Bildirim Saati",
+                title: "Günlük Bildirim Saati",
+                info: "Pil tasarrufu vb. sebeplerle bu özellik düzgün çalışmayabilir.",
                 child: TimePickSetting(
                   initialValue: KeyValueDatabase.getNotificationTime(),
                   onChange: (value) {

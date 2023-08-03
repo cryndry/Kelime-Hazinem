@@ -22,8 +22,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
-  await FirebaseDatabase.initDB();
   runApp(const ProviderScope(child: KelimeHazinem()));
+  await FirebaseDatabase.initDB();
   await Notifications.initService();
   if (await Notifications.isNotificationAllowed()) {
     final time = KeyValueDatabase.getNotificationTime();

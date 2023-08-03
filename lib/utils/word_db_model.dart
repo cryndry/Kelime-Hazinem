@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -92,9 +91,15 @@ class Word {
     await SqlDatabase.updateWord(id, changes, db);
   }
 
-  void favoriteToggle() {
-    favorite = intBoolInvert(favorite);
-    SqlDatabase.updateWord(id, {"favorite": favorite});
+  FutureOr<void> favoriteToggle({int? setValue, Database? db}) async {
+    if (setValue != null) {
+      if (setValue == favorite) return;
+
+      favorite = setValue;
+    } else {
+      favorite = intBoolInvert(favorite);
+    }
+    await SqlDatabase.updateWord(id, {"favorite": favorite}, db);
   }
 
   void learnedToggle() {
