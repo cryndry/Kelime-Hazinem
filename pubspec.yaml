@@ -25,6 +25,7 @@ dependencies:
   firebase_storage: ^11.2.5
   cr_file_saver: ^0.0.2+1
   awesome_notifications: ^0.7.4+1
+  flutter_slidable: ^3.0.0
 
 dev_dependencies:
   flutter_test:

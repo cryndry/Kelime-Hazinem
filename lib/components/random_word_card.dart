@@ -35,7 +35,11 @@ class RandomWordCardState extends State<RandomWordCard> {
     bool isAnimatable = KeyValueDatabase.getIsAnimatable();
     return Stack(
       children: [
-        WordCard(word: word),
+        WordCard(
+          word: word,
+          key: ValueKey(word.id),
+          wordChange: getRandomWord,
+        ),
         Positioned(
           top: 16,
           right: 16,
