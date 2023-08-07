@@ -1,12 +1,11 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cr_file_saver/file_saver.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
-import 'package:kelime_hazinem/notifications/notifications.dart';
+import 'package:kelime_hazinem/utils/notifications.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';

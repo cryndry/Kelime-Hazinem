@@ -17,7 +17,7 @@ import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
-import 'package:kelime_hazinem/notifications/notifications.dart';
+import 'package:kelime_hazinem/utils/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
