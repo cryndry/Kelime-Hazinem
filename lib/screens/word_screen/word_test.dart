@@ -142,7 +142,7 @@ class WordTestState extends State<WordTest> {
       emptyCount = words.length;
       mistakenIndexes.clear();
       handleMistakenAnswersFuture = null;
-      appBarButtons.removeLast();
+      if (appBarButtons.isNotEmpty) appBarButtons.removeLast();
       pageController.jumpToPage(0);
       isListRefreshed = true;
     });

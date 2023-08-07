@@ -137,6 +137,8 @@ class WordGuessState extends State<WordGuess> {
       appBarButtons.removeLast();
       pageController.jumpToPage(0);
       isListRefreshed = true;
+      tipButtonUsedIndexes.clear();
+      isTipButtonVisible = true;
     });
   }
 
@@ -168,14 +170,18 @@ class WordGuessState extends State<WordGuess> {
   @override
   Widget build(BuildContext context) {
     final Widget tipButtonBuild = isAnimatable
-        ? Visibility(
-            visible: isTipButtonVisible,
-            child: AnimatedSize(
-              duration: MyDurations.millisecond300,
+        ? AnimatedOpacity(
+            opacity: isTipButtonVisible ? 1 : 0,
+            duration: MyDurations.millisecond300,
+            child: IgnorePointer(
+              ignoring: !isTipButtonVisible,
               child: tipButton,
             ),
           )
-        : tipButton;
+        : Visibility(
+            visible: isTipButtonVisible,
+            child: tipButton,
+          );
     if (appBarButtons.isEmpty) {
       appBarButtons.insert(0, tipButtonBuild);
     } else {
