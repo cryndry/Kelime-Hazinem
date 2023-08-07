@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/main.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/disable_battery_opt.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class Notifications {
   static late final String _timeZone;
@@ -64,6 +65,7 @@ class Notifications {
         NotificationPermission.FullScreenIntent,
       ]);
       isAllowed = await AwesomeNotifications().isNotificationAllowed();
+      if (isAllowed) requestDisablingBatteryOptimization();
     }
     return isAllowed;
   }

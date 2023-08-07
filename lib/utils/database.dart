@@ -500,13 +500,22 @@ abstract class KeyValueDatabase {
   }
 
   static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
-  static void setFirstTabIndex(int value) => _db.setInt(DbKeys.firstTabIndex, value);
+  static Future<int> setFirstTabIndex(int value) async {
+    await _db.setInt(DbKeys.firstTabIndex, value);
+    return value;
+  }
 
   static int getWordLearnListLength() => _db.getInt(DbKeys.wordLearnListLength)!;
-  static void setWordLearnListLength(int value) => _db.setInt(DbKeys.wordLearnListLength, value);
+  static Future<int> setWordLearnListLength(int value) async {
+    await _db.setInt(DbKeys.wordLearnListLength, value);
+    return value;
+  }
 
   static int getOtherModsListLength() => _db.getInt(DbKeys.otherModsListLength)!;
-  static void setOtherModsListLength(int value) => _db.setInt(DbKeys.otherModsListLength, value);
+  static Future<int> setOtherModsListLength(int value) async {
+    await _db.setInt(DbKeys.otherModsListLength, value);
+    return value;
+  }
 
   static bool getIsAnimatable() {
     return WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
@@ -535,7 +544,10 @@ abstract class KeyValueDatabase {
   }
 
   static String getNotificationTime() => _db.getString(DbKeys.notificationTime)!;
-  static void setNotificationTime(String value) => _db.setString(DbKeys.notificationTime, value);
+  static Future<String> setNotificationTime(String value) async {
+    await _db.setString(DbKeys.notificationTime, value);
+    return value;
+  }
 }
 
 abstract class FirebaseDatabase {

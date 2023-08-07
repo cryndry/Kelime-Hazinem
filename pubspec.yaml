@@ -13,20 +13,28 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Widget packages
   flutter_svg: ^2.0.7
   flutter_layout_grid: ^2.0.3
-  shared_preferences: ^2.1.2
-  sqflite: ^2.2.8+4
+  flutter_slidable: ^3.0.0
+
+  # Data management packages
   path: ^1.8.3
   path_provider: ^2.0.15
+  sqflite: ^2.2.8+4
+  shared_preferences: ^2.1.2
   flutter_riverpod: ^2.3.6
+  
+  # Firebase packages
   firebase_core: ^2.15.0
   cloud_firestore: ^4.8.3
   firebase_storage: ^11.2.5
+  
+  # Other utility packages
   cr_file_saver: ^0.0.2+1
   awesome_notifications: ^0.7.4+1
-  flutter_slidable: ^3.0.0
   observe_internet_connectivity: ^1.0.2
+  disable_battery_optimization: ^1.1.0+1
 
 dev_dependencies:
   flutter_test:
@@ -39,7 +47,6 @@ flutter:
 
   assets:
     - assets/
-    - android/app/src/main/res/drawable/
 
   fonts:
     - family: Manrope

@@ -30,7 +30,12 @@ void main() async {
   runApp(const ProviderScope(child: KelimeHazinem()));
   await FirebaseDatabase.initDB();
   await Notifications.initService();
-  if (await Notifications.isNotificationAllowed()) {
+  final isNotificationsAllowed = await Notifications.isNotificationAllowed();
+  final isNotificationsAllowedInDB = KeyValueDatabase.getNotifications();
+  if (isNotificationsAllowed != isNotificationsAllowedInDB) {
+    await KeyValueDatabase.setNotifications(isNotificationsAllowed);
+  }
+  if (isNotificationsAllowed) {
     final time = KeyValueDatabase.getNotificationTime();
     await Notifications.createDailyWordNotification(time);
   }
