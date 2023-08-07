@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
@@ -22,6 +23,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const ProviderScope(child: KelimeHazinem()));
   await FirebaseDatabase.initDB();
   await Notifications.initService();
