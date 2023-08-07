@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class FAB extends StatelessWidget {
   const FAB({super.key, required this.icon, required this.onTap, this.semanticsLabel});

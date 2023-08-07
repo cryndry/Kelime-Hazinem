@@ -4,7 +4,7 @@ import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 

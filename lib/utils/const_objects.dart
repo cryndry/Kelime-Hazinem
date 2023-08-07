@@ -74,16 +74,24 @@ abstract final class MyRegExpPatterns {
   static String getWithoutHaraka(String word) {
     return allArabicWithoutHaraka.allMatches(word).map((e) => e[0]).toList().join("");
   }
-  
+
   static List<String> getWithoutHarakaButShaddah(String word) {
     final letters = allArabicWithoutHarakaButShaddah.allMatches(word).map((e) => e[0]!).toList();
-    
+
     final int shaddahIndex = letters.indexOf(_shaddah);
-    if (shaddahIndex != -1){
+    if (shaddahIndex != -1) {
       final String letter = letters[shaddahIndex - 1] + letters[shaddahIndex];
       letters.replaceRange(shaddahIndex - 1, shaddahIndex + 1, [letter]);
     }
-    
+
     return letters;
   }
+}
+
+abstract final class MyDurations {
+  static const millisecond1 = Duration(milliseconds: 1);
+  static const millisecond300 = Duration(milliseconds: 300);
+  static const millisecond400 = Duration(milliseconds: 400);
+  static const millisecond500 = Duration(milliseconds: 500);
+  static const millisecond1000 = Duration(milliseconds: 1000);
 }

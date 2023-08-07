@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class FillColoredButton extends StatelessWidget {
   FillColoredButton({super.key, this.title, required this.onPressed, this.icon});

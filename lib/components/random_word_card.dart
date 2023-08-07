@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/word_card.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -48,7 +49,7 @@ class RandomWordCardState extends State<RandomWordCard> {
           child: isAnimatable
               ? AnimatedRotation(
                   turns: turns,
-                  duration: const Duration(milliseconds: 300),
+                  duration: MyDurations.millisecond300,
                   onEnd: getRandomWord,
                   child: ActionButton(
                     icon: MySvgs.refresh,

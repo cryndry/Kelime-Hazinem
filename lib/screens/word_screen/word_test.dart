@@ -9,7 +9,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -54,7 +54,7 @@ class WordTestState extends State<WordTest> {
       if (isAnimatable) {
         pageController.animateToPage(
           currentValue - 1,
-          duration: const Duration(milliseconds: 500),
+          duration: MyDurations.millisecond500,
           curve: Curves.bounceOut,
         );
       } else {
@@ -68,11 +68,11 @@ class WordTestState extends State<WordTest> {
   void getToNextPage() {
     if (pageController.page != (words.length - 1)) {
       Future.delayed(
-        const Duration(milliseconds: 500),
+        MyDurations.millisecond500,
         () {
           final bool isAnimatable = KeyValueDatabase.getIsAnimatable();
           pageController.nextPage(
-            duration: isAnimatable ? const Duration(milliseconds: 300) : const Duration(milliseconds: 1),
+            duration: isAnimatable ? MyDurations.millisecond300 : MyDurations.millisecond1,
             curve: Curves.ease,
           );
         },
@@ -170,7 +170,7 @@ class WordTestState extends State<WordTest> {
   }
 
   Future<void> handleMistakenAnswers() async {
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await Future.delayed(MyDurations.millisecond1000);
     for (int index in mistakenIndexes) {
       words[index].willLearnToggle(setValue: 1);
     }
@@ -500,7 +500,7 @@ class WordTestPageState extends State<WordTestPage> {
                     status = newStatus;
                     widget.handleAnswer(newStatus == OptionStatus.correct);
                     if (newStatus == OptionStatus.wrong) {
-                      Timer(const Duration(milliseconds: 600), () {
+                      Timer(MyDurations.millisecond500, () {
                         setWidgetState(() {
                           status = OptionStatus.normal;
                         });

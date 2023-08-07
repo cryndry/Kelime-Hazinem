@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/screens/main_screen/all_words.dart';
 import 'package:kelime_hazinem/screens/main_screen/homepage.dart';
 import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 
@@ -15,7 +15,7 @@ class MainScreenTabBar extends ConsumerWidget {
     return DefaultTabController(
       length: 3,
       initialIndex: KeyValueDatabase.getFirstTabIndex(),
-      animationDuration: const Duration(milliseconds: 400),
+      animationDuration: MyDurations.millisecond400,
       child: Builder(builder: (context) {
         final controller = DefaultTabController.of(context);
         controller.addListener(() {

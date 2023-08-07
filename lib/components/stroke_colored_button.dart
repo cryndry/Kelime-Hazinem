@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class StrokeColoredButton extends StatelessWidget {
   StrokeColoredButton({super.key, required this.title, required this.onPressed});

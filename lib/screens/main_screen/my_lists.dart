@@ -7,6 +7,7 @@ import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
@@ -61,7 +62,7 @@ class MyListsState extends ConsumerState<MyLists> {
       return false;
     }
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(MyDurations.millisecond1000);
 
     final doesListExist = await SqlDatabase.checkIfListExists(listName);
     if (doesListExist) {

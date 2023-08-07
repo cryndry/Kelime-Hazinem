@@ -7,7 +7,7 @@ import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
@@ -43,7 +43,7 @@ class SecondaryAppBarState extends ConsumerState {
       return false;
     }
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(MyDurations.millisecond500);
 
     final doesListExist = await SqlDatabase.checkIfListExists(newName);
     if (doesListExist) {
@@ -239,13 +239,13 @@ class SecondaryAppBarState extends ConsumerState {
                         Stream<Widget> uploadingStream() async* {
                           yield const Text("Liste verisi alınıyor...", style: MyTextStyles.font_16_20_500);
                           final cacheDbFile = await SqlDatabase.shareLists(selectedLists);
-                          await Future.delayed(const Duration(milliseconds: 500));
+                          await Future.delayed(MyDurations.millisecond300);
 
                           yield const Text("Yükleme başlatılıyor", style: MyTextStyles.font_16_20_500);
                           final sharedFileId = await FirebaseDatabase.addSharedFileData({
                             "creation_time": Timestamp.now(),
                           });
-                          await Future.delayed(const Duration(milliseconds: 500));
+                          await Future.delayed(MyDurations.millisecond300);
 
                           final uploadTask = FirebaseDatabase.uploadFile(cacheDbFile, sharedFileId);
                           final uploadStream = uploadTask.snapshotEvents;
@@ -259,7 +259,7 @@ class SecondaryAppBarState extends ConsumerState {
                               yield progressWidget(progress);
                             } else if (taskSnapshot.state == TaskState.success) {
                               yield progressWidget(progress);
-                              await Future.delayed(const Duration(milliseconds: 500));
+                              await Future.delayed(MyDurations.millisecond500);
                               Future<void>? clipboardActionFuture;
 
                               yield Column(
@@ -325,7 +325,7 @@ class SecondaryAppBarState extends ConsumerState {
                                 final isAnimatable = KeyValueDatabase.getIsAnimatable();
                                 return isAnimatable
                                     ? AnimatedSize(
-                                        duration: const Duration(milliseconds: 300),
+                                        duration: MyDurations.millisecond300,
                                         child: dialogWidget,
                                       )
                                     : dialogWidget;

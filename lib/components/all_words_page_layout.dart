@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/components/word_card.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
@@ -62,7 +63,7 @@ class AllWordsPageLayoutState extends ConsumerState<AllWordsPageLayout> {
         searchTimer = null;
       }
       searchTimer = Timer(
-        const Duration(milliseconds: 500),
+        MyDurations.millisecond500,
         () {
           setState(() {
             List<Word> searchedWords;

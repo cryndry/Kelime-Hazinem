@@ -5,7 +5,7 @@ import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
@@ -62,7 +62,7 @@ class WordAddState extends State<WordAdd> {
   }
 
   Future saveHandler() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(MyDurations.millisecond500);
     bool validationResult = _formKey.currentState!.validate();
     if (!validationResult) return false;
 
@@ -108,7 +108,7 @@ class WordAddState extends State<WordAdd> {
     final saveResult = await saveHandling;
     if (saveResult is Map) {
       Future.delayed(
-        const Duration(milliseconds: 500),
+        MyDurations.millisecond500,
         () {
           Navigator.of(context).pop(saveResult);
         },

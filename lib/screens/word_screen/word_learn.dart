@@ -6,7 +6,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -82,7 +82,7 @@ class _WordLearnState extends State<WordLearn> {
       if (isAnimatable) {
         pageController.animateToPage(
           currentValue - 1,
-          duration: const Duration(milliseconds: 500),
+          duration: MyDurations.millisecond500,
           curve: Curves.bounceOut,
         );
       } else {
@@ -376,13 +376,13 @@ class WordLearnPageState extends State<WordLearnPage> {
                       isAnimatable
                           ? AnimatedRotation(
                               turns: wordFlipTurn,
-                              duration: const Duration(milliseconds: 400),
+                              duration: MyDurations.millisecond400,
                               child: wordWidget,
                             )
                           : wordWidget,
                       isAnimatable
                           ? AnimatedSize(
-                              duration: const Duration(milliseconds: 400),
+                              duration: MyDurations.millisecond400,
                               child: infoWidget,
                             )
                           : infoWidget,

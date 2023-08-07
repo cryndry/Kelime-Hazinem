@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/secondary_app_bar.dart';
 import 'package:kelime_hazinem/main.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
@@ -113,7 +113,7 @@ class MyAppBarState extends ConsumerState<MyAppBar> with RouteAware {
             left: 0,
             right: 0,
             top: isSelectionModeActive ? 0 : -64,
-            duration: const Duration(milliseconds: 300),
+            duration: MyDurations.millisecond300,
             child: secondaryAppBar,
           ),
         if (!isAnimatable && isSelectionModeActive) secondaryAppBar,

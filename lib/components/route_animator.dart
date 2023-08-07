@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 
 PageRouteBuilder<T> routeAnimator<T>({required Widget page, Offset? beginOffset}) {
-  final Duration animationDuration = KeyValueDatabase.getIsAnimatable() ? const Duration(milliseconds: 300) : Duration.zero;
-  
+  final Duration animationDuration = KeyValueDatabase.getIsAnimatable() ? MyDurations.millisecond300 : Duration.zero;
+
   return PageRouteBuilder<T>(
     settings: RouteSettings(name: page.runtimeType.toString()),
     pageBuilder: (context, animation, secondaryAnimation) => page,

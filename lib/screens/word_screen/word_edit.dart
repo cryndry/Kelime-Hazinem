@@ -9,7 +9,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
@@ -85,7 +85,7 @@ class WordEditState extends ConsumerState<WordEdit> {
   }
 
   Future<bool> saveHandler() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(MyDurations.millisecond500);
     bool validationResult = _formKey.currentState!.validate();
     if (!validationResult) return false;
 
@@ -166,7 +166,7 @@ class WordEditState extends ConsumerState<WordEdit> {
         return [...state]..removeAt(index);
       });
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(MyDurations.millisecond500);
       Navigator.of(context).pop({"deleted": isDeleted});
     }
   }

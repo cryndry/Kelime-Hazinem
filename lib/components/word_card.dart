@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/utils/colors_text_styles_patterns.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -40,7 +40,7 @@ class WordCardState extends State<WordCard> {
 
   void deleteWord(BuildContext context) async {
     final slidableController = Slidable.of(context)!;
-    await slidableController.dismiss(ResizeRequest(const Duration(milliseconds: 300), () {}));
+    await slidableController.dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
 
     SqlDatabase.deleteWord(widget.word.id);
     if (widget.wordRemove != null) {
