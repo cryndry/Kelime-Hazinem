@@ -64,7 +64,21 @@ class ShareListsState extends ConsumerState {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
+                      if (!hasInternet) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(milliseconds: 1200),
+                            content: Text(
+                              "Listeleri içe aktarmak internet bağlantısı gerektirir.",
+                              style: MyTextStyles.font_16_20_400,
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
                       popBottomSheet(
                         context: context,
                         title: "Yeni Listeler Ekle",
@@ -227,7 +241,7 @@ class ShareListsState extends ConsumerState {
                 const SizedBox(height: 24),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (lists.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -239,6 +253,20 @@ class ShareListsState extends ConsumerState {
                           ),
                         );
                       } else {
+                        final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
+                        if (!hasInternet) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 1200),
+                              content: Text(
+                                "Liste paylaşımı internet bağlantısı gerektirir.",
+                                style: MyTextStyles.font_16_20_400,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
                         Navigator.of(context).pushNamed("MyLists");
                       }
                     },
