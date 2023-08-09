@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,10 @@ import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/notifications.dart';
 
 void main() async {
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['Manrope'], license);
+  });
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
@@ -42,6 +47,7 @@ void main() async {
 }
 
 final routeObserver = RouteObserver();
+final myNavigatorObserver = MyNavigatorObserver();
 
 class KelimeHazinem extends ConsumerWidget {
   const KelimeHazinem({super.key});
@@ -68,7 +74,7 @@ class KelimeHazinem extends ConsumerWidget {
         colorSchemeSeed: MyColors.darkBlue,
       ),
       navigatorKey: navigatorKey,
-      navigatorObservers: [MyNavigatorObserver(), routeObserver],
+      navigatorObservers: [myNavigatorObserver, routeObserver],
       initialRoute: "/",
       onGenerateRoute: (settings) {
         final String? routeName = settings.name;

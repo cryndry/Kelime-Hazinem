@@ -110,7 +110,7 @@ class Notifications {
       schedule: NotificationCalendar(
         hour: newSchedule.hour,
         minute: newSchedule.minute,
-        repeats: false,
+        repeats: true,
         preciseAlarm: true,
         allowWhileIdle: true,
         timeZone: _timeZone,
