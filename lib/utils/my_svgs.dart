@@ -74,6 +74,12 @@ abstract final class MySvgs {
     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 """;
+  static const info = """
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.9998 22.0001V16.0001M15.9998 10.6667H16.0132M29.3332 16.0001C29.3332 23.3639 23.3636 29.3334 15.9998 29.3334C8.63604 29.3334 2.6665 23.3639 2.6665 16.0001C2.6665 8.63628 8.63604 2.66675 15.9998 2.66675C23.3636 2.66675 29.3332 8.63628 29.3332 16.0001Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+""";
   static const littleDownArrow = """
 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M4 6L8 10L12 6" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
@@ -117,6 +123,17 @@ abstract final class MySvgs {
     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M16 20.0001C18.2091 20.0001 20 18.2092 20 16.0001C20 13.7909 18.2091 12.0001 16 12.0001C13.7909 12.0001 12 13.7909 12 16.0001C12 18.2092 13.7909 20.0001 16 20.0001Z"
     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+""";
+
+  static const threeDots = """
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 26.6666C16.5523 26.6666 17 26.0696 17 25.3333C17 24.5969 16.5523 23.9999 16 23.9999C15.4477 23.9999 15 24.5969 15 25.3333C15 26.0696 15.4477 26.6666 16 26.6666Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M16 17.3333C16.5523 17.3333 17 16.7363 17 15.9999C17 15.2635 16.5523 14.6666 16 14.6666C15.4477 14.6666 15 15.2635 15 15.9999C15 16.7363 15.4477 17.3333 16 17.3333Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M16 7.99992C16.5523 7.99992 17 7.40296 17 6.66659C17 5.93021 16.5523 5.33325 16 5.33325C15.4477 5.33325 15 5.93021 15 6.66659C15 7.40296 15.4477 7.99992 16 7.99992Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
 """;
   static const tip = """

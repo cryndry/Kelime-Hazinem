@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/components/about_dialog.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/screens/main_screen/tab_bar_navigation.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class MainScreen extends StatelessWidget {
@@ -23,15 +25,74 @@ class MainScreen extends StatelessWidget {
                 Navigator.of(context).pushNamed("ShareLists");
               },
             ),
-            ActionButton(
-              key: const ValueKey("settings"),
-              icon: MySvgs.settings,
-              size: 32,
-              semanticsLabel: "Ayarlar",
-              onTap: () {
-                Navigator.of(context).pushNamed("Settings");
-              },
-            ),
+            SizedBox(
+              width: 32,
+              height: 32,
+              child: PopupMenuButton(
+                tooltip: "",
+                padding: EdgeInsets.zero,
+                icon: const ActionButton(icon: MySvgs.threeDots, size: 32),
+                iconSize: 32,
+                onSelected: (value) {
+                  switch (value) {
+                    case "Settings":
+                      Navigator.of(context).pushNamed("Settings");
+                      break;
+                    case "AboutUs":
+                      popAboutDialog(context);
+                      break;
+                    default:
+                      break;
+                  }
+                },
+                itemBuilder: (popupMenuContext) {
+                  return [
+                    PopupMenuItem(
+                      value: "Settings",
+                      child: Row(
+                        children: [
+                          const ActionButton(
+                            key: ValueKey("settings"),
+                            icon: MySvgs.settings,
+                            size: 32,
+                            strokeColor: MyColors.darkBlue,
+                            semanticsLabel: "Ayarlar",
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            "Ayarlar",
+                            style: MyTextStyles.font_16_20_500.apply(
+                              color: MyColors.darkBlue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: "AboutUs",
+                      child: Row(
+                        children: [
+                          const ActionButton(
+                            key: ValueKey("aboutUs"),
+                            icon: MySvgs.info,
+                            size: 32,
+                            strokeColor: MyColors.darkBlue,
+                            semanticsLabel: "Hakkımızda",
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            "Hakkımızda",
+                            style: MyTextStyles.font_16_20_500.apply(
+                              color: MyColors.darkBlue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ];
+                },
+              ),
+            )
           ],
         ),
         body: const MainScreenTabBar(),
