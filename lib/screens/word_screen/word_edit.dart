@@ -26,7 +26,7 @@ class WordEdit extends ConsumerStatefulWidget {
 
 class WordEditState extends ConsumerState<WordEdit> {
   final _formKey = GlobalKey<FormState>();
-  Future<bool>? saveHandling;
+  Future? saveHandling;
   Future<void>? deleteHandling;
 
   String plural = "";
@@ -84,10 +84,10 @@ class WordEditState extends ConsumerState<WordEdit> {
     super.dispose();
   }
 
-  Future<bool> saveHandler() async {
+  Future saveHandler() async {
     await Future.delayed(MyDurations.millisecond500);
     bool validationResult = _formKey.currentState!.validate();
-    if (!validationResult) return false;
+    if (!validationResult) return "TextError";
 
     widget.word.word = wordInputController.text;
     widget.word.meaning = meaningInputController.text;
@@ -105,14 +105,14 @@ class WordEditState extends ConsumerState<WordEdit> {
       widget.word.descriptionSearch = "";
     }
 
-    await SqlDatabase.updateWord(widget.word.id, {
+    final isSuccessful = await SqlDatabase.updateWord(widget.word.id, {
       "word": widget.word.word,
       "word_search": widget.word.wordSearch,
       "meaning": widget.word.meaning,
       "description": widget.word.description,
       "description_search": widget.word.descriptionSearch
     });
-    return true;
+    return isSuccessful;
   }
 
   Future<void> deleteHandler() async {
@@ -304,6 +304,40 @@ class WordEditState extends ConsumerState<WordEdit> {
                             ),
                             onPressed: () {},
                           );
+                        }
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.data is bool) {
+                            if (snapshot.data) {
+                              Timer(MyDurations.millisecond1000, () {
+                                setState(() {
+                                  saveHandling = null;
+                                });
+                              });
+                              return FillColoredButton(
+                                title: "Kaydedildi",
+                                icon: const ActionButton(
+                                  icon: MySvgs.save,
+                                  size: 32,
+                                ),
+                                onPressed: () {},
+                              );
+                            }
+                            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                              popDialog(
+                                context: context,
+                                duration: MyDurations.millisecond1000,
+                                builder: (setDialogState) {
+                                  return const [
+                                    Text(
+                                      "Bir hata oluştu. Lütfen tekrar deneyin.",
+                                      style: MyTextStyles.font_16_24_500,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ];
+                                },
+                              );
+                            });
+                          }
                         }
                         return FillColoredButton(
                           title: "Kaydet",
