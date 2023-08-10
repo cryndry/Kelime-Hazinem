@@ -174,11 +174,26 @@ class MyListsState extends ConsumerState<MyLists> {
                     );
                   }),
             ],
-      children: [
-        ListCardGrid(
-          children: lists.map<ListCard>((e) => ListCard(title: e)).toList(),
-        ),
-      ],
+      children: lists.isNotEmpty
+          ? [
+              ListCardGrid(
+                children: lists.map<ListCard>((e) => ListCard(title: e)).toList(),
+              ),
+            ]
+          : [
+              Image.asset(
+                "assets/sad_folder.png",
+                filterQuality: FilterQuality.high,
+                colorBlendMode: BlendMode.dstOver,
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "Hiç listen yok. Sağ alttan hemen yeni bir tane oluşturabilirsin.",
+                style: MyTextStyles.font_20_24_500,
+                textAlign: TextAlign.center,
+              ),
+            ],
     );
   }
 }

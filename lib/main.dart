@@ -73,6 +73,7 @@ class KelimeHazinem extends ConsumerWidget {
         useMaterial3: true,
         colorSchemeSeed: MyColors.darkBlue,
       ),
+      color: MyColors.darkBlue,
       navigatorKey: navigatorKey,
       navigatorObservers: [myNavigatorObserver, routeObserver],
       initialRoute: "/",
