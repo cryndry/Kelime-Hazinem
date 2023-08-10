@@ -52,9 +52,6 @@ class WordShowState extends State<WordShow> {
     super.initState();
   }
 
-  int intBoolInvert(int value) => (value == 1) ? 0 : 1;
-  bool intAsBool(int value) => (value == 1);
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(

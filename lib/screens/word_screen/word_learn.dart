@@ -63,9 +63,6 @@ class _WordLearnState extends State<WordLearn> {
     ),
   ];
 
-  int intBoolInvert(int value) => (value == 1) ? 0 : 1;
-  bool intAsBool(int value) => (value == 1);
-
   void handleSetState(Function() callback) {
     setState(() {
       callback();

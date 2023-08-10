@@ -29,9 +29,6 @@ class WordCardState extends State<WordCard> {
   final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.apply(color: Colors.white60);
   final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
 
-  int intBoolInvert(int value) => (value == 1) ? 0 : 1;
-  bool intAsBool(int value) => (value == 1);
-
   void handleSetState(Function() callback) {
     setState(() {
       callback();

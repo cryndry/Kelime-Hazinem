@@ -67,8 +67,8 @@ class Word {
         "memorized": memorized,
       };
 
-  int intBoolInvert(int value) => (value == 1) ? 0 : 1;
-  bool intAsBool(int value) => (value == 1);
+  int intBoolInvert(int value) => (value != 0) ? 0 : 1;
+  bool intAsBool(int value) => (value != 0);
 
   FutureOr<void> willLearnToggle({int? setValue, Database? db}) async {
     if (setValue != null) {

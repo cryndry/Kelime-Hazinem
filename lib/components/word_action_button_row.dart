@@ -20,8 +20,7 @@ class WordActionButtonRow extends StatelessWidget {
   final Color iconStrokeColor;
   final void Function(void Function()) handleSetState;
 
-  int intBoolInvert(int value) => (value == 1) ? 0 : 1;
-  bool intAsBool(int value) => (value == 1);
+  bool intAsBool(int value) => (value != 0);
 
   @override
   Widget build(BuildContext context) {
