@@ -405,7 +405,7 @@ class WordTestState extends State<WordTest> {
               bottom: 0,
               child: Container(
                 height: 32,
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 alignment: Alignment.topCenter,
                 child: IntrinsicWidth(
                   child: TextField(

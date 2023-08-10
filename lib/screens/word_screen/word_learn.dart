@@ -247,7 +247,7 @@ class _WordLearnState extends State<WordLearn> {
               bottom: 0,
               child: Container(
                 height: 32,
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 alignment: Alignment.topCenter,
                 child: IntrinsicWidth(
                   child: TextField(
