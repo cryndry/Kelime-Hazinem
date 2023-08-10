@@ -20,6 +20,12 @@ class WordShow extends StatefulWidget {
 class WordShowState extends State<WordShow> {
   List<ActionButton> appBarButtons = [];
 
+  void handleSetState(Function() callback) {
+    setState(() {
+      callback();
+    });
+  }
+
   @override
   void initState() {
     appBarButtons = [
@@ -71,7 +77,7 @@ class WordShowState extends State<WordShow> {
               children: [
                 WordShowPage(
                   currentWord: widget.word,
-                  handleSetState: setState,
+                  handleSetState: handleSetState,
                 ),
               ],
             ),
@@ -82,7 +88,7 @@ class WordShowState extends State<WordShow> {
   }
 }
 
-class WordShowPage extends StatefulWidget {
+class WordShowPage extends StatelessWidget {
   const WordShowPage({
     super.key,
     required this.currentWord,
@@ -93,31 +99,22 @@ class WordShowPage extends StatefulWidget {
   final void Function(void Function()) handleSetState;
 
   @override
-  WordShowPageState createState() => WordShowPageState();
-}
-
-class WordShowPageState extends State<WordShowPage> {
-  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
               child: Column(
                 children: [
                   const Flexible(child: FractionallySizedBox(heightFactor: 0.4)),
-                  Text(
-                    widget.currentWord.word,
-                    style: MyTextStyles.font_28_36_600,
-                  ),
-                  if (widget.currentWord.description.isNotEmpty)
+                  Text(currentWord.word, style: MyTextStyles.font_28_36_600),
+                  if (currentWord.description.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        widget.currentWord.description,
+                        currentWord.description,
                         style: MyTextStyles.font_16_20_500.merge(TextStyle(
                           color: Colors.black.withOpacity(0.6),
                         )),
@@ -126,7 +123,7 @@ class WordShowPageState extends State<WordShowPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 64),
                     child: Text(
-                      widget.currentWord.meaning,
+                      currentWord.meaning,
                       textAlign: TextAlign.center,
                       style: MyTextStyles.font_20_24_500.merge(TextStyle(
                         color: Colors.black.withOpacity(0.8),
@@ -143,10 +140,10 @@ class WordShowPageState extends State<WordShowPage> {
           right: 16,
           bottom: 36,
           child: WordActionButtonRow(
-            word: widget.currentWord,
+            word: currentWord,
             eachIconSize: 36,
             iconStrokeColor: Colors.black,
-            handleSetState: widget.handleSetState,
+            handleSetState: handleSetState,
           ),
         ),
       ],
