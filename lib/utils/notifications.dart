@@ -92,7 +92,7 @@ class Notifications {
       content: NotificationContent(
         id: _dailyWordChannelId,
         wakeUpScreen: true,
-        showWhen: false,
+        showWhen: true,
         channelKey: _dailyWordChannelKey,
         title: _dailyWordChannelName,
         body: """
@@ -110,7 +110,6 @@ class Notifications {
       schedule: NotificationCalendar(
         hour: newSchedule.hour,
         minute: newSchedule.minute,
-        repeats: true,
         preciseAlarm: true,
         allowWhileIdle: true,
         timeZone: _timeZone,
