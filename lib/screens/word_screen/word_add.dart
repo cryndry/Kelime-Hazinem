@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
@@ -64,7 +65,7 @@ class WordAddState extends State<WordAdd> {
   Future saveHandler() async {
     await Future.delayed(MyDurations.millisecond500);
     bool validationResult = _formKey.currentState!.validate();
-    if (!validationResult) return false;
+    if (!validationResult) return "TextError";
 
     String description;
     String descriptionSearch;
@@ -98,7 +99,7 @@ class WordAddState extends State<WordAdd> {
     if (wordId != 0) {
       return {...wordData, "id": wordId};
     }
-    return false;
+    return "DbError";
   }
 
   void saveButtonOnTap() async {
@@ -113,8 +114,6 @@ class WordAddState extends State<WordAdd> {
           Navigator.of(context).pop(saveResult);
         },
       );
-    } else {
-      saveButtonOnTap();
     }
   }
 
@@ -208,6 +207,30 @@ class WordAddState extends State<WordAdd> {
                             ),
                             onPressed: () {},
                           );
+                        }
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.data is Map) {
+                            return FillColoredButton(
+                              title: "Kaydedildi",
+                              onPressed: () {},
+                            );
+                          } else if (snapshot.data == "DbError") {
+                            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                              popDialog(
+                                context: context,
+                                duration: MyDurations.millisecond1000,
+                                builder: (setDialogState) {
+                                  return const [
+                                    Text(
+                                      "Bir hata oluştu. Lütfen tekrar deneyin.",
+                                      style: MyTextStyles.font_16_24_500,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ];
+                                },
+                              );
+                            });
+                          }
                         }
 
                         return FillColoredButton(
