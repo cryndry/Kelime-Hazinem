@@ -106,6 +106,7 @@ class ListCardState extends ConsumerState<ListCard> {
             ],
           );
         } else {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               duration: Duration(milliseconds: 1200),

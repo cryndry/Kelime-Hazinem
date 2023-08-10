@@ -67,6 +67,7 @@ class ShareListsState extends ConsumerState {
                     onTap: () async {
                       final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
                       if (!hasInternet) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             duration: Duration(milliseconds: 1200),
@@ -243,6 +244,7 @@ class ShareListsState extends ConsumerState {
                   child: GestureDetector(
                     onTap: () async {
                       if (lists.isEmpty) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             duration: Duration(milliseconds: 1200),
@@ -255,6 +257,7 @@ class ShareListsState extends ConsumerState {
                       } else {
                         final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
                         if (!hasInternet) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               duration: Duration(milliseconds: 1200),
