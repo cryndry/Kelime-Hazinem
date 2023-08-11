@@ -39,7 +39,7 @@ class MyTextInput extends StatefulWidget {
 }
 
 class MyTextInputState extends State<MyTextInput> {
-  late final FocusNode textInputFocus = (widget.focusNode == null) ? FocusNode() : widget.focusNode!;
+  late final FocusNode textInputFocus = widget.focusNode ?? FocusNode();
   late TextDirection textDirection = widget.formatArabic ? TextDirection.rtl : TextDirection.ltr;
   late final clearIcon = Align(
     widthFactor: 1,
@@ -97,7 +97,10 @@ class MyTextInputState extends State<MyTextInput> {
               }
             }
           : null,
-      onChanged: widget.onChange,
+      onChanged: (value) {
+        widget.onChange?.call(value);
+        setState(() {});
+      },
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintTextDirection: textDirection,
