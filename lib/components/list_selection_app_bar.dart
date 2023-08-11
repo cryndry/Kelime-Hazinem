@@ -226,7 +226,21 @@ class ListSelectionAppBarState extends ConsumerState {
               icon: MySvgs.share,
               size: 32,
               semanticsLabel: "${selectedLists.length == 1 ? "Listeyi" : "Listeleri"} Paylaş",
-              onTap: () {
+              onTap: () async {
+                final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
+                if (!hasInternet) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      duration: MyDurations.millisecond1000,
+                      content: Text(
+                        "Liste paylaşımı internet bağlantısı gerektirir.",
+                        style: MyTextStyles.font_16_20_400,
+                      ),
+                    ),
+                  );
+                  return;
+                }
                 popDialog(
                     context: context,
                     routeName: "ShareListsDialog",
