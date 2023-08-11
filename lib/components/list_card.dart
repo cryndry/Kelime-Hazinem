@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/snack_bar.dart';
 import 'package:kelime_hazinem/components/stroke_colored_button.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -106,15 +107,9 @@ class ListCardState extends ConsumerState<ListCard> {
             ],
           );
         } else {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              duration: Duration(milliseconds: 1200),
-              content: Text(
-                "Listede hiç kelime yok!",
-                style: MyTextStyles.font_16_20_400,
-              ),
-            ),
+          showSnackBar(
+            context: context,
+            message: "Listede hiç kelime yok!",
           );
         }
       },

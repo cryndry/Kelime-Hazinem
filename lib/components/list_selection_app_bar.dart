@@ -6,6 +6,7 @@ import 'package:kelime_hazinem/components/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/snack_bar.dart';
 import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -229,15 +230,9 @@ class ListSelectionAppBarState extends ConsumerState {
               onTap: () async {
                 final hasInternet = await ref.read(internetConnectivityProvider).hasInternetConnection;
                 if (!hasInternet) {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: MyDurations.millisecond1000,
-                      content: Text(
-                        "Liste paylaşımı internet bağlantısı gerektirir.",
-                        style: MyTextStyles.font_16_20_400,
-                      ),
-                    ),
+                  showSnackBar(
+                    context: context,
+                    message: "Liste paylaşımı internet bağlantısı gerektirir.",
                   );
                   return;
                 }
