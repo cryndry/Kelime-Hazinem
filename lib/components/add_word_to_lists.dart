@@ -12,11 +12,11 @@ Future<void> addWordToLists({required BuildContext context, required int wordId}
     listsBottomSheet.addAll(deepMapCopy(value));
   });
 
-  popBottomSheet<Map<String, dynamic>>(
+  await popBottomSheet<Map<String, dynamic>>(
     context: context,
     title: "Listelere Ekle",
     info: "Liste değişiklikleri kaydettikten sonra geri alınamaz.",
-    routeName: "AddToListsBottomSheet",
+    routeName: "AddWordToListsBottomSheet",
     bottomWidgets: (setSheetState) {
       return [
         ConstrainedBox(

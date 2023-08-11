@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:kelime_hazinem/components/word_action_button_row.dart';
 
-class WordCard extends StatefulWidget {
+class WordCard extends ConsumerStatefulWidget {
   const WordCard({
     super.key,
     required this.word,
@@ -21,10 +23,10 @@ class WordCard extends StatefulWidget {
   final void Function()? wordChange;
 
   @override
-  State<WordCard> createState() => WordCardState();
+  WordCardState createState() => WordCardState();
 }
 
-class WordCardState extends State<WordCard> {
+class WordCardState extends ConsumerState<WordCard> {
   final TextStyle wordTextStyle = MyTextStyles.font_20_24_600.apply(color: Colors.white);
   final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.apply(color: Colors.white60);
   final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
@@ -49,158 +51,180 @@ class WordCardState extends State<WordCard> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedWords = ref.watch(selectedWordsProvider);
+
     return LayoutBuilder(builder: (context, constraints) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Slidable(
-          key: widget.key,
-          startActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            extentRatio: 48 / constraints.maxWidth,
-            dismissible: Builder(builder: (context) {
-              return DismissiblePane(
-                dismissThreshold: 0.5,
-                onDismissed: () {
-                  deleteWord(context);
+      return DecoratedBox(
+        position: selectedWords.contains(widget.word.id)
+            ? DecorationPosition.foreground
+            : DecorationPosition.background,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: MyColors.darkGreen, width: 3),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Slidable(
+            key: widget.key,
+            startActionPane: ActionPane(
+              motion: const DrawerMotion(),
+              extentRatio: 48 / constraints.maxWidth,
+              dismissible: Builder(builder: (context) {
+                return DismissiblePane(
+                  dismissThreshold: 0.5,
+                  onDismissed: () {
+                    deleteWord(context);
+                  },
+                );
+              }),
+              children: [
+                Flexible(
+                  child: Builder(builder: (context) {
+                    return GestureDetector(
+                      onTap: () {
+                        deleteWord(context);
+                      },
+                      child: Container(
+                        width: 48,
+                        color: MyColors.red,
+                        alignment: Alignment.center,
+                        child: const ActionButton(
+                          icon: MySvgs.delete,
+                          size: 32,
+                          semanticsLabel: "Sil",
+                        ),
+                      ),
+                    );
+                  }),
+                )
+              ],
+            ),
+            endActionPane: ActionPane(
+              openThreshold: 0.0001,
+              closeThreshold: 0.0001,
+              motion: const DrawerMotion(),
+              extentRatio: 160 / constraints.maxWidth,
+              children: [
+                Flexible(
+                  child: Builder(builder: (context) {
+                    return GestureDetector(
+                      onTap: () async {
+                        final result = await Navigator.of(context).pushNamed(
+                          "WordEdit",
+                          arguments: {"word": widget.word},
+                        );
+
+                        if (result != null && (result as Map)["deleted"]) {
+                          if (widget.wordRemove != null) {
+                            widget.wordRemove!(widget.word.id);
+                          } else if (widget.wordChange != null) {
+                            widget.wordChange!();
+                          }
+                        } else {
+                          final slidableController = Slidable.of(context)!;
+                          setState(() {});
+                          slidableController.close();
+                        }
+                      },
+                      child: Container(
+                        width: 80,
+                        color: MyColors.darkGreen,
+                        alignment: Alignment.center,
+                        child: const ActionButton(
+                          icon: MySvgs.edit,
+                          size: 32,
+                          semanticsLabel: "Düzenle",
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                Flexible(
+                  child: Builder(builder: (boxContext) {
+                    return GestureDetector(
+                      onTap: () {
+                        addWordToLists(context: context, wordId: widget.word.id).then((value) {
+                          final slidableController = Slidable.of(boxContext)!;
+                          slidableController.close();
+                        });
+                      },
+                      child: Container(
+                        width: 80,
+                        color: MyColors.darkBlue,
+                        alignment: Alignment.center,
+                        child: const ActionButton(
+                          icon: MySvgs.add2List,
+                          size: 32,
+                          semanticsLabel: "Listelere Ekle",
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+            child: Builder(builder: (context) {
+              return GestureDetector(
+                onLongPress: () {
+                  activateWordSelectionMode(ref);
+                  updateSelectedWords(ref, widget.word.id);
                 },
+                onTap: () async {
+                  bool isWordSelectionModeActive = getIsWordSelectionModeActive(ref);
+                  if (isWordSelectionModeActive) {
+                    updateSelectedWords(ref, widget.word.id);
+                    return;
+                  }
+
+                  final slidableController = Slidable.of(context)!;
+                  if (slidableController.ratio != 0) {
+                    slidableController.close();
+                    return;
+                  }
+
+                  final result = await Navigator.of(context).pushNamed(
+                    "WordShow",
+                    arguments: {"word": widget.word},
+                  );
+                  if (result != null && (result as Map)["deleted"] && widget.wordRemove != null) {
+                    widget.wordRemove!(widget.word.id);
+                  } else {
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  color: MyColors.lightBlue,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(widget.word.word, style: wordTextStyle),
+                            if (widget.word.description.isNotEmpty) const SizedBox(height: 2),
+                            if (widget.word.description.isNotEmpty) Text(widget.word.description, style: infoTextStyle),
+                            const SizedBox(height: 8),
+                            Text(widget.word.meaning, style: meaningTextStyle),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      WordActionButtonRow(
+                        word: widget.word,
+                        eachIconSize: 32,
+                        iconStrokeColor: Colors.white,
+                        handleSetState: handleSetState,
+                      ),
+                    ],
+                  ),
+                ),
               );
             }),
-            children: [
-              Flexible(
-                child: Builder(builder: (context) {
-                  return GestureDetector(
-                    onTap: () {
-                      deleteWord(context);
-                    },
-                    child: Container(
-                      width: 48,
-                      color: MyColors.red,
-                      alignment: Alignment.center,
-                      child: const ActionButton(
-                        icon: MySvgs.delete,
-                        size: 32,
-                        semanticsLabel: "Sil",
-                      ),
-                    ),
-                  );
-                }),
-              )
-            ],
           ),
-          endActionPane: ActionPane(
-            openThreshold: 0.0001,
-            closeThreshold: 0.0001,
-            motion: const DrawerMotion(),
-            extentRatio: 160 / constraints.maxWidth,
-            children: [
-              Flexible(
-                child: Builder(builder: (context) {
-                  return GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.of(context).pushNamed(
-                        "WordEdit",
-                        arguments: {"word": widget.word},
-                      );
-
-                      if (result != null && (result as Map)["deleted"]) {
-                        if (widget.wordRemove != null) {
-                          widget.wordRemove!(widget.word.id);
-                        } else if (widget.wordChange != null) {
-                          widget.wordChange!();
-                        }
-                      } else {
-                        final slidableController = Slidable.of(context)!;
-                        setState(() {});
-                        slidableController.close();
-                      }
-                    },
-                    child: Container(
-                      width: 80,
-                      color: MyColors.darkGreen,
-                      alignment: Alignment.center,
-                      child: const ActionButton(
-                        icon: MySvgs.edit,
-                        size: 32,
-                        semanticsLabel: "Düzenle",
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              Flexible(
-                child: Builder(builder: (boxContext) {
-                  return GestureDetector(
-                    onTap: () {
-                      addWordToLists(context: context, wordId: widget.word.id).then((value) {
-                        final slidableController = Slidable.of(boxContext)!;
-                        slidableController.close();
-                      });
-                    },
-                    child: Container(
-                      width: 80,
-                      color: MyColors.darkBlue,
-                      alignment: Alignment.center,
-                      child: const ActionButton(
-                        icon: MySvgs.add2List,
-                        size: 32,
-                        semanticsLabel: "Listelere Ekle",
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ],
-          ),
-          child: Builder(builder: (context) {
-            return GestureDetector(
-              onTap: () async {
-                final slidableController = Slidable.of(context)!;
-                if (slidableController.ratio != 0) {
-                  slidableController.close();
-                  return;
-                }
-                final result = await Navigator.of(context).pushNamed(
-                  "WordShow",
-                  arguments: {"word": widget.word},
-                );
-                if (result != null && (result as Map)["deleted"] && widget.wordRemove != null) {
-                  widget.wordRemove!(widget.word.id);
-                } else {
-                  setState(() {});
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                color: MyColors.lightBlue,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(widget.word.word, style: wordTextStyle),
-                          if (widget.word.description.isNotEmpty) const SizedBox(height: 2),
-                          if (widget.word.description.isNotEmpty) Text(widget.word.description, style: infoTextStyle),
-                          const SizedBox(height: 8),
-                          Text(widget.word.meaning, style: meaningTextStyle),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    WordActionButtonRow(
-                      word: widget.word,
-                      eachIconSize: 32,
-                      iconStrokeColor: Colors.white,
-                      handleSetState: handleSetState,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
         ),
       );
     });

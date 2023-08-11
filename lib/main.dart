@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/route_animator.dart';
+import 'package:kelime_hazinem/screens/add_words_to_new_list.dart';
 import 'package:kelime_hazinem/screens/main_screen/main_screen.dart';
 import 'package:kelime_hazinem/screens/settings.dart';
 import 'package:kelime_hazinem/screens/share_lists.dart';
@@ -86,6 +87,8 @@ class KelimeHazinem extends ConsumerWidget {
             return routeAnimator(page: const MainScreen());
           case "MyLists":
             return routeAnimator(page: const ShareMyLists());
+          case "AddWordsToNewList":
+            return routeAnimator(page: const AddWordsToNewList());
           case "WordLearn":
             return routeAnimator(
               beginOffset: arguments!["beginOffset"],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/bottom_sheet.dart';
+import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fab.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
@@ -31,14 +32,14 @@ class MyListsState extends ConsumerState<MyLists> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (isUsedInListSharePage) {
-        activateSelectionMode(ref);
+        activateListSelectionMode(ref);
       }
     });
 
     ref.listenManual(myListsProvider, (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (next.isEmpty && isUsedInListSharePage) {
-          deactivateSelectionMode(ref);
+          deactivateListSelectionMode(ref);
           Navigator.of(context).pop();
         }
       });
@@ -83,98 +84,139 @@ class MyListsState extends ConsumerState<MyLists> {
   @override
   Widget build(BuildContext context) {
     final lists = ref.watch(myListsProvider);
-    final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
+    final isListSelectionModeActive = ref.watch(isListSelectionModeActiveProvider);
 
     return PageLayout(
-      FABs: (isSelectionModeActive || isUsedInListSharePage)
+      FABs: (isListSelectionModeActive || isUsedInListSharePage)
           ? null
           : [
               FAB(
-                  icon: MySvgs.cloud,
-                  semanticsLabel: "Liste Paylaş",
-                  onTap: () {
-                    Navigator.of(context).pushNamed("ShareLists");
-                  }),
+                icon: MySvgs.cloud,
+                semanticsLabel: "Liste Paylaş",
+                onTap: () {
+                  Navigator.of(context).pushNamed("ShareLists");
+                },
+              ),
               const SizedBox(height: 12),
               FAB(
-                  icon: MySvgs.plus,
-                  semanticsLabel: "Yeni Liste Oluştur",
-                  onTap: () {
-                    popBottomSheet(
-                      context: context,
-                      title: "Yeni Listeni Oluştur",
-                      routeName: "CreateListBottomSheet",
-                      mayKeyboardAppear: true,
-                      onSheetDismissed: () {
-                        setState(() {
-                          errorMessage = null;
-                          listAddingTextInputController.clear();
-                        });
-                      },
-                      bottomWidgets: (setSheetState) => [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              MyTextInput(
-                                label: "Liste",
-                                hintText: "Yeni Listem",
-                                autoFocus: true,
-                                keyboardAction: TextInputAction.done,
-                                errormessage: errorMessage,
-                                loseFocusOnTapOutside: false,
-                                textInputController: listAddingTextInputController,
-                              ),
-                              const SizedBox(height: 16),
-                              FutureBuilder(
-                                future: creatingList,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting ||
-                                      snapshot.connectionState == ConnectionState.active) {
-                                    return FillColoredButton(
-                                      title: "Oluşturuluyor",
-                                      icon: const SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 3,
-                                          semanticsLabel: "Oluşturuluyor...",
-                                        ),
-                                      ),
-                                      onPressed: () {},
-                                    );
-                                  }
+                icon: MySvgs.plus,
+                semanticsLabel: "Yeni Liste Oluştur",
+                onTap: () async {
+                  final newListName = await popBottomSheet<String>(
+                    context: context,
+                    title: "Yeni Listeni Oluştur",
+                    routeName: "CreateListBottomSheet",
+                    mayKeyboardAppear: true,
+                    onSheetDismissed: () {
+                      setState(() {
+                        errorMessage = null;
+                        listAddingTextInputController.clear();
+                      });
+                    },
+                    bottomWidgets: (setSheetState) => [
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MyTextInput(
+                              label: "Liste",
+                              hintText: "Yeni Listem",
+                              autoFocus: true,
+                              keyboardAction: TextInputAction.done,
+                              errormessage: errorMessage,
+                              loseFocusOnTapOutside: false,
+                              textInputController: listAddingTextInputController,
+                            ),
+                            const SizedBox(height: 16),
+                            FutureBuilder(
+                              future: creatingList,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting ||
+                                    snapshot.connectionState == ConnectionState.active) {
                                   return FillColoredButton(
-                                      title: "Oluştur",
-                                      onPressed: () {
-                                        final String listName = listAddingTextInputController.text;
-                                        setState(() {
-                                          setSheetState(() {
-                                            errorMessage = null;
-                                          });
-                                          creatingList = createList(listName);
-                                          setSheetState(() {});
-                                        });
-
-                                        creatingList!.then((value) {
-                                          setSheetState(() {});
-                                          if (!value) return value;
-
-                                          ref.read(myListsProvider.notifier).update((state) => [...state, listName]);
-                                          Navigator.of(context).pop();
-                                          return value;
-                                        });
+                                    title: "Oluşturuluyor",
+                                    icon: const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 3,
+                                        semanticsLabel: "Oluşturuluyor...",
+                                      ),
+                                    ),
+                                    onPressed: () {},
+                                  );
+                                }
+                                return FillColoredButton(
+                                  title: "Oluştur",
+                                  onPressed: () {
+                                    final String listName = listAddingTextInputController.text;
+                                    setState(() {
+                                      setSheetState(() {
+                                        errorMessage = null;
                                       });
-                                },
-                              ),
-                            ],
-                          ),
+                                      creatingList = createList(listName);
+                                      setSheetState(() {});
+                                    });
+
+                                    creatingList!.then((value) {
+                                      setSheetState(() {});
+                                      if (!value) return value;
+
+                                      ref.read(myListsProvider.notifier).update((state) => [...state, listName]);
+                                      Navigator.of(context).pop(listName);
+                                      return value;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-                  }),
+                      ),
+                    ],
+                  );
+                  final willAddWords = await popDialog<bool>(
+                    context: context,
+                    routeName: "AddWordsToNewListRequestDialog",
+                    builder: (setDialogState) {
+                      return [
+                        const Text(
+                          "İsterseniz yeni listenize tüm kelimeler arasından seçim yaparak yeni kelimeler ekleyebilirsiniz.",
+                          style: MyTextStyles.font_16_24_500,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              child: const Text("Geri Dön"),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            const SizedBox(width: 12),
+                            TextButton(
+                              child: const Text("Onayla"),
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                            ),
+                          ],
+                        ),
+                      ];
+                    },
+                  );
+
+                  if (willAddWords != true) return;
+                  ref.read(isWordSelectionModeActiveProvider.notifier).update((state) => true);
+                  ref.read(newCreatedListNameProvider.notifier).update((state) => newListName ?? "");
+                  await Navigator.of(context).pushNamed("AddWordsToNewList");
+                  ref.read(newCreatedListNameProvider.notifier).update((state) => "");
+                },
+              ),
             ],
       children: lists.isNotEmpty
           ? [

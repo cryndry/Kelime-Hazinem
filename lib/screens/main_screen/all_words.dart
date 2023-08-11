@@ -8,7 +8,9 @@ import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class AllWords extends ConsumerStatefulWidget {
-  const AllWords({super.key});
+  const AllWords({super.key, this.hideFAB = false});
+
+  final bool hideFAB;
 
   @override
   AllWordsState createState() => AllWordsState();
@@ -39,18 +41,20 @@ class AllWordsState extends ConsumerState<AllWords> {
     return AllWordsPageLayout(
       words: words,
       type: "AllWords",
-      FABs: [
-        FAB(
-          icon: MySvgs.plus,
-          semanticsLabel: "Yeni Kelime Ekle",
-          onTap: () async {
-            final result = await Navigator.of(context).pushNamed("WordAdd");
-            if (result is Map<String, dynamic>) {
-              ref.read(allWordsProvider.notifier).update((state) => [...state, Word.fromJson(result)]);
-            }
-          },
-        ),
-      ],
+      FABs: widget.hideFAB
+          ? null
+          : [
+              FAB(
+                icon: MySvgs.plus,
+                semanticsLabel: "Yeni Kelime Ekle",
+                onTap: () async {
+                  final result = await Navigator.of(context).pushNamed("WordAdd");
+                  if (result is Map<String, dynamic>) {
+                    ref.read(allWordsProvider.notifier).update((state) => [...state, Word.fromJson(result)]);
+                  }
+                },
+              ),
+            ],
     );
   }
 }

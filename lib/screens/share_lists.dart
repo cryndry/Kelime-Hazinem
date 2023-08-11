@@ -247,7 +247,7 @@ class ShareListsState extends ConsumerState {
                         ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            duration: Duration(milliseconds: 1200),
+                            duration: MyDurations.millisecond1000,
                             content: Text(
                               "Hiç listen yok. Kelimelerini paylaşmak istiyorsan yeni bir liste oluşturabilirsin.",
                               style: MyTextStyles.font_16_20_400,
@@ -260,7 +260,7 @@ class ShareListsState extends ConsumerState {
                           ScaffoldMessenger.of(context).clearSnackBars();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              duration: Duration(milliseconds: 1200),
+                              duration: MyDurations.millisecond1000,
                               content: Text(
                                 "Liste paylaşımı internet bağlantısı gerektirir.",
                                 style: MyTextStyles.font_16_20_400,

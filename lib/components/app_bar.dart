@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/list_selection_app_bar.dart';
 import 'package:kelime_hazinem/components/secondary_app_bar.dart';
+import 'package:kelime_hazinem/components/word_selection_app_bar.dart';
 import 'package:kelime_hazinem/main.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
-import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
@@ -24,7 +25,7 @@ class MyAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(appBarHeight);
-  
+
   @override
   MyAppBarState createState() => MyAppBarState();
 }
@@ -54,17 +55,9 @@ class MyAppBarState extends ConsumerState<MyAppBar> with RouteAware {
   @override
   Widget build(BuildContext context) {
     final canPop = MyNavigatorObserver.stack.length > 1;
-    final isAnimatable = KeyValueDatabase.getIsAnimatable();
-    final isSelectionModeActive = ref.watch(isSelectionModeActiveProvider);
-    final activeTabIndex = ref.watch(activeTabIndexProvider);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final bool isUsedInListSharePage = MyNavigatorObserver.stack.first == "ShareMyLists";
-      if (!(activeTabIndex == 1 || isUsedInListSharePage)) {
-        deactivateSelectionMode(ref);
-      }
-    });
+    final isListSelectionModeActive = ref.watch(isListSelectionModeActiveProvider);
+    final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
 
-    const secondaryAppBar = SecondaryAppBar();
     return Stack(
       children: [
         Container(
@@ -109,15 +102,13 @@ class MyAppBarState extends ConsumerState<MyAppBar> with RouteAware {
             ],
           ),
         ),
-        if (isAnimatable)
-          AnimatedPositioned(
-            left: 0,
-            right: 0,
-            top: isSelectionModeActive ? 0 : -64,
-            duration: MyDurations.millisecond300,
-            child: secondaryAppBar,
-          ),
-        if (!isAnimatable && isSelectionModeActive) secondaryAppBar,
+        SecondaryAppBar(
+          child: isListSelectionModeActive
+              ? const ListSelectionAppBar()
+              : isWordSelectionModeActive
+                  ? const WordSelectionAppBar()
+                  : const SizedBox(),
+        ),
       ],
     );
   }

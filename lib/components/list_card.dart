@@ -40,11 +40,11 @@ class ListCardState extends ConsumerState<ListCard> {
       onLongPress: () {
         if (widget.isDefaultList) return;
 
-        activateSelectionMode(ref);
+        activateListSelectionMode(ref);
         updateSelectedLists(ref, widget.title);
       },
       onTap: () async {
-        bool isSelectionModeActive = !widget.isDefaultList && getIsSelectionModeActive(ref);
+        bool isSelectionModeActive = !widget.isDefaultList && getIsListSelectionModeActive(ref);
         if (isSelectionModeActive) {
           updateSelectedLists(ref, widget.title);
           return;
