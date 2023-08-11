@@ -91,12 +91,14 @@ class MyListsState extends ConsumerState<MyLists> {
           : [
               FAB(
                   icon: MySvgs.cloud,
+                  semanticsLabel: "Liste Paylaş",
                   onTap: () {
                     Navigator.of(context).pushNamed("ShareLists");
                   }),
               const SizedBox(height: 12),
               FAB(
                   icon: MySvgs.plus,
+                  semanticsLabel: "Yeni Liste Oluştur",
                   onTap: () {
                     popBottomSheet(
                       context: context,

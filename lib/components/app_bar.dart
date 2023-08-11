@@ -91,6 +91,7 @@ class MyAppBarState extends ConsumerState<MyAppBar> with RouteAware {
                 ? ActionButton(
                     icon: MySvgs.backArrow,
                     size: 32,
+                    semanticsLabel: "Geri Dön",
                     onTap: Navigator.of(context).pop,
                   )
                 : null,

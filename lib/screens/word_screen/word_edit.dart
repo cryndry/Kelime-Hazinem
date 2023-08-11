@@ -272,6 +272,7 @@ class WordEditState extends ConsumerState<WordEdit> {
                         icon: const ActionButton(
                           icon: MySvgs.delete,
                           size: 32,
+                          semanticsLabel: "Sil",
                         ),
                         onPressed: () {
                           setState(() {

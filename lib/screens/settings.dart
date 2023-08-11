@@ -33,6 +33,7 @@ class SettingsState extends State<Settings> {
                   1: "Listelerim",
                   2: "Tüm Kelimeler",
                 },
+                tooltip: "Açılış Ekranını Değiştir",
                 initialValue: KeyValueDatabase.getFirstTabIndex(),
                 onChange: (newValue) {
                   KeyValueDatabase.setFirstTabIndex(newValue);
@@ -271,11 +272,13 @@ class SelectableSetting<T> extends StatefulWidget {
     required this.values,
     required this.initialValue,
     required this.onChange,
+    this.tooltip = "",
   });
 
   final Map<T, String> values;
   final T initialValue;
   final void Function(T) onChange;
+  final String tooltip;
 
   @override
   State<SelectableSetting> createState() => SelectableSettingState<T>();
@@ -292,7 +295,7 @@ class SelectableSettingState<T> extends State<SelectableSetting<T>> {
       initialValue: state,
       position: PopupMenuPosition.over,
       surfaceTintColor: Colors.white,
-      tooltip: "Açılış Ekranını Değiştir",
+      tooltip: widget.tooltip,
       itemBuilder: (context) {
         return widget.values
             .map((key, value) => MapEntry(

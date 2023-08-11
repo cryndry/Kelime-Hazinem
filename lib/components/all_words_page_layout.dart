@@ -142,6 +142,7 @@ class AllWordsPageLayoutState extends ConsumerState<AllWordsPageLayout> {
                         "Kelimede": "Kelimede",
                         "Anlamda": "Anlamda",
                       },
+                      tooltip: "$searchMode Ara",
                       initialValue: "Kelimede",
                       onChange: (value) {
                         setState(() {

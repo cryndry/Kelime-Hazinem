@@ -331,6 +331,7 @@ class WordTestState extends State<WordTest> {
                                 ActionButton(
                                   icon: MySvgs.save,
                                   size: 32,
+                                  semanticsLabel: "Seti Tamamla",
                                   onTap: endingHandler,
                                 ),
                               );

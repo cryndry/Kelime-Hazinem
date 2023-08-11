@@ -48,6 +48,7 @@ class MyTextInputState extends State<MyTextInput> {
       icon: MySvgs.clearText,
       strokeColor: Colors.black,
       size: 40,
+      semanticsLabel: "Temizle",
       onTap: () {
         setState(widget.textInputController.clear);
       },

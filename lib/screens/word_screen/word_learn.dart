@@ -35,7 +35,7 @@ class _WordLearnState extends State<WordLearn> {
     ActionButton(
       icon: MySvgs.add2List,
       size: 32,
-      semanticsLabel: "Add This Word To Lists",
+      semanticsLabel: "Listelere Ekle",
       onTap: () {
         addWordToLists(context: context, wordId: words[pageController.page!.toInt()].id);
       },
@@ -43,7 +43,7 @@ class _WordLearnState extends State<WordLearn> {
     ActionButton(
       icon: MySvgs.edit,
       size: 32,
-      semanticsLabel: "Edit The Word Entry",
+      semanticsLabel: "Düzenle",
       onTap: () async {
         final int wordIndex = pageController.page!.toInt();
         final result = await Navigator.of(context).pushNamed(
@@ -207,7 +207,7 @@ class _WordLearnState extends State<WordLearn> {
                           ActionButton(
                             icon: MySvgs.refresh,
                             size: 32,
-                            semanticsLabel: "Refresh The List",
+                            semanticsLabel: "Yeni Sete Başla",
                             onTap: refreshList,
                           )
                         ];

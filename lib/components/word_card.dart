@@ -76,7 +76,11 @@ class WordCardState extends State<WordCard> {
                       width: 48,
                       color: MyColors.red,
                       alignment: Alignment.center,
-                      child: const ActionButton(icon: MySvgs.delete, size: 32),
+                      child: const ActionButton(
+                        icon: MySvgs.delete,
+                        size: 32,
+                        semanticsLabel: "Sil",
+                      ),
                     ),
                   );
                 }),
@@ -114,7 +118,11 @@ class WordCardState extends State<WordCard> {
                       width: 80,
                       color: MyColors.darkGreen,
                       alignment: Alignment.center,
-                      child: const ActionButton(icon: MySvgs.edit, size: 32),
+                      child: const ActionButton(
+                        icon: MySvgs.edit,
+                        size: 32,
+                        semanticsLabel: "Düzenle",
+                      ),
                     ),
                   );
                 }),
@@ -132,7 +140,11 @@ class WordCardState extends State<WordCard> {
                       width: 80,
                       color: MyColors.darkBlue,
                       alignment: Alignment.center,
-                      child: const ActionButton(icon: MySvgs.add2List, size: 32),
+                      child: const ActionButton(
+                        icon: MySvgs.add2List,
+                        size: 32,
+                        semanticsLabel: "Listelere Ekle",
+                      ),
                     ),
                   );
                 }),

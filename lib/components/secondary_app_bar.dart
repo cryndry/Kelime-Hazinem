@@ -89,6 +89,7 @@ class SecondaryAppBarState extends ConsumerState {
             ActionButton(
               icon: MySvgs.clearText,
               size: 40,
+              semanticsLabel: "Seçimleri İptal Et",
               onTap: deactivateShareMode,
             ),
             const SizedBox(width: 12),
@@ -103,6 +104,7 @@ class SecondaryAppBarState extends ConsumerState {
                 child: ActionButton(
                   icon: MySvgs.delete,
                   size: 32,
+                  semanticsLabel: "Listeyi Sil",
                   onTap: () {
                     ref.read(myListsProvider.notifier).update((state) {
                       final newState = [...state];
@@ -125,6 +127,7 @@ class SecondaryAppBarState extends ConsumerState {
                 child: ActionButton(
                   icon: MySvgs.edit,
                   size: 32,
+                  semanticsLabel: "Listeyi Yeniden Adlandır",
                   onTap: () async {
                     String listName = selectedLists.first;
                     listRenameTextInputController.text = listName;
@@ -219,6 +222,7 @@ class SecondaryAppBarState extends ConsumerState {
               ActionButton(
                 icon: MySvgs.share,
                 size: 32,
+                semanticsLabel: "${selectedLists.length == 1 ? "Listeyi" : "Listeleri"} Paylaş",
                 onTap: () {
                   popDialog(
                       context: context,

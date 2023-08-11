@@ -36,6 +36,7 @@ class WordGuessState extends State<WordGuess> {
   late final ActionButton tipButton = ActionButton(
     icon: MySvgs.tip,
     size: 32,
+    semanticsLabel: "İpucu",
     onTap: () {
       setState(() {
         tipButtonUsedIndexes.add(pageController.page!.toInt());
@@ -215,6 +216,7 @@ class WordGuessState extends State<WordGuess> {
                           ActionButton(
                             icon: MySvgs.refresh,
                             size: 32,
+                            semanticsLabel: "Yeni Sete Başla",
                             onTap: refreshList,
                           ),
                         );

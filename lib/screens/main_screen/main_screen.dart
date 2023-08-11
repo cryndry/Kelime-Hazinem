@@ -17,7 +17,6 @@ class MainScreen extends StatelessWidget {
           title: 'Kelime Hazinem',
           buttons: [
             ActionButton(
-              key: const ValueKey("cloud"),
               icon: MySvgs.cloud,
               size: 32,
               semanticsLabel: "Liste Paylaş",
@@ -29,7 +28,7 @@ class MainScreen extends StatelessWidget {
               width: 32,
               height: 32,
               child: PopupMenuButton(
-                tooltip: "",
+                tooltip: "Daha Fazla",
                 padding: EdgeInsets.zero,
                 icon: const ActionButton(icon: MySvgs.threeDots, size: 32),
                 iconSize: 32,
@@ -52,7 +51,6 @@ class MainScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           const ActionButton(
-                            key: ValueKey("settings"),
                             icon: MySvgs.settings,
                             size: 32,
                             strokeColor: MyColors.darkBlue,
@@ -73,7 +71,6 @@ class MainScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           const ActionButton(
-                            key: ValueKey("aboutUs"),
                             icon: MySvgs.info,
                             size: 32,
                             strokeColor: MyColors.darkBlue,

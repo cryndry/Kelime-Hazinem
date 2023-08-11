@@ -32,7 +32,7 @@ class WordShowState extends State<WordShow> {
       ActionButton(
         icon: MySvgs.add2List,
         size: 32,
-        semanticsLabel: "Add This Word To Lists",
+        semanticsLabel: "Listelere Ekle",
         onTap: () {
           addWordToLists(context: context, wordId: widget.word.id);
         },
@@ -40,7 +40,7 @@ class WordShowState extends State<WordShow> {
       ActionButton(
         icon: MySvgs.edit,
         size: 32,
-        semanticsLabel: "Edit The Word Entry",
+        semanticsLabel: "Düzenle",
         onTap: () async {
           final result = await Navigator.of(context).pushNamed(
             "WordEdit",
