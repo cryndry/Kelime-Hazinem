@@ -9,6 +9,7 @@ import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
+import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class WordAdd extends StatefulWidget {
   const WordAdd({super.key});
@@ -95,11 +96,56 @@ class WordAddState extends State<WordAdd> {
       "description": description,
       "description_search": descriptionSearch,
     };
-    final wordId = await SqlDatabase.createWord(wordData);
-    if (wordId != 0) {
-      return {...wordData, "id": wordId};
+
+    String? decision = "Save";
+    final existingWord = await SqlDatabase.getWordData(word);
+    if (existingWord != null) {
+      decision = await popDialog<String>(
+        context: context,
+        builder: (setDialogState) {
+          return [
+            const Text(
+              "Bu kelime için bir kayıt zaten mevcut. Dilerseniz o kaydı düzenleyebilirsiniz.",
+              style: MyTextStyles.font_16_24_500,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: [
+                TextButton(
+                  child: const Text(
+                    "Yeni Kopyayı Kaydet",
+                    style: MyTextStyles.font_16_24_500,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop("Save");
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "Mevcut Kaydı Düzenle",
+                    style: MyTextStyles.font_16_24_500,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop("EditExistingOne");
+                  },
+                ),
+              ],
+            )
+          ];
+        },
+      );
     }
-    return "DbError";
+    if (decision == "EditExistingOne") {
+      Navigator.of(context).pushReplacementNamed("WordEdit", arguments: {"word": Word.fromJson(existingWord!)});
+      return;
+    } else if (decision == "Save") {
+      final wordId = await SqlDatabase.createWord(wordData);
+      if (wordId != 0) {
+        return {...wordData, "id": wordId};
+      }
+      return "DbError";
+    }
   }
 
   void saveButtonOnTap() async {
