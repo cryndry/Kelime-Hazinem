@@ -68,9 +68,15 @@ class AllWordsPageLayoutState extends ConsumerState<AllWordsPageLayout> {
           setState(() {
             List<Word> searchedWords;
             if (searchMode == "Kelimede") {
+              searchText = MyRegExpPatterns.getWithoutHaraka(searchText);
               searchedWords = widget.words.where((element) => element.wordSearch.contains(searchText)).toList();
-              searchedWords
-                  .sort((a, b) => a.wordSearch.indexOf(searchText).compareTo(b.wordSearch.indexOf(searchText)));
+              searchedWords.sort((a, b) {
+                int result = a.wordSearch.indexOf(searchText).compareTo(b.wordSearch.indexOf(searchText));
+                if (result == 0) {
+                  result = a.wordSearch.length.compareTo(b.wordSearch.length);
+                }
+                return result;
+              });
             } else {
               final searchedWordsWithMeaning = <Word>[];
               final searchTextNotExact = searchText.trim();

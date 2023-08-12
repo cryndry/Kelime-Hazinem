@@ -42,7 +42,7 @@ abstract class SqlDatabase {
 
   static Future<List<Word>> getAllWords() async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
-      final values = await txn.query(_dbWordTableName, columns: null);
+      final values = await txn.query(_dbWordTableName, orderBy: "word");
       return values;
     });
     return words.map((word) => Word.fromJson(word)).toList();
