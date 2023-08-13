@@ -132,8 +132,22 @@ abstract class SqlDatabase {
 
   static Future<Word> getRandomWord([Database? db]) async {
     return await (db ?? _db).transaction((txn) async {
-      List<Map<String, dynamic>> result =
-          await txn.rawQuery("SELECT * FROM $_dbWordTableName ORDER BY random() LIMIT 1");
+      List<Map<String, dynamic>> result = await txn.rawQuery("""
+            SELECT * FROM $_dbWordTableName
+            WHERE willLearn = 0
+              AND favorite = 0
+              AND learned = 0
+              AND memorized = 0
+            ORDER BY random()
+            LIMIT 1
+          """);
+      if (result.isEmpty) {
+        result = await txn.rawQuery("""
+            SELECT * FROM $_dbWordTableName
+            ORDER BY random()
+            LIMIT 1
+          """);
+      }
       return Word.fromJson(result.first);
     });
   }
