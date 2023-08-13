@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/app_bar.dart';
 import 'package:kelime_hazinem/components/dialog.dart';
 import 'package:kelime_hazinem/components/fill_colored_button.dart';
@@ -9,16 +10,16 @@ import 'package:kelime_hazinem/components/text_input.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
-import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:kelime_hazinem/utils/providers.dart';
 
-class WordAdd extends StatefulWidget {
+class WordAdd extends ConsumerStatefulWidget {
   const WordAdd({super.key});
 
   @override
-  State<WordAdd> createState() => WordAddState();
+  WordAddState createState() => WordAddState();
 }
 
-class WordAddState extends State<WordAdd> {
+class WordAddState extends ConsumerState<WordAdd> {
   final _formKey = GlobalKey<FormState>();
   Future? saveHandling;
 
@@ -98,8 +99,8 @@ class WordAddState extends State<WordAdd> {
     };
 
     String? decision = "Save";
-    final existingWord = await SqlDatabase.getWordData(word);
-    if (existingWord != null) {
+    final existingWordData = await SqlDatabase.getWordData(word);
+    if (existingWordData != null) {
       decision = await popDialog<String>(
         context: context,
         builder: (setDialogState) {
@@ -137,7 +138,8 @@ class WordAddState extends State<WordAdd> {
       );
     }
     if (decision == "EditExistingOne") {
-      Navigator.of(context).pushReplacementNamed("WordEdit", arguments: {"word": Word.fromJson(existingWord!)});
+      final existingWord = ref.read(allWordsProvider).where((word) => word.id == existingWordData!["id"]).first;
+      await Navigator.of(context).pushReplacementNamed("WordEdit", arguments: {"word": existingWord});
       return;
     } else if (decision == "Save") {
       final wordId = await SqlDatabase.createWord(wordData);
