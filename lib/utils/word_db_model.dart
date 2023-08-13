@@ -53,7 +53,6 @@ class Word {
         memorized: json["memorized"] ?? 0,
       );
 
-  // unused for now
   Map<String, dynamic> toJson() => {
         "id": id,
         "word_search": wordSearch,
@@ -69,6 +68,7 @@ class Word {
 
   int intBoolInvert(int value) => (value != 0) ? 0 : 1;
   bool intAsBool(int value) => (value != 0);
+  String getNow() => DateTime.now().toString().split(".")[0];
 
   FutureOr<void> willLearnToggle({int? setValue, Database? db}) async {
     if (setValue != null) {
@@ -78,14 +78,17 @@ class Word {
     } else {
       willLearn = intBoolInvert(willLearn);
     }
-    var changes = {"willLearn": willLearn};
+    final now = getNow();
+    var changes = {"willLearn": willLearn, "willLearnChangeTime": intAsBool(willLearn) ? now : ""};
     if (willLearn == 1) {
       if (intAsBool(learned)) {
         learned = 0;
         changes["learned"] = 0;
+        changes["learnedChangeTime"] = "";
       } else if (intAsBool(memorized)) {
         memorized = 0;
         changes["memorized"] = 0;
+        changes["memorizedChangeTime"] = "";
       }
     }
     await SqlDatabase.updateWord(id, changes, db);
@@ -99,19 +102,23 @@ class Word {
     } else {
       favorite = intBoolInvert(favorite);
     }
-    await SqlDatabase.updateWord(id, {"favorite": favorite}, db);
+    final now = getNow();
+    await SqlDatabase.updateWord(id, {"favorite": favorite, "favoriteChangeTime": now}, db);
   }
 
   void learnedToggle() {
     learned = intBoolInvert(learned);
-    var changes = {"learned": learned};
+    final now = getNow();
+    var changes = {"learned": learned, "learnedChangeTime": now};
     if (learned == 1) {
       if (intAsBool(willLearn)) {
         willLearn = 0;
         changes["willLearn"] = 0;
+        changes["willLearnChangeTime"] = "";
       } else if (intAsBool(memorized)) {
         memorized = 0;
         changes["memorized"] = 0;
+        changes["memorizedChangeTime"] = "";
       }
     }
     SqlDatabase.updateWord(id, changes);
@@ -119,14 +126,17 @@ class Word {
 
   void memorizedToggle() {
     memorized = intBoolInvert(memorized);
-    var changes = {"memorized": memorized};
+    final now = getNow();
+    var changes = {"memorized": memorized, "memorizedChangeTime": now};
     if (memorized == 1) {
       if (intAsBool(willLearn)) {
         willLearn = 0;
         changes["willLearn"] = 0;
+        changes["willLearnChangeTime"] = "";
       } else if (intAsBool(learned)) {
         learned = 0;
         changes["learned"] = 0;
+        changes["learnedChangeTime"] = "";
       }
     }
     SqlDatabase.updateWord(id, changes);
