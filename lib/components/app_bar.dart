@@ -4,11 +4,11 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/list_selection_app_bar.dart';
 import 'package:kelime_hazinem/components/secondary_app_bar.dart';
 import 'package:kelime_hazinem/components/word_selection_app_bar.dart';
-import 'package:kelime_hazinem/main.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
+import 'package:kelime_hazinem/utils/set_state_on_pop_next.dart';
 
 class MyAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   const MyAppBar({
@@ -30,28 +30,7 @@ class MyAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   MyAppBarState createState() => MyAppBarState();
 }
 
-class MyAppBarState extends ConsumerState<MyAppBar> with RouteAware {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      routeObserver.subscribe(this, ModalRoute.of(context)!);
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      routeObserver.unsubscribe(this);
-    });
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    setState(() {});
-  }
-
+class MyAppBarState extends ConsumerStateWithRefreshOnPopNext<MyAppBar> {  
   @override
   Widget build(BuildContext context) {
     final canPop = MyNavigatorObserver.stack.length > 1;
