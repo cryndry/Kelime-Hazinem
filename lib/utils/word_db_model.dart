@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:kelime_hazinem/utils/database.dart';
+import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Word {
@@ -68,7 +69,6 @@ class Word {
 
   int intBoolInvert(int value) => (value != 0) ? 0 : 1;
   bool intAsBool(int value) => (value != 0);
-  String getNow() => DateTime.now().toString().split(".")[0];
 
   FutureOr<void> willLearnToggle({int? setValue, Database? db}) async {
     if (setValue != null) {
@@ -78,7 +78,7 @@ class Word {
     } else {
       willLearn = intBoolInvert(willLearn);
     }
-    final now = getNow();
+    final now = GetTimeString.now;
     var changes = {"willLearn": willLearn, "willLearnChangeTime": intAsBool(willLearn) ? now : ""};
     if (willLearn == 1) {
       if (intAsBool(learned)) {
@@ -102,13 +102,13 @@ class Word {
     } else {
       favorite = intBoolInvert(favorite);
     }
-    final now = getNow();
+    final now = GetTimeString.now;
     await SqlDatabase.updateWord(id, {"favorite": favorite, "favoriteChangeTime": now}, db);
   }
 
   void learnedToggle() {
     learned = intBoolInvert(learned);
-    final now = getNow();
+    final now = GetTimeString.now;
     var changes = {"learned": learned, "learnedChangeTime": now};
     if (learned == 1) {
       if (intAsBool(willLearn)) {
@@ -126,7 +126,7 @@ class Word {
 
   void memorizedToggle() {
     memorized = intBoolInvert(memorized);
-    final now = getNow();
+    final now = GetTimeString.now;
     var changes = {"memorized": memorized, "memorizedChangeTime": now};
     if (memorized == 1) {
       if (intAsBool(willLearn)) {

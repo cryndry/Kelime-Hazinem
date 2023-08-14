@@ -3,6 +3,7 @@ import 'package:kelime_hazinem/components/icon.dart';
 import 'package:kelime_hazinem/components/list_card.dart';
 import 'package:kelime_hazinem/components/list_card_grid.dart';
 import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/components/performance.dart';
 import 'package:kelime_hazinem/components/random_word_card.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -15,6 +16,8 @@ class HomePage extends StatelessWidget {
     return const PageLayout(
       children: [
         RandomWordCard(),
+        SizedBox(height: 12),
+        MyPerformance(),
         SizedBox(height: 12),
         ListCardGrid(
           children: [

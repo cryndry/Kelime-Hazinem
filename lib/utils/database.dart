@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
+import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:kelime_hazinem/utils/notifications.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,7 +103,7 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<bool> checkIfListHaveWords(String listName) async {
+  static Future<bool> checkIfListHaveWords(String listName, [int? atLeast]) async {
     return await _db.transaction((txn) async {
       final listDataQuery = await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
       final listData = listDataQuery.isEmpty ? null : listDataQuery.first;
@@ -112,21 +113,21 @@ abstract class SqlDatabase {
         SELECT COUNT(*) as count 
         FROM $_dbEntryTableName
         WHERE list_id=${listData['id']}
-        LIMIT 1
+        LIMIT ${atLeast ?? 1}
       ''');
-      return ((result[0]["count"] as int) > 0);
+      return ((result[0]["count"] as int) >= (atLeast ?? 0));
     });
   }
 
-  static Future<bool> checkIfIconicListHaveWords(String listName) async {
+  static Future<bool> checkIfIconicListHaveWords(String listName, [int? atLeast]) async {
     return await _db.transaction((txn) async {
       final result = await txn.rawQuery('''
         SELECT COUNT(*) as count
         FROM $_dbWordTableName
         WHERE $listName = 1
-        LIMIT 1
+        LIMIT ${atLeast ?? 1}
       ''');
-      return ((result[0]["count"] as int) > 0);
+      return ((result[0]["count"] as int) >= (atLeast ?? 0));
     });
   }
 
@@ -157,6 +158,38 @@ abstract class SqlDatabase {
       return await txn.rawQuery("SELECT * FROM $_dbWordTableName WHERE word='$word'");
     });
     return result.isEmpty ? null : result.first;
+  }
+
+  static Future<Map<String, int>> getCountOfWordAttrs({required String period}) async {
+    final timeOldest = (() {
+      switch (period) {
+        case "Haftalık":
+          return GetTimeString.oneWeekBefore;
+        case "Aylık":
+          return GetTimeString.oneMonthBefore;
+        case "3 Aylık":
+          return GetTimeString.threeMonthsBefore;
+        default:
+          return GetTimeString.oneWeekBefore;
+      }
+    })();
+    return await _db.transaction((txn) async {
+      final result = await txn.rawQuery("""
+        SELECT
+          SUM(willLearn) as willLearnCount,
+          SUM(favorite) as favoriteCount,
+          SUM(learned) as learnedCount,
+          SUM(memorized) as memorizedCount
+        FROM (
+          SELECT willLearn, favorite, learned, memorized FROM $_dbWordTableName
+          WHERE willLearnChangeTime >= '$timeOldest'
+            OR favoriteChangeTime >= '$timeOldest'
+            OR learnedChangeTime >= '$timeOldest'
+            OR memorizedChangeTime >= '$timeOldest'
+        );
+      """);
+      return result.first.map((key, value) => MapEntry(key, value ?? 0)).cast<String, int>();
+    });
   }
 
   static Future<int> createWord(Map<String, Object?> word) async {
@@ -273,7 +306,7 @@ abstract class SqlDatabase {
         ''');
 
         if (query.isEmpty && isWordInList) {
-          final timeCreated = DateTime.now().toString().split(".")[0];
+          final timeCreated = GetTimeString.now;
           batch.rawInsert(
               "INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
         } else if (query.isNotEmpty && !isWordInList) {
@@ -449,7 +482,7 @@ abstract class SqlDatabase {
         final doesEntryExist = query.isNotEmpty;
         if (doesEntryExist) continue;
 
-        final timeCreated = DateTime.now().toString().split(".")[0];
+        final timeCreated = GetTimeString.now;
         batch.rawInsert('''
         INSERT INTO $_dbEntryTableName (word_id, list_id, time_created)
         VALUES (${entry["word_id"]}, ${entry["list_id"]}, '$timeCreated')
@@ -468,7 +501,7 @@ abstract class SqlDatabase {
     debugPrint("isPermitted: $isPermitted");
     if (isPermitted) {
       String dbPath = path.join(_applicationDirectory.path, _dbName);
-      final timeCreated = DateTime.now().toString().split(".")[0];
+      final timeCreated = GetTimeString.now;
       final result = await CRFileSaver.saveFileWithDialog(SaveFileDialogParams(
         sourceFilePath: dbPath,
         destinationFileName: "$timeCreated.db",
@@ -496,6 +529,7 @@ abstract final class DbKeys {
   static const String darkMode = "darkMode";
   static const String notifications = "notifications";
   static const String notificationTime = "notificationTime";
+  static const String myPerformancePeriod = "myPerformancePeriod";
 }
 
 abstract class KeyValueDatabase {
@@ -511,6 +545,7 @@ abstract class KeyValueDatabase {
     if (!_db.containsKey(DbKeys.darkMode)) setDarkMode(false);
     if (!_db.containsKey(DbKeys.notifications)) setNotifications(false);
     if (!_db.containsKey(DbKeys.notificationTime)) setNotificationTime("12:00");
+    if (!_db.containsKey(DbKeys.myPerformancePeriod)) setMyPerformancePeriod("Haftalık");
   }
 
   static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
@@ -562,6 +597,12 @@ abstract class KeyValueDatabase {
     await _db.setString(DbKeys.notificationTime, value);
     return value;
   }
+
+  static String getMyPerformancePeriod() => _db.getString(DbKeys.myPerformancePeriod)!;
+  static Future<String> setMyPerformancePeriod(String value) async {
+    await _db.setString(DbKeys.myPerformancePeriod, value);
+    return value;
+  }
 }
 
 abstract class FirebaseDatabase {
@@ -598,3 +639,37 @@ abstract class FirebaseDatabase {
     return fileRef.writeToFile(cacheDbFile);
   }
 }
+
+const asd = """
+SELECT
+  SUM(willLearn) as willLearnCount,
+  SUM(favorite) as favoriteCount,
+  SUM(learned) as learnedCount,
+  SUM(memorized) as memorizedCount
+  FROM (
+    SELECT willLearn, favorite, learned, memorized FROM Words
+	  WHERE willLearnChangeTime >= "2023-08-07 02:36:17"
+	    OR favoriteChangeTime >= "2023-08-07 02:36:17"
+	    OR learnedChangeTime >= "2023-08-07 02:36:17"
+	    OR memorizedChangeTime >= "2023-08-07 02:36:17"
+  )
+
+
+  COUNT((
+	SELECT willLearn FROM Words
+	WHERE willLearnChangeTime >= "2023-08-07 02:36:17"
+  )) as willLearnCount,
+  COUNT((
+	SELECT favorite FROM Words
+	WHERE favoriteChangeTime >= "2023-08-07 02:36:17"
+  )) as favoriteCount,
+  COUNT((
+	SELECT learned FROM Words
+	WHERE learnedChangeTime >= "2023-08-07 02:36:17"
+  )) as learnedCount,
+  COUNT((
+	SELECT memorized FROM Words
+	WHERE memorizedChangeTime >= "2023-08-07 02:36:17"
+  )) as memorizedCount
+FROM Words
+""";

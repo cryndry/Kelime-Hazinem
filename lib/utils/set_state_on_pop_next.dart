@@ -3,6 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/main.dart';
 
 abstract class StateWithRefreshOnPopNext<T extends StatefulWidget> extends State<T> with RouteAware {
+  Function onPopNextCallback = () {};
+  void setOnPopNextCallback(Function callback) {
+    setState(() {
+      onPopNextCallback = callback;
+    });
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -21,12 +28,17 @@ abstract class StateWithRefreshOnPopNext<T extends StatefulWidget> extends State
 
   @override
   void didPopNext() {
-    setState(() {});
+    setState(() {
+      onPopNextCallback();
+    });
   }
 }
 
 abstract class ConsumerStateWithRefreshOnPopNext<T extends ConsumerStatefulWidget> extends ConsumerState<T>
     with RouteAware {
+  Function onPopNextCallback = () {};
+  void setOnPopNextCallback(Function callback) => onPopNextCallback = callback;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -45,6 +57,8 @@ abstract class ConsumerStateWithRefreshOnPopNext<T extends ConsumerStatefulWidge
 
   @override
   void didPopNext() {
-    setState(() {});
+    setState(() {
+      onPopNextCallback();
+    });
   }
 }

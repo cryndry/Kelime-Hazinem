@@ -272,12 +272,14 @@ class SelectableSetting<T> extends StatefulWidget {
     required this.values,
     required this.initialValue,
     required this.onChange,
+    this.color = Colors.black,
     this.tooltip = "",
   });
 
   final Map<T, String> values;
   final T initialValue;
   final void Function(T) onChange;
+  final Color color;
   final String tooltip;
 
   @override
@@ -287,7 +289,7 @@ class SelectableSetting<T> extends StatefulWidget {
 class SelectableSettingState<T> extends State<SelectableSetting<T>> {
   late T state = widget.initialValue;
 
-  final TextStyle textStyle = MyTextStyles.font_16_20_400.merge(const TextStyle(color: Colors.black));
+  final TextStyle textStyle = MyTextStyles.font_16_20_400;
 
   @override
   Widget build(BuildContext context) {
@@ -323,12 +325,12 @@ class SelectableSettingState<T> extends State<SelectableSetting<T>> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Row(
           children: [
-            Text(widget.values[state]!, style: textStyle),
+            Text(widget.values[state]!, style: textStyle.apply(color: widget.color)),
             const SizedBox(width: 4),
-            const ActionButton(
+            ActionButton(
               icon: MySvgs.littleDownArrow,
               size: 20,
-              strokeColor: Colors.black,
+              strokeColor: widget.color,
             ),
           ],
         ),
