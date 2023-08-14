@@ -436,7 +436,17 @@ abstract class SqlDatabase {
         listId = listData["id"] as int;
         extendedExistingList.add(listData["name"]);
       } else {
-        final newListName = "${doesListExist ? "_" : ""}$listName";
+        int tryCount = 1;
+        String newListName = listName;
+        while (doesListExist) {
+          newListName = "$listName ($tryCount)";
+          final doesNewListExist = await SqlDatabase.checkIfListExists(newListName);
+          if (doesNewListExist) {
+            tryCount += 1;
+          } else {
+            break;
+          }
+        }
         listId = await createList(newListName);
         cacheDbData["listData"]![listIndex]["name"] = newListName;
       }
@@ -639,37 +649,3 @@ abstract class FirebaseDatabase {
     return fileRef.writeToFile(cacheDbFile);
   }
 }
-
-const asd = """
-SELECT
-  SUM(willLearn) as willLearnCount,
-  SUM(favorite) as favoriteCount,
-  SUM(learned) as learnedCount,
-  SUM(memorized) as memorizedCount
-  FROM (
-    SELECT willLearn, favorite, learned, memorized FROM Words
-	  WHERE willLearnChangeTime >= "2023-08-07 02:36:17"
-	    OR favoriteChangeTime >= "2023-08-07 02:36:17"
-	    OR learnedChangeTime >= "2023-08-07 02:36:17"
-	    OR memorizedChangeTime >= "2023-08-07 02:36:17"
-  )
-
-
-  COUNT((
-	SELECT willLearn FROM Words
-	WHERE willLearnChangeTime >= "2023-08-07 02:36:17"
-  )) as willLearnCount,
-  COUNT((
-	SELECT favorite FROM Words
-	WHERE favoriteChangeTime >= "2023-08-07 02:36:17"
-  )) as favoriteCount,
-  COUNT((
-	SELECT learned FROM Words
-	WHERE learnedChangeTime >= "2023-08-07 02:36:17"
-  )) as learnedCount,
-  COUNT((
-	SELECT memorized FROM Words
-	WHERE memorizedChangeTime >= "2023-08-07 02:36:17"
-  )) as memorizedCount
-FROM Words
-""";

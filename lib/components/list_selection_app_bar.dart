@@ -258,8 +258,10 @@ class ListSelectionAppBarState extends ConsumerState {
                         await Future.delayed(MyDurations.millisecond300);
 
                         yield const Text("Yükleme başlatılıyor", style: MyTextStyles.font_16_20_500);
+                        final now = DateTime.now();
                         final sharedFileId = await FirebaseDatabase.addSharedFileData({
-                          "creation_time": Timestamp.now(),
+                          "creation_time": Timestamp.fromDate(now),
+                          "deletion_time": Timestamp.fromDate(now.copyWith(month: now.month + 1)),
                         });
                         await Future.delayed(MyDurations.millisecond300);
 
@@ -281,7 +283,7 @@ class ListSelectionAppBarState extends ConsumerState {
                             yield Column(
                               children: [
                                 const Text(
-                                  "Seçtiğiniz listeleri aşağıdaki kod ile paylaşabilirsiniz",
+                                  "Seçtiğiniz listeleri aşağıdaki kod ile paylaşabilirsiniz. Kodunuzun geçerlilik süresi 1 aydır.",
                                   style: MyTextStyles.font_16_20_500,
                                   textAlign: TextAlign.center,
                                 ),
