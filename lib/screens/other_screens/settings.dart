@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
-import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/page_layout.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/layouts/page_layout.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/list_card.dart';
-import 'package:kelime_hazinem/components/list_card_grid.dart';
-import 'package:kelime_hazinem/components/page_layout.dart';
-import 'package:kelime_hazinem/components/performance.dart';
-import 'package:kelime_hazinem/components/random_word_card.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/words_and_lists/list_card.dart';
+import 'package:kelime_hazinem/components/layouts/list_card_grid.dart';
+import 'package:kelime_hazinem/components/layouts/page_layout.dart';
+import 'package:kelime_hazinem/components/others/performance.dart';
+import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 

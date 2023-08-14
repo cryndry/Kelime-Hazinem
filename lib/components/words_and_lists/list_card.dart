@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/bottom_sheet.dart';
-import 'package:kelime_hazinem/components/fill_colored_button.dart';
-import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/snack_bar.dart';
-import 'package:kelime_hazinem/components/stroke_colored_button.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/bottom_sheet.dart';
+import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/snack_bar.dart';
+import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';

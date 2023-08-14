@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/list_selection_app_bar.dart';
-import 'package:kelime_hazinem/components/secondary_app_bar.dart';
-import 'package:kelime_hazinem/components/word_selection_app_bar.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/app_bars/list_selection_app_bar.dart';
+import 'package:kelime_hazinem/components/app_bars/secondary_app_bar.dart';
+import 'package:kelime_hazinem/components/app_bars/word_selection_app_bar.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
 
 class AnimatedActionButton extends StatefulWidget {
   const AnimatedActionButton({

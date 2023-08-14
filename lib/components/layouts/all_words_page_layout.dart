@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/text_input.dart';
-import 'package:kelime_hazinem/components/word_card.dart';
-import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/components/words_and_lists/word_card.dart';
+import 'package:kelime_hazinem/screens/other_screens/settings.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';

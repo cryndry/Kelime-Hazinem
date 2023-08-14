@@ -1,11 +1,11 @@
 import 'dart:math' show Random;
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/add_word_to_lists.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
-import 'package:kelime_hazinem/components/icon.dart';
-import 'package:kelime_hazinem/components/keep_alive_widget.dart';
-import 'package:kelime_hazinem/components/nonscrollable_page_layout.dart';
-import 'package:kelime_hazinem/components/word_action_button_row.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
+import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';

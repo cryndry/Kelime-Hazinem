@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 

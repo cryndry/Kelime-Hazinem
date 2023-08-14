@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class FAB extends StatelessWidget {

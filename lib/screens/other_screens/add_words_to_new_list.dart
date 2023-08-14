@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/screens/main_screen/all_words.dart';
 
 class AddWordsToNewList extends StatelessWidget {

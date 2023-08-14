@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/all_words_page_layout.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 

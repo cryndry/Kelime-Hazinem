@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/app_bar.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
 
 class ShareMyLists extends StatelessWidget {

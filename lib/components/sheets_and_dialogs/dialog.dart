@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/components/circular_progress_with_duration.dart';
+import 'package:kelime_hazinem/components/others/circular_progress_with_duration.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 
 Future<T?> popDialog<T>({

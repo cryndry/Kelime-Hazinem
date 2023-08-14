@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kelime_hazinem/components/add_word_to_lists.dart';
-import 'package:kelime_hazinem/components/add_words_to_lists.dart';
-import 'package:kelime_hazinem/components/icon.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/add_words_to_lists.dart';
+import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';

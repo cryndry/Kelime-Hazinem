@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelime_hazinem/screens/settings.dart';
+import 'package:kelime_hazinem/screens/other_screens/settings.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/set_state_on_pop_next.dart';
