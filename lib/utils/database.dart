@@ -115,7 +115,7 @@ abstract class SqlDatabase {
         WHERE list_id=${listData['id']}
         LIMIT ${atLeast ?? 1}
       ''');
-      return ((result[0]["count"] as int) >= (atLeast ?? 0));
+      return ((result[0]["count"] as int) >= (atLeast ?? 1));
     });
   }
 
@@ -127,7 +127,7 @@ abstract class SqlDatabase {
         WHERE $listName = 1
         LIMIT ${atLeast ?? 1}
       ''');
-      return ((result[0]["count"] as int) >= (atLeast ?? 0));
+      return ((result[0]["count"] as int) >= (atLeast ?? 1));
     });
   }
 
