@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/screens/main_screen/all_words.dart';
 import 'package:kelime_hazinem/screens/main_screen/homepage.dart';
 import 'package:kelime_hazinem/screens/main_screen/my_lists.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
@@ -21,6 +22,13 @@ class MainScreenTabBar extends ConsumerWidget {
         controller.addListener(() {
           if (!controller.indexIsChanging) {
             ref.read(activeTabIndexProvider.notifier).update((state) => controller.index);
+
+            String routeName = (controller.index == 0)
+                ? "HomePage"
+                : (controller.index == 1)
+                    ? "MyLists"
+                    : "AllWords";
+            Analytics.logRouteChange(routeName);
           }
         });
 

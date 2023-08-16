@@ -8,6 +8,7 @@ import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/snack_bar.dart';
 import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -277,6 +278,7 @@ class ListSelectionAppBarState extends ConsumerState {
                             yield progressWidget(progress);
                           } else if (taskSnapshot.state == TaskState.success) {
                             yield progressWidget(progress);
+                            Analytics.logListShare(code: sharedFileId, action: "list_share_export");
                             await Future.delayed(MyDurations.millisecond500);
                             Future<void>? clipboardActionFuture;
 

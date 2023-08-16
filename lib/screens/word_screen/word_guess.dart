@@ -5,6 +5,7 @@ import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -38,6 +39,7 @@ class WordGuessState extends State<WordGuess> {
     size: 32,
     semanticsLabel: "İpucu",
     onTap: () {
+      Analytics.logLearnModeAction(mode: "word_guess", listName: widget.listName, action: "tip_button_used");
       setState(() {
         tipButtonUsedIndexes.add(pageController.page!.toInt());
         isTipButtonVisible = false;
@@ -80,6 +82,7 @@ class WordGuessState extends State<WordGuess> {
   }
 
   void refreshList() async {
+    Analytics.logLearnModeAction(mode: "word_guess", listName: widget.listName, action: "refresh_button_used");
     final List<Word> willRepeatWords = [];
     final bool isCurrentListIconic = widget.dbTitle != widget.listName;
 
@@ -562,13 +565,13 @@ class WordGuessLetterBoxState extends State<WordGuessLetterBox> {
   late LetterBoxStatus status = widget.status;
   late bool isAnimatable = widget.isAnimatable;
 
-  final shadowColors = const {
+  static const shadowColors = {
     LetterBoxStatus.normal: Colors.black26,
     LetterBoxStatus.correct: MyColors.green,
     LetterBoxStatus.wrong: MyColors.red,
   };
 
-  final textColors = const {
+  static const textColors = {
     LetterBoxStatus.normal: Colors.black,
     LetterBoxStatus.correct: MyColors.green,
     LetterBoxStatus.wrong: MyColors.red,

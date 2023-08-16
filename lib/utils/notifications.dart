@@ -46,6 +46,16 @@ class Notifications {
       onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
       onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
     );
+
+    final isNotificationsAllowed = await Notifications.isNotificationAllowed();
+    final isNotificationsAllowedInDB = KeyValueDatabase.getNotifications();
+    if (isNotificationsAllowed != isNotificationsAllowedInDB) {
+      await KeyValueDatabase.setNotifications(isNotificationsAllowed);
+    }
+    if (isNotificationsAllowed) {
+      final time = KeyValueDatabase.getNotificationTime();
+      await Notifications.createDailyWordNotification(time);
+    }
   }
 
   static Future<bool> isNotificationAllowed() async {

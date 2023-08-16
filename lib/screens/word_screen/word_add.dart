@@ -7,6 +7,7 @@ import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/layouts/page_layout.dart';
 import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -144,6 +145,7 @@ class WordAddState extends ConsumerState<WordAdd> {
     } else if (decision == "Save") {
       final wordId = await SqlDatabase.createWord(wordData);
       if (wordId != 0) {
+        Analytics.logWordAction(word: wordData["word"]!, action: "word_created");
         return {...wordData, "id": wordId};
       }
       return "DbError";

@@ -9,6 +9,7 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -81,6 +82,7 @@ class WordTestState extends State<WordTest> {
   }
 
   void refreshList() async {
+    Analytics.logLearnModeAction(mode: "word_test", listName: widget.listName, action: "refresh_button_used");
     final List<Word> willRepeatWords = [];
     final bool isCurrentListIconic = widget.dbTitle != widget.listName;
 
@@ -170,11 +172,11 @@ class WordTestState extends State<WordTest> {
   }
 
   Future<void> handleMistakenAnswers() async {
+    Analytics.logLearnModeAction(mode: "word_test", listName: widget.listName, action: "mistaken_answers_saved");
     await Future.delayed(MyDurations.millisecond1000);
     for (int index in mistakenIndexes) {
       words[index].willLearnToggle(setValue: 1);
     }
-    return;
   }
 
   void endingHandler() {
@@ -267,6 +269,7 @@ class WordTestState extends State<WordTest> {
         StrokeColoredButton(
           title: "Anasayfaya Dön",
           onPressed: () {
+            Analytics.logLearnModeAction(mode: "word_test", listName: widget.listName, action: "returned_to_homepage");
             Navigator.of(context).popUntil(ModalRoute.withName("MainScreen"));
           },
         ),
@@ -603,13 +606,13 @@ class WordTestOption extends StatefulWidget {
 class WordTestOptionState extends State<WordTestOption> {
   late OptionStatus status = widget.status;
 
-  final shadowColors = const {
+  static const shadowColors = {
     OptionStatus.normal: Colors.black26,
     OptionStatus.correct: MyColors.green,
     OptionStatus.wrong: MyColors.red,
   };
 
-  final textColors = const {
+  static const textColors = {
     OptionStatus.normal: Colors.black,
     OptionStatus.correct: MyColors.green,
     OptionStatus.wrong: MyColors.red,

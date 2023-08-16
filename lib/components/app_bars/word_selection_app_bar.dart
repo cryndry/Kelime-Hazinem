@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_words_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -68,10 +69,14 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
                 onTap: () {
                   ref.read(allWordsProvider.notifier).update((state) {
                     final newState = [...state];
-                    for (int wordId in selectedWords) {
-                      SqlDatabase.deleteWord(wordId);
-                      newState.removeWhere((word) => word.id == wordId);
-                    }
+                    newState.removeWhere((word) {
+                      final bool result = selectedWords.contains(word.id);
+                      if (result) {
+                        SqlDatabase.deleteWord(word.id);
+                        Analytics.logWordAction(word: word.word, action: "word_deleted");
+                      }
+                      return result;
+                    });
 
                     return newState;
                   });
@@ -80,10 +85,7 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
                     if (state.isEmpty) return state;
 
                     final newState = [...state];
-                    for (int wordId in selectedWords) {
-                      SqlDatabase.deleteWord(wordId);
-                      newState.removeWhere((word) => word.id == wordId);
-                    }
+                    newState.removeWhere((word) => selectedWords.contains(word.id));
 
                     return newState;
                   });

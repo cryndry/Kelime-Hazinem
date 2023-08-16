@@ -8,6 +8,7 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/snack_bar.dart';
 import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -42,6 +43,7 @@ class ShareListsState extends ConsumerState {
 
     await FirebaseDatabase.downloadFile(importCode);
     final importedLists = await SqlDatabase.importLists(willCopyNewMeanings, willExtendExistingLists);
+    Analytics.logListShare(code: importCode, action: "list_share_import");
     ref.read(myListsProvider.notifier).update((state) => [...state, ...importedLists]);
 
     setState(() {

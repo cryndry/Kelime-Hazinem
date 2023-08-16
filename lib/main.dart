@@ -15,6 +15,7 @@ import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_show.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
@@ -33,18 +34,10 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const ProviderScope(child: KelimeHazinem()));
   await FirebaseDatabase.initDB();
+  await Analytics.initService();
+  runApp(const ProviderScope(child: KelimeHazinem()));
   await Notifications.initService();
-  final isNotificationsAllowed = await Notifications.isNotificationAllowed();
-  final isNotificationsAllowedInDB = KeyValueDatabase.getNotifications();
-  if (isNotificationsAllowed != isNotificationsAllowedInDB) {
-    await KeyValueDatabase.setNotifications(isNotificationsAllowed);
-  }
-  if (isNotificationsAllowed) {
-    final time = KeyValueDatabase.getNotificationTime();
-    await Notifications.createDailyWordNotification(time);
-  }
 }
 
 final routeObserver = RouteObserver();

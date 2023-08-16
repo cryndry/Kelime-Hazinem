@@ -9,6 +9,7 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/layouts/page_layout.dart';
 import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
 import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -112,6 +113,9 @@ class WordEditState extends ConsumerState<WordEdit> {
       "description": widget.word.description,
       "description_search": widget.word.descriptionSearch
     });
+    if (isSuccessful) {
+      Analytics.logWordAction(word: widget.word.word, action: "word_updated");
+    }
     return isSuccessful;
   }
 
@@ -147,6 +151,7 @@ class WordEditState extends ConsumerState<WordEdit> {
               title: "Onayla",
               onPressed: () async {
                 final bool deleted = await SqlDatabase.deleteWord(widget.word.id);
+                Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
                 Navigator.of(context).pop(deleted);
               },
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -42,6 +43,7 @@ class WordCardState extends ConsumerState<WordCard> {
     await slidableController.dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
 
     SqlDatabase.deleteWord(widget.word.id);
+    Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
     if (widget.wordRemove != null) {
       widget.wordRemove!(widget.word.id);
     } else if (widget.wordChange != null) {
@@ -55,9 +57,8 @@ class WordCardState extends ConsumerState<WordCard> {
 
     return LayoutBuilder(builder: (context, constraints) {
       return DecoratedBox(
-        position: selectedWords.contains(widget.word.id)
-            ? DecorationPosition.foreground
-            : DecorationPosition.background,
+        position:
+            selectedWords.contains(widget.word.id) ? DecorationPosition.foreground : DecorationPosition.background,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: MyColors.darkGreen, width: 3),

@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:kelime_hazinem/utils/notifications.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -536,7 +537,6 @@ abstract final class DbKeys {
   static const String wordLearnListLength = "wordLearnListLength";
   static const String otherModsListLength = "otherModsListLength";
   static const String isAnimatable = "isAnimatable";
-  static const String darkMode = "darkMode";
   static const String notifications = "notifications";
   static const String notificationTime = "notificationTime";
   static const String myPerformancePeriod = "myPerformancePeriod";
@@ -548,31 +548,39 @@ abstract class KeyValueDatabase {
   static Future<void> initDB() async {
     _db = await SharedPreferences.getInstance();
 
-    if (!_db.containsKey(DbKeys.firstTabIndex)) setFirstTabIndex(0);
-    if (!_db.containsKey(DbKeys.wordLearnListLength)) setWordLearnListLength(30);
-    if (!_db.containsKey(DbKeys.otherModsListLength)) setOtherModsListLength(15);
-    if (!_db.containsKey(DbKeys.isAnimatable)) setIsAnimatable(true);
-    if (!_db.containsKey(DbKeys.darkMode)) setDarkMode(false);
-    if (!_db.containsKey(DbKeys.notifications)) setNotifications(false);
-    if (!_db.containsKey(DbKeys.notificationTime)) setNotificationTime("12:00");
-    if (!_db.containsKey(DbKeys.myPerformancePeriod)) setMyPerformancePeriod("Haftalık");
+    if (!_db.containsKey(DbKeys.firstTabIndex)) setFirstTabIndex(0, true);
+    if (!_db.containsKey(DbKeys.wordLearnListLength)) setWordLearnListLength(30, true);
+    if (!_db.containsKey(DbKeys.otherModsListLength)) setOtherModsListLength(15, true);
+    if (!_db.containsKey(DbKeys.isAnimatable)) setIsAnimatable(true, true);
+    if (!_db.containsKey(DbKeys.notifications)) setNotifications(false, true);
+    if (!_db.containsKey(DbKeys.notificationTime)) setNotificationTime("18:00", true);
+    if (!_db.containsKey(DbKeys.myPerformancePeriod)) setMyPerformancePeriod("Haftalık", true);
   }
 
   static int getFirstTabIndex() => _db.getInt(DbKeys.firstTabIndex)!;
-  static Future<int> setFirstTabIndex(int value) async {
+  static Future<int> setFirstTabIndex(int value, [bool? initialSet]) async {
     await _db.setInt(DbKeys.firstTabIndex, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.firstTabIndex, value: value);
+    }
     return value;
   }
 
   static int getWordLearnListLength() => _db.getInt(DbKeys.wordLearnListLength)!;
-  static Future<int> setWordLearnListLength(int value) async {
+  static Future<int> setWordLearnListLength(int value, [bool? initialSet]) async {
     await _db.setInt(DbKeys.wordLearnListLength, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.wordLearnListLength, value: value);
+    }
     return value;
   }
 
   static int getOtherModsListLength() => _db.getInt(DbKeys.otherModsListLength)!;
-  static Future<int> setOtherModsListLength(int value) async {
+  static Future<int> setOtherModsListLength(int value, [bool? initialSet]) async {
     await _db.setInt(DbKeys.otherModsListLength, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.otherModsListLength, value: value);
+    }
     return value;
   }
 
@@ -580,22 +588,22 @@ abstract class KeyValueDatabase {
     return WidgetsBinding.instance.disableAnimations ? false : _db.getBool(DbKeys.isAnimatable)!;
   }
 
-  static Future<bool> setIsAnimatable(bool value) async {
+  static Future<bool> setIsAnimatable(bool value, [bool? initialSet]) async {
     await _db.setBool(DbKeys.isAnimatable, value);
-    return value;
-  }
-
-  static bool getDarkMode() => _db.getBool(DbKeys.darkMode)!;
-  static Future<bool> setDarkMode(bool value) async {
-    await _db.setBool(DbKeys.darkMode, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.isAnimatable, value: value);
+    }
     return value;
   }
 
   static bool getNotifications() => _db.getBool(DbKeys.notifications)!;
-  static Future<bool> setNotifications(bool value) async {
+  static Future<bool> setNotifications(bool value, [bool? initialSet]) async {
     if (value) {
       final isAllowed = await Notifications.requestPermission();
       await _db.setBool(DbKeys.notifications, isAllowed);
+      if (initialSet == null) {
+        Analytics.logKeyValueDbChange(key: DbKeys.notifications, value: isAllowed);
+      }
       return isAllowed;
     }
     await _db.setBool(DbKeys.notifications, value);
@@ -603,14 +611,20 @@ abstract class KeyValueDatabase {
   }
 
   static String getNotificationTime() => _db.getString(DbKeys.notificationTime)!;
-  static Future<String> setNotificationTime(String value) async {
+  static Future<String> setNotificationTime(String value, [bool? initialSet]) async {
     await _db.setString(DbKeys.notificationTime, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.notificationTime, value: value);
+    }
     return value;
   }
 
   static String getMyPerformancePeriod() => _db.getString(DbKeys.myPerformancePeriod)!;
-  static Future<String> setMyPerformancePeriod(String value) async {
+  static Future<String> setMyPerformancePeriod(String value, [bool? initialSet]) async {
     await _db.setString(DbKeys.myPerformancePeriod, value);
+    if (initialSet == null) {
+      Analytics.logKeyValueDbChange(key: DbKeys.myPerformancePeriod, value: value);
+    }
     return value;
   }
 }

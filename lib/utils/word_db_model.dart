@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:sqflite/sqflite.dart';
@@ -92,6 +93,7 @@ class Word {
       }
     }
     await SqlDatabase.updateWord(id, changes, db);
+    Analytics.logWordAction(word: word, action: intAsBool(willLearn) ? "willLearn" : "willLearnReversed");
   }
 
   FutureOr<void> favoriteToggle({int? setValue, Database? db}) async {
@@ -104,6 +106,7 @@ class Word {
     }
     final now = GetTimeString.now;
     await SqlDatabase.updateWord(id, {"favorite": favorite, "favoriteChangeTime": now}, db);
+    Analytics.logWordAction(word: word, action: intAsBool(favorite) ? "favorite" : "favoriteReversed");
   }
 
   void learnedToggle() {
@@ -122,6 +125,7 @@ class Word {
       }
     }
     SqlDatabase.updateWord(id, changes);
+    Analytics.logWordAction(word: word, action: intAsBool(learned) ? "learned" : "learnedReversed");
   }
 
   void memorizedToggle() {
@@ -140,6 +144,7 @@ class Word {
       }
     }
     SqlDatabase.updateWord(id, changes);
+    Analytics.logWordAction(word: word, action: intAsBool(memorized) ? "memorized" : "memorizedReversed");
   }
 
   @override

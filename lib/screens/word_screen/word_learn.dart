@@ -6,6 +6,7 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -91,6 +92,7 @@ class _WordLearnState extends State<WordLearn> {
   }
 
   void refreshList() async {
+    Analytics.logLearnModeAction(mode: "word_learn", listName: widget.listName, action: "refresh_button_used");
     final List<Word> willRepeatWords = [];
     final bool isCurrentListIconic = widget.dbTitle != widget.listName;
 
@@ -302,7 +304,6 @@ class WordLearnPageState extends State<WordLearnPage> {
 
   @override
   void didUpdateWidget(covariant WordLearnPage oldWidget) {
-    // if (oldWidget.currentWord.id != widget.currentWord.id) {
     if (oldWidget.currentWord.hashCode != widget.currentWord.hashCode) {
       setState(() {
         isMeaningVisible = false;
