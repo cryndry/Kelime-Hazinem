@@ -6,11 +6,13 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
+import 'package:kelime_hazinem/utils/admob.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 class WordLearn extends StatefulWidget {
   const WordLearn({super.key, required this.listName, required this.dbTitle});
@@ -156,14 +158,16 @@ class _WordLearnState extends State<WordLearn> {
 
   @override
   void initState() {
-    SqlDatabase.getWordsQuery(
-      limit: listLength,
-      listName: widget.dbTitle,
-      isIconicList: widget.dbTitle != widget.listName,
-      isInRandomOrder: true,
-    ).then((result) {
-      setState(() {
-        words = result;
+    AdMob.loadBannerAd().then((_) {
+      SqlDatabase.getWordsQuery(
+        limit: listLength,
+        listName: widget.dbTitle,
+        isIconicList: widget.dbTitle != widget.listName,
+        isInRandomOrder: true,
+      ).then((result) {
+        setState(() {
+          words = result;
+        });
       });
     });
 
@@ -177,6 +181,7 @@ class _WordLearnState extends State<WordLearn> {
     pageController.dispose();
     textEditingController.dispose();
     textInputFocus.dispose();
+    AdMob.disposeBannerAd();
 
     super.dispose();
   }
@@ -186,95 +191,106 @@ class _WordLearnState extends State<WordLearn> {
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(title: "Kelime Öğrenme", secTitle: widget.listName, buttons: appBarButtons),
-        body: Stack(
-          alignment: Alignment.center,
+        body: Column(
           children: [
-            NonScrollablePageLayout(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: MyColors.darkBlue.withOpacity(0.7),
-                    width: 2,
-                  ),
-                ),
-                child: PageView.custom(
-                  onPageChanged: (value) {
-                    textEditingController.value = TextEditingValue(text: (value + 1).toString());
-                    if (value + 1 == words.length && appBarButtons.length == 2) {
-                      setState(() {
-                        appBarButtons = [
-                          ...constAppBarButtons,
-                          ActionButton(
-                            icon: MySvgs.refresh,
-                            size: 32,
-                            semanticsLabel: "Yeni Sete Başla",
-                            onTap: refreshList,
-                          )
-                        ];
-                      });
-                    }
-                  },
-                  controller: pageController,
-                  scrollDirection: Axis.horizontal,
-                  childrenDelegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final Word currentWord = words[index];
-                      final wordPage = WordLearnPage(
-                        currentWord: currentWord,
-                        handleSetState: handleSetState,
-                      );
-
-                      if (isListRefreshed) {
-                        // disposes all the states from pages
-                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                          setState(() {
-                            isListRefreshed = false;
-                          });
-                        });
-                      }
-                      return isListRefreshed
-                          ? wordPage
-                          : KeepAliveWidget(
-                              child: wordPage,
+            Flexible(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  NonScrollablePageLayout(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: MyColors.darkBlue.withOpacity(0.7),
+                          width: 2,
+                        ),
+                      ),
+                      child: PageView.custom(
+                        onPageChanged: (value) {
+                          textEditingController.value = TextEditingValue(text: (value + 1).toString());
+                          if (value + 1 == words.length && appBarButtons.length == 2) {
+                            setState(() {
+                              appBarButtons = [
+                                ...constAppBarButtons,
+                                ActionButton(
+                                  icon: MySvgs.refresh,
+                                  size: 32,
+                                  semanticsLabel: "Yeni Sete Başla",
+                                  onTap: refreshList,
+                                )
+                              ];
+                            });
+                          }
+                        },
+                        controller: pageController,
+                        scrollDirection: Axis.horizontal,
+                        childrenDelegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final Word currentWord = words[index];
+                            final wordPage = WordLearnPage(
+                              currentWord: currentWord,
+                              handleSetState: handleSetState,
                             );
-                    },
-                    childCount: words.length,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                height: 32,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                alignment: Alignment.topCenter,
-                child: IntrinsicWidth(
-                  child: TextField(
-                    showCursor: true,
-                    focusNode: textInputFocus,
-                    style: MyTextStyles.font_24_32_500,
-                    autocorrect: false,
-                    keyboardType: TextInputType.number,
-                    controller: textEditingController,
-                    onEditingComplete: animateToPageHandler,
-                    onTapOutside: (event) {
-                      if (textInputFocus.hasFocus) {
-                        animateToPageHandler();
-                      }
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      suffixText: " / ${words.length}",
-                      suffixStyle: MyTextStyles.font_24_32_500,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+
+                            if (isListRefreshed) {
+                              // disposes all the states from pages
+                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                setState(() {
+                                  isListRefreshed = false;
+                                });
+                              });
+                            }
+                            return isListRefreshed
+                                ? wordPage
+                                : KeepAliveWidget(
+                                    child: wordPage,
+                                  );
+                          },
+                          childCount: words.length,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      height: 32,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      alignment: Alignment.topCenter,
+                      child: IntrinsicWidth(
+                        child: TextField(
+                          showCursor: true,
+                          focusNode: textInputFocus,
+                          style: MyTextStyles.font_24_32_500,
+                          autocorrect: false,
+                          keyboardType: TextInputType.number,
+                          controller: textEditingController,
+                          onEditingComplete: animateToPageHandler,
+                          onTapOutside: (event) {
+                            if (textInputFocus.hasFocus) {
+                              animateToPageHandler();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            suffixText: " / ${words.length}",
+                            suffixStyle: MyTextStyles.font_24_32_500,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+            ),
+            InternetConnectivityBuilder(
+              child: SizedBox(height: 50, child: AdMob.bannerAdWidget),
+              connectivityBuilder: (context, hasInternetAccess, child) =>
+                  (hasInternetAccess) ? child! : const SizedBox.shrink(),
             ),
           ],
         ),

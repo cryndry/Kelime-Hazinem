@@ -9,11 +9,13 @@ import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
 import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
+import 'package:kelime_hazinem/utils/admob.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 class WordTest extends StatefulWidget {
   const WordTest({super.key, required this.listName, required this.dbTitle});
@@ -279,16 +281,18 @@ class WordTestState extends State<WordTest> {
 
   @override
   void initState() {
-    SqlDatabase.getWordsQuery(
-      limit: listLength,
-      listName: widget.dbTitle,
-      isIconicList: widget.dbTitle != widget.listName,
-      isInRandomOrder: true,
-    ).then((result) {
-      setState(() {
-        words = result;
-        meanings = result.map((word) => word.meaning).toList();
-        emptyCount = result.length;
+    AdMob.loadBannerAd().then((_) {
+      SqlDatabase.getWordsQuery(
+        limit: listLength,
+        listName: widget.dbTitle,
+        isIconicList: widget.dbTitle != widget.listName,
+        isInRandomOrder: true,
+      ).then((result) {
+        setState(() {
+          words = result;
+          meanings = result.map((word) => word.meaning).toList();
+          emptyCount = result.length;
+        });
       });
     });
 
@@ -300,6 +304,7 @@ class WordTestState extends State<WordTest> {
     pageController.dispose();
     textEditingController.dispose();
     textInputFocus.dispose();
+    AdMob.disposeBannerAd();
 
     super.dispose();
   }
@@ -309,132 +314,143 @@ class WordTestState extends State<WordTest> {
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(title: "Kelime Testi", secTitle: widget.listName, buttons: appBarButtons),
-        body: Stack(
-          alignment: Alignment.center,
+        body: Column(
           children: [
-            NonScrollablePageLayout(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: MyColors.darkBlue.withOpacity(0.7),
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Flexible(
-                      child: PageView.custom(
-                        onPageChanged: (value) {
-                          textEditingController.value = TextEditingValue(text: (value + 1).toString());
-                          if (appBarButtons.isEmpty && value + 1 == words.length) {
-                            setState(() {
-                              appBarButtons.add(
-                                ActionButton(
-                                  icon: MySvgs.save,
-                                  size: 32,
-                                  semanticsLabel: "Seti Tamamla",
-                                  onTap: endingHandler,
-                                ),
-                              );
-                            });
-                          }
-                        },
-                        controller: pageController,
-                        scrollDirection: Axis.horizontal,
-                        childrenDelegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final Word currentWord = words[index];
-                            final wordPage = WordTestPage(
-                              currentWord: currentWord,
-                              meanings: meanings,
-                              getToNextPage: getToNextPage,
-                              handleAnswer: handleAnswer,
-                            );
-
-                            if (isListRefreshed) {
-                              // disposes all the states from pages
-                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                setState(() {
-                                  isListRefreshed = false;
-                                });
-                              });
-                            }
-                            return isListRefreshed
-                                ? wordPage
-                                : KeepAliveWidget(
-                                    child: wordPage,
-                                  );
-                          },
-                          childCount: words.length,
+            Flexible(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  NonScrollablePageLayout(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: MyColors.darkBlue.withOpacity(0.7),
+                          width: 2,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: Text(
-                              "D: $correctCount",
-                              textAlign: TextAlign.center,
-                              style: correctTextStyle,
+                          Flexible(
+                            child: PageView.custom(
+                              onPageChanged: (value) {
+                                textEditingController.value = TextEditingValue(text: (value + 1).toString());
+                                if (appBarButtons.isEmpty && value + 1 == words.length) {
+                                  setState(() {
+                                    appBarButtons.add(
+                                      ActionButton(
+                                        icon: MySvgs.save,
+                                        size: 32,
+                                        semanticsLabel: "Seti Tamamla",
+                                        onTap: endingHandler,
+                                      ),
+                                    );
+                                  });
+                                }
+                              },
+                              controller: pageController,
+                              scrollDirection: Axis.horizontal,
+                              childrenDelegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final Word currentWord = words[index];
+                                  final wordPage = WordTestPage(
+                                    currentWord: currentWord,
+                                    meanings: meanings,
+                                    getToNextPage: getToNextPage,
+                                    handleAnswer: handleAnswer,
+                                  );
+
+                                  if (isListRefreshed) {
+                                    // disposes all the states from pages
+                                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                      setState(() {
+                                        isListRefreshed = false;
+                                      });
+                                    });
+                                  }
+                                  return isListRefreshed
+                                      ? wordPage
+                                      : KeepAliveWidget(
+                                          child: wordPage,
+                                        );
+                                },
+                                childCount: words.length,
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              "Y: $wrongCount",
-                              textAlign: TextAlign.center,
-                              style: wrongTextStyle,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              "B: $emptyCount",
-                              textAlign: TextAlign.center,
-                              style: emptyTextStyle,
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "D: $correctCount",
+                                    textAlign: TextAlign.center,
+                                    style: correctTextStyle,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    "Y: $wrongCount",
+                                    textAlign: TextAlign.center,
+                                    style: wrongTextStyle,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    "B: $emptyCount",
+                                    textAlign: TextAlign.center,
+                                    style: emptyTextStyle,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                height: 32,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                alignment: Alignment.topCenter,
-                child: IntrinsicWidth(
-                  child: TextField(
-                    showCursor: true,
-                    focusNode: textInputFocus,
-                    style: MyTextStyles.font_24_32_500,
-                    autocorrect: false,
-                    keyboardType: TextInputType.number,
-                    controller: textEditingController,
-                    onEditingComplete: animateToPageHandler,
-                    onTapOutside: (event) {
-                      if (textInputFocus.hasFocus) {
-                        animateToPageHandler();
-                      }
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      suffixText: " / ${words.length}",
-                      suffixStyle: MyTextStyles.font_24_32_500,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      height: 32,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      alignment: Alignment.topCenter,
+                      child: IntrinsicWidth(
+                        child: TextField(
+                          showCursor: true,
+                          focusNode: textInputFocus,
+                          style: MyTextStyles.font_24_32_500,
+                          autocorrect: false,
+                          keyboardType: TextInputType.number,
+                          controller: textEditingController,
+                          onEditingComplete: animateToPageHandler,
+                          onTapOutside: (event) {
+                            if (textInputFocus.hasFocus) {
+                              animateToPageHandler();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            suffixText: " / ${words.length}",
+                            suffixStyle: MyTextStyles.font_24_32_500,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
+            ),
+            InternetConnectivityBuilder(
+              child: SizedBox(height: 50, child: AdMob.bannerAdWidget),
+              connectivityBuilder: (context, hasInternetAccess, child) =>
+                  (hasInternetAccess) ? child! : const SizedBox.shrink(),
             ),
           ],
         ),

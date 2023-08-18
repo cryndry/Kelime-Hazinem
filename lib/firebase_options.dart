@@ -38,7 +38,7 @@ abstract class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDikHoaUqaIQ_MKEfQZRW1MLNwCRy2KazM',
-    appId: '1:451513472757:android:ed3a880d8786fd6603d7bc',
+    appId: '1:451513472757:android:0a862417fa58860903d7bc',
     messagingSenderId: '451513472757',
     projectId: 'kelime-hazinem-ar-tr',
     storageBucket: 'kelime-hazinem-ar-tr.appspot.com',
@@ -46,7 +46,7 @@ abstract class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyByCwXJXSiL7Da7x2RX77M3JfNFjexoV7I',
-    appId: '1:451513472757:ios:21af2ebf74fcd87103d7bc',
+    appId: '1:451513472757:ios:05d908aad8d9e5d303d7bc',
     messagingSenderId: '451513472757',
     projectId: 'kelime-hazinem-ar-tr',
     storageBucket: 'kelime-hazinem-ar-tr.appspot.com',

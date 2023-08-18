@@ -15,6 +15,7 @@ import 'package:kelime_hazinem/screens/word_screen/word_guess.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_learn.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_show.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
+import 'package:kelime_hazinem/utils/admob.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -37,6 +38,7 @@ void main() async {
   await FirebaseDatabase.initDB();
   await Analytics.initService();
   runApp(const ProviderScope(child: KelimeHazinem()));
+  await AdMob.initService();
   await Notifications.initService();
 }
 
