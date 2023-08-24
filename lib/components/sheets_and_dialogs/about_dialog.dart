@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/dialog.dart';
-import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
-import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> popAboutDialog(BuildContext context) async {
@@ -14,12 +12,14 @@ Future<void> popAboutDialog(BuildContext context) async {
       return [
         Row(
           children: [
-            const ActionButton(
-              icon: MySvgs.favorites,
-              size: 48,
-              fillColor: Colors.white,
-              strokeColor: MyColors.darkBlue,
-              semanticsLabel: "Kelime Hazinem logo",
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                "assets/app_logo_256x256.png",
+                width: 64,
+                height: 64,
+                semanticLabel: "Kelime Hazinem logo",
+              ),
             ),
             const SizedBox(width: 12),
             Column(

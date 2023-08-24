@@ -10,7 +10,7 @@ extension GetTimeString on DateTime {
 
   static String get threeMonthsBefore {
     final now = DateTime.now();
-    final threeMonthsBefore = now.copyWith(month: now.month - 1);
+    final threeMonthsBefore = now.copyWith(month: now.month - 3);
     return threeMonthsBefore.toString().split(".")[0];
   }
 }
