@@ -34,6 +34,7 @@ dependencies:
   google_mobile_ads: ^3.0.0
   
   # Other utility packages
+  url_launcher: ^6.1.12
   cr_file_saver: ^0.0.2+1
   package_info_plus: ^4.1.0
   awesome_notifications: ^0.7.4+1
