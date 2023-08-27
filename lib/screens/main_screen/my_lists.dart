@@ -177,6 +177,8 @@ class MyListsState extends ConsumerState<MyLists> {
                       ),
                     ],
                   );
+                  
+                  if (newListName == null) return;
                   final willAddWords = await popDialog<bool>(
                     context: context,
                     routeName: "AddWordsToNewListRequestDialog",
@@ -212,7 +214,7 @@ class MyListsState extends ConsumerState<MyLists> {
 
                   if (willAddWords != true) return;
                   ref.read(isWordSelectionModeActiveProvider.notifier).update((state) => true);
-                  ref.read(newCreatedListNameProvider.notifier).update((state) => newListName ?? "");
+                  ref.read(newCreatedListNameProvider.notifier).update((state) => newListName);
                   await Navigator.of(context).pushNamed("AddWordsToNewList");
                   ref.read(newCreatedListNameProvider.notifier).update((state) => "");
                 },

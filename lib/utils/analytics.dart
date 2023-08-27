@@ -32,7 +32,7 @@ class Analytics {
   static Future<void> logWordAction({required String word, required String action}) async {
     return await _analytics.logEvent(
       name: AnalyticEvents.wordAction,
-      parameters: {'word': word, 'action_type': action},
+      parameters: {'word_action_word': word, 'word_action_type': action},
     );
   }
 
@@ -40,14 +40,14 @@ class Analytics {
       {required String mode, required String listName, required String action}) async {
     return await _analytics.logEvent(
       name: AnalyticEvents.learnModeAction,
-      parameters: {'mode': mode, 'list_name': listName, 'action_type': action},
+      parameters: {'learn_mode': mode, 'learn_mode_list_name': listName, 'learn_mode_action_type': action},
     );
   }
 
   static Future<void> logListShare({required String code, required String action}) async {
     return await _analytics.logEvent(
       name: AnalyticEvents.listShare,
-      parameters: {'share_code': code, 'action_type': action},
+      parameters: {'list_share_code': code, 'list_share_action_type': action},
     );
   }
 

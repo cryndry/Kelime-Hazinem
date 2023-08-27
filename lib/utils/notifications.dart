@@ -108,8 +108,7 @@ class Notifications {
         body: """
           <big><b>${word.word}</b></big>
           <br>
-          (<small>${word.description}</small>)
-          <br>
+          ${word.description != "" ? "(<small>${word.description}</small>)<br>" : ""}
           ${word.meaning}
         """,
         actionType: ActionType.Default,
