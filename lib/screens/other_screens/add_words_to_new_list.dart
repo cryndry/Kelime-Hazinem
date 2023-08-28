@@ -10,7 +10,7 @@ class AddWordsToNewList extends StatelessWidget {
     return const SafeArea(
       child: Scaffold(
         appBar: MyAppBar(title: "Tüm Kelimeler"),
-        body: AllWords(hideFAB: true),
+        body: AllWords(),
       ),
     );
   }

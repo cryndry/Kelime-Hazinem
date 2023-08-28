@@ -9,9 +9,7 @@ import 'package:kelime_hazinem/utils/set_state_on_pop_next.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 
 class AllWords extends ConsumerStatefulWidget {
-  const AllWords({super.key, this.hideFAB = false});
-
-  final bool hideFAB;
+  const AllWords({super.key});
 
   @override
   AllWordsState createState() => AllWordsState();
@@ -39,10 +37,12 @@ class AllWordsState extends ConsumerStateWithRefreshOnPopNext<AllWords> {
 
   @override
   Widget build(BuildContext context) {
+    final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
+
     return AllWordsPageLayout(
       words: words,
       type: "AllWords",
-      FABs: widget.hideFAB
+      FABs: isWordSelectionModeActive
           ? null
           : [
               FAB(
