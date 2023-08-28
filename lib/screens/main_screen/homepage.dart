@@ -5,7 +5,9 @@ import 'package:kelime_hazinem/components/layouts/list_card_grid.dart';
 import 'package:kelime_hazinem/components/layouts/page_layout.dart';
 import 'package:kelime_hazinem/components/others/performance.dart';
 import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
+import 'package:kelime_hazinem/utils/app_info.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
+import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
 
 class HomePage extends StatelessWidget {
@@ -13,13 +15,15 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageLayout(
+    return PageLayout(
       children: [
-        RandomWordCard(),
-        SizedBox(height: 12),
-        MyPerformance(),
-        SizedBox(height: 12),
-        ListCardGrid(
+        const RandomWordCard(),
+        if (AppInfo.installationTime.compareTo(GetTimeString.oneWeekBefore) < 0) ...const [
+          SizedBox(height: 12),
+          MyPerformance(),
+        ],
+        const SizedBox(height: 12),
+        const ListCardGrid(
           children: [
             ListCard(title: "Temel Seviye", isDefaultList: true),
             ListCard(title: "Orta Seviye", isDefaultList: true),
