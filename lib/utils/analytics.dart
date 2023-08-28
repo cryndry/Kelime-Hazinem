@@ -1,6 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:kelime_hazinem/utils/app_info.dart';
 import 'package:kelime_hazinem/utils/get_time_string.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 abstract final class AnalyticEvents {
   static const String routeChange = "route_change";
@@ -11,11 +11,11 @@ abstract final class AnalyticEvents {
   static const String randomWordCardRefresh = "random_word_card_refreshed";
 }
 
-class Analytics {
+abstract class Analytics {
   static final _analytics = FirebaseAnalytics.instance;
 
   static Future<void> initService() async {
-    final appVersion = (await PackageInfo.fromPlatform()).version;
+    final appVersion = AppInfo.appVersion;
     await _analytics.setDefaultEventParameters({
       "app_version": appVersion,
       "event_creation_time": GetTimeString.now,

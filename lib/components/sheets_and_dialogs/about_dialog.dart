@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/dialog.dart';
+import 'package:kelime_hazinem/utils/app_info.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> popAboutDialog(BuildContext context) async {
-  final packageInfo = await PackageInfo.fromPlatform();
-
   popDialog(
     context: context,
     routeName: "AboutDialog",
@@ -28,9 +26,9 @@ Future<void> popAboutDialog(BuildContext context) async {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(packageInfo.appName, style: MyTextStyles.font_20_24_500),
+                Text(AppInfo.appName, style: MyTextStyles.font_20_24_500),
                 const SizedBox(height: 8),
-                Text("Versiyon: ${packageInfo.version}", style: MyTextStyles.font_14_16_500),
+                Text("Versiyon: ${AppInfo.appVersion}", style: MyTextStyles.font_14_16_500),
               ],
             ),
           ],

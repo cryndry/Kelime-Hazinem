@@ -17,6 +17,7 @@ import 'package:kelime_hazinem/screens/word_screen/word_show.dart';
 import 'package:kelime_hazinem/screens/word_screen/word_test.dart';
 import 'package:kelime_hazinem/utils/admob.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
+import 'package:kelime_hazinem/utils/app_info.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/navigation_observer.dart';
@@ -31,6 +32,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SqlDatabase.initDB();
   await KeyValueDatabase.initDB();
+  await AppInfo.initializeApp();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

@@ -24,6 +24,7 @@ abstract class SqlDatabase {
   static const String _dbWordTableName = "Words";
   static const String _dbListTableName = "Lists";
   static const String _dbEntryTableName = "Entries";
+  static const String _dbAppInfoTableName = "AppInfo";
 
   static Future<void> initDB() async {
     _applicationDirectory = (await getApplicationDocumentsDirectory()).absolute;
@@ -39,6 +40,36 @@ abstract class SqlDatabase {
 
     _db = await openDatabase(dbPath, onOpen: (db) {
       db.execute("PRAGMA foreign_keys = ON");
+    });
+  }
+
+  static Future<Map<String, String>> getAppInfo() async {
+    return await _db.transaction((txn) async {
+      await txn.execute("""
+        CREATE TABLE IF NOT EXISTS $_dbAppInfoTableName (
+          key TEXT,
+          value TEXT
+        );
+      """);
+      final result = (await txn.rawQuery("""
+        SELECT * FROM $_dbAppInfoTableName
+        WHERE key = 'installationTime'
+      """)).cast<Map<String, String>>();
+      return {
+        for (Map<String, String> data in result) data["key"]!: data["value"]!,
+      };
+    });
+  }
+
+  static Future<void> updateAppInfo(Map<String, String> appInfo) async {
+    await _db.transaction((txn) async {
+      for (MapEntry<String, String> data in appInfo.entries) {
+        await txn.execute("""
+          UPDATE $_dbAppInfoTableName
+          SET value='${data.value}'
+          WHERE key='${data.key}'
+        """);
+      }
     });
   }
 
