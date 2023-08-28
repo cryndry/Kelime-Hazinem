@@ -21,7 +21,7 @@ abstract class AppInfo {
     if (appInfo.isEmpty) {
       final updateInfo = {
         "installation_time": GetTimeString.now,
-        "appVersion": packageInfo.version,
+        "app_version": packageInfo.version,
       };
       await SqlDatabase.updateAppInfo(updateInfo);
       appInfo.addAll(updateInfo);

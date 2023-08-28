@@ -47,16 +47,13 @@ abstract class SqlDatabase {
     return await _db.transaction((txn) async {
       await txn.execute("""
         CREATE TABLE IF NOT EXISTS $_dbAppInfoTableName (
-          key TEXT,
+          key TEXT PRIMARY KEY,
           value TEXT
         );
       """);
-      final result = (await txn.rawQuery("""
-        SELECT * FROM $_dbAppInfoTableName
-        WHERE key = 'installationTime'
-      """)).cast<Map<String, String>>();
+      final result = await txn.query(_dbAppInfoTableName);
       return {
-        for (Map<String, String> data in result) data["key"]!: data["value"]!,
+        for (var data in result) (data["key"] as String): (data["value"] as String),
       };
     });
   }
@@ -64,11 +61,11 @@ abstract class SqlDatabase {
   static Future<void> updateAppInfo(Map<String, String> appInfo) async {
     await _db.transaction((txn) async {
       for (MapEntry<String, String> data in appInfo.entries) {
-        await txn.execute("""
-          UPDATE $_dbAppInfoTableName
-          SET value='${data.value}'
-          WHERE key='${data.key}'
-        """);
+        await txn.insert(
+          _dbAppInfoTableName,
+          {"key": data.key, "value": data.value},
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
       }
     });
   }
