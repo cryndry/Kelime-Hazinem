@@ -13,7 +13,7 @@ class StrokeColoredButton extends StatelessWidget {
     side: const BorderSide(color: MyColors.darkBlue, width: 1.5),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(24),
     ),
   );
 

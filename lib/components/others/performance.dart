@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
 import 'package:kelime_hazinem/screens/other_screens/settings.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -59,8 +60,11 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: MyColors.lightBlue,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: MyColors.darkBlue.withOpacity(0.7),
+          width: 2,
+        ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       child: Column(
@@ -69,7 +73,7 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Performansım", style: MyTextStyles.font_20_24_600.apply(color: Colors.white)),
+              Text("Performansım", style: MyTextStyles.font_20_24_600.apply(color: MyColors.darkBlue)),
               SelectableSetting(
                 values: const {
                   "Haftalık": "Haftalık",
@@ -77,7 +81,7 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
                   "3 Aylık": "3 Aylık",
                 },
                 initialValue: "Haftalık",
-                color: Colors.white,
+                color: MyColors.darkBlue,
                 onChange: (value) {
                   KeyValueDatabase.setMyPerformancePeriod(value);
                   setState(() {
@@ -92,20 +96,16 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const SizedBox(height: 8),
                     Text(
                       getNoDataMessage(),
                       style: MyTextStyles.font_16_24_500.apply(
-                        color: Colors.white,
+                        color: MyColors.darkBlue,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.white),
-                        foregroundColor: MaterialStatePropertyAll(MyColors.darkBlue),
-                        padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 4, horizontal: 8)),
-                      ),
-                      child: const Text("Kısa Bir Tekrar?", style: MyTextStyles.font_16_20_500),
+                    const SizedBox(height: 16),
+                    StrokeColoredButton(
+                      title: "Kısa Bir Tekrar?",
                       onPressed: () async {
                         final doesWillLearnHaveEnoughWords =
                             await SqlDatabase.checkIfIconicListHaveWords("willLearn", 50);
@@ -135,21 +135,21 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
                           Text(
                             "Öğreneceklerim: ${data["willLearnCount"]!.toInt()}",
                             style: MyTextStyles.font_16_24_500.apply(
-                              color: MyColors.red,
+                              color: const Color(0xFFFF453A),
                             ),
                           ),
                         if (data["favoriteCount"] != 0)
                           Text(
                             "Favorilerim: ${data["favoriteCount"]!.toInt()}",
                             style: MyTextStyles.font_16_24_500.apply(
-                              color: MyColors.amber,
+                              color: const Color(0xFFFF9F0A),
                             ),
                           ),
                         if (data["learnedCount"] != 0)
                           Text(
                             "Öğrendiklerim: ${data["learnedCount"]!.toInt()}",
                             style: MyTextStyles.font_16_24_500.apply(
-                              color: MyColors.green,
+                              color: const Color(0xFF32D74B),
                             ),
                           ),
                         if (data["memorizedCount"] != 0)

@@ -13,7 +13,7 @@ class FillColoredButton extends StatelessWidget {
     foregroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(24),
     ),
   );
 
