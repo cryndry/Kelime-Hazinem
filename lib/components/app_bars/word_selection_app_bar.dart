@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_words_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/main.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -81,16 +82,27 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
                     return newState;
                   });
 
+                  bool isAllWordsOfListEmpty = false;
                   ref.read(allWordsOfListProvider.notifier).update((state) {
-                    if (state.isEmpty) return state;
+                    if (state.isEmpty) {
+                      isAllWordsOfListEmpty = true;
+                      return state;
+                    }
 
                     final newState = [...state];
                     newState.removeWhere((word) => selectedWords.contains(word.id));
+
+                    if (newState.isEmpty) isAllWordsOfListEmpty = true;
 
                     return newState;
                   });
 
                   deactivateWordSelectionMode(ref);
+
+                  if (MyNavigatorObserver.stack.first == "AllWordsOfList" && isAllWordsOfListEmpty) {
+                    Navigator.of(KelimeHazinem.navigatorKey.currentContext!)
+                        .popUntil(ModalRoute.withName("MainScreen"));
+                  }
                 },
               ),
             ),

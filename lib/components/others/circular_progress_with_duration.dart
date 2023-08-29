@@ -9,6 +9,7 @@ class CircularProgressIndicatorWithDuration extends StatefulWidget {
     required this.strokeWidth,
     required this.size,
     this.shouldShowRemainingDuration = false,
+    this.remainingDurationColor,
   });
 
   final Color color;
@@ -16,6 +17,7 @@ class CircularProgressIndicatorWithDuration extends StatefulWidget {
   final double strokeWidth;
   final double size;
   final bool shouldShowRemainingDuration;
+  final Color? remainingDurationColor;
 
   @override
   CircularProgressIndicatorWithDurationState createState() => CircularProgressIndicatorWithDurationState();
@@ -72,7 +74,7 @@ class CircularProgressIndicatorWithDurationState extends State<CircularProgressI
                 fit: BoxFit.fitHeight,
                 child: Text(
                   ((1 - _animationController.value) * widget.duration.inSeconds).round().toInt().toString(),
-                  style: const TextStyle(height: 1),
+                  style: TextStyle(height: 1, color: widget.remainingDurationColor),
                   maxLines: 1,
                 ),
               ),

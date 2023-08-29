@@ -106,29 +106,44 @@ class AllWordsPageLayoutState extends ConsumerState<AllWordsPageLayout> {
     }
   }
 
-  void wordRemove(int id) {
-    bool shouldPop = false;
+  void Function() wordRemove(int id) {
+    int removedIndex = -1;
+    Word? removedWord;
+
     if (widget.type == "AllWords") {
       ref.read(allWordsProvider.notifier).update((state) {
         final newState = [...state];
-        newState.removeWhere((word) => word.id == id);
+        removedIndex = newState.indexWhere((word) => word.id == id);
+        if (removedIndex != -1) removedWord = newState.removeAt(removedIndex);
         return newState;
       });
     } else if (widget.type == "AllWordsOfList") {
       ref.read(allWordsOfListProvider.notifier).update((state) {
         final newState = [...state];
-        newState.removeWhere((word) => word.id == id);
-        if (newState.isEmpty) shouldPop = true;
+        removedIndex = newState.indexWhere((word) => word.id == id);
+        if (removedIndex != -1) removedWord = newState.removeAt(removedIndex);
         return newState;
       });
     }
-    words.removeWhere((word) => word.id == id);
+    if (mounted) setState(() {});
 
-    if (shouldPop) {
-      Navigator.of(context).pop();
-    } else {
-      setState(() {});
-    }
+    return () {
+      List<Word> insertBack(List<Word> state) {
+        final newState = [...state];
+        newState.insert(removedIndex, removedWord!);
+        return newState;
+      }
+
+      if (removedWord == null) return;
+
+      if (widget.type == "AllWords") {
+        ref.read(allWordsProvider.notifier).update(insertBack);
+      } else if (widget.type == "AllWordsOfList") {
+        ref.read(allWordsOfListProvider.notifier).update(insertBack);
+      }
+
+      if (mounted) setState(() {});
+    };
   }
 
   @override

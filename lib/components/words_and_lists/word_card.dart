@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
+import 'package:kelime_hazinem/components/others/circular_progress_with_duration.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
@@ -20,8 +23,8 @@ class WordCard extends ConsumerStatefulWidget {
   });
 
   final Word word;
-  final void Function(int)? wordRemove;
-  final void Function()? wordChange;
+  final void Function() Function(int)? wordRemove;
+  final void Function() Function()? wordChange;
 
   @override
   WordCardState createState() => WordCardState();
@@ -39,16 +42,71 @@ class WordCardState extends ConsumerState<WordCard> {
   }
 
   void deleteWord(BuildContext context) async {
+    final scaffoldContext = Scaffold.of(context).context;
+    final allWordsPageLayoutState = context.findAncestorStateOfType<AllWordsPageLayoutState>();
+
     final slidableController = Slidable.of(context)!;
     await slidableController.dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
 
-    SqlDatabase.deleteWord(widget.word.id);
-    Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
+    void Function()? reverseRemoveCallback;
     if (widget.wordRemove != null) {
-      widget.wordRemove!(widget.word.id);
+      reverseRemoveCallback = widget.wordRemove!(widget.word.id);
     } else if (widget.wordChange != null) {
-      widget.wordChange!();
+      reverseRemoveCallback = widget.wordChange!();
     }
+
+    Timer? timer;
+    final duration = MyDurations.millisecond1000 * 5;
+
+    ScaffoldMessenger.of(scaffoldContext).clearSnackBars();
+    ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+      SnackBar(
+        padding: const EdgeInsets.all(8),
+        backgroundColor: MyColors.darkBlue,
+        duration: duration,
+        onVisible: () {
+          if (timer != null) {
+            timer?.cancel();
+            timer = null;
+          }
+          timer = Timer(duration, () {
+            SqlDatabase.deleteWord(widget.word.id);
+            Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
+            final bool? allWordsPageLayoutHasNoWord = allWordsPageLayoutState?.words.isEmpty;
+            if (allWordsPageLayoutHasNoWord ?? false) {
+              Navigator.of(scaffoldContext).popUntil(ModalRoute.withName("MainScreen"));
+            }
+          });
+        },
+        content: Row(
+          children: [
+            TextButton.icon(
+              label: Text("Geri Al", style: MyTextStyles.font_14_16_500.apply(color: Colors.white)),
+              style: const ButtonStyle(overlayColor: MaterialStatePropertyAll(Colors.white24)),
+              icon: CircularProgressIndicatorWithDuration(
+                size: 30,
+                strokeWidth: 3,
+                color: Colors.white,
+                duration: duration,
+                shouldShowRemainingDuration: true,
+                remainingDurationColor: Colors.white,
+              ),
+              onPressed: () {
+                timer?.cancel();
+                timer = null;
+                reverseRemoveCallback?.call();
+                ScaffoldMessenger.of(scaffoldContext).clearSnackBars();
+              },
+            ),
+            const SizedBox(width: 4),
+            const Text(
+              "Kelime kalıcı olarak silinecek.",
+              style: MyTextStyles.font_16_20_400,
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override

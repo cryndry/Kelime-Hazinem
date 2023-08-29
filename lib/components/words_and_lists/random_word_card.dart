@@ -26,6 +26,19 @@ class RandomWordCardState extends State<RandomWordCard> {
     });
   }
 
+  void Function() wordChange() {
+    final currentWord = word;
+    getRandomWord();
+
+    return () {
+      if (mounted) {
+        setState(() {
+          word = currentWord;
+        });
+      }
+    };
+  }
+
   @override
   void initState() {
     getRandomWord();
@@ -40,7 +53,7 @@ class RandomWordCardState extends State<RandomWordCard> {
         WordCard(
           word: word,
           key: ValueKey(word.id),
-          wordChange: getRandomWord,
+          wordChange: wordChange,
         ),
         Positioned(
           top: 16,

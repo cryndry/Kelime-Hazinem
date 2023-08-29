@@ -32,14 +32,6 @@ class AllWordsOfListState extends ConsumerState<AllWordsOfList> {
       });
     });
 
-    ref.listenManual(allWordsOfListProvider, (previous, next) {
-      if (previous != null && previous.isNotEmpty && next.isEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.of(context).pop();
-        });
-      }
-    });
-
     super.initState();
   }
 
