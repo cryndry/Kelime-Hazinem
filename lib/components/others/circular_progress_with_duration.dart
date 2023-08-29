@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class CircularProgressIndicatorWithDuration extends StatefulWidget {
@@ -6,13 +7,15 @@ class CircularProgressIndicatorWithDuration extends StatefulWidget {
     required this.color,
     required this.duration,
     required this.strokeWidth,
-    this.size,
+    required this.size,
+    this.shouldShowRemainingDuration = false,
   });
 
   final Color color;
   final Duration duration;
   final double strokeWidth;
-  final double? size;
+  final double size;
+  final bool shouldShowRemainingDuration;
 
   @override
   CircularProgressIndicatorWithDurationState createState() => CircularProgressIndicatorWithDurationState();
@@ -41,16 +44,40 @@ class CircularProgressIndicatorWithDurationState extends State<CircularProgressI
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) => CircularProgressIndicator(
-          color: widget.color,
-          strokeWidth: widget.strokeWidth,
-          value: _animationController.value,
-        ),
+    final textSize = ((widget.size - widget.strokeWidth) / sqrt(2)).floorToDouble();
+
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) => Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: CircularProgressIndicator(
+              color: widget.color,
+              strokeWidth: widget.strokeWidth,
+              value: _animationController.value,
+            ),
+          ),
+          if (widget.shouldShowRemainingDuration)
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: textSize,
+                maxHeight: min(textSize, 24),
+              ),
+              width: textSize,
+              height: textSize,
+              child: FittedBox(
+                fit: BoxFit.fitHeight,
+                child: Text(
+                  ((1 - _animationController.value) * widget.duration.inSeconds).round().toInt().toString(),
+                  style: const TextStyle(height: 1),
+                  maxLines: 1,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
