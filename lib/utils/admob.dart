@@ -1,15 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-abstract final class AnalyticEvents {
-  static const String routeChange = "route_change";
-  static const String wordAction = "word_action";
-  static const String learnModeAction = "learn_mode_action";
-  static const String listShare = "list_share";
-  static const String keyValueDbChange = "key_value_db_change";
-  static const String randomWordCardRefresh = "random_word_card_refreshed";
-}
-
 abstract class AdMob {
   static final _adMob = MobileAds.instance;
   static const _learnModeBannerIdIOS = "ca-app-pub-8406981056412185/6338819938";
