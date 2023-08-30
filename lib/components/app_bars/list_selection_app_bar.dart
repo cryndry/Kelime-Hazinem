@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/dialog.dart';
 import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/snack_bar.dart';
 import 'package:kelime_hazinem/components/others/text_input.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/undo_snack_bar.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -110,19 +112,56 @@ class ListSelectionAppBarState extends ConsumerState {
                 icon: MySvgs.delete,
                 size: 32,
                 semanticsLabel: "${selectedLists.length == 1 ? "Listeyi" : "Listeleri"} Sil",
-                onTap: () {
+                onTap: () async {
+                  final willRemoveIndexes = <int, String>{};
+                  List<MapEntry<int, String>> willRemoveIndexesSorted = [];
+
                   ref.read(myListsProvider.notifier).update((state) {
                     final newState = [...state];
 
                     for (String listName in selectedLists) {
-                      SqlDatabase.deleteList(listName);
-                      newState.remove(listName);
+                      final index = newState.indexOf(listName);
+                      if (index != -1) willRemoveIndexes[index] = listName;
+                    }
+
+                    willRemoveIndexesSorted = willRemoveIndexes.entries.toList()
+                      ..sort((entry1, entry2) => entry2.key.compareTo(entry1.key));
+
+                    for (MapEntry<int, String> entry in willRemoveIndexesSorted) {
+                      newState.removeAt(entry.key);
                     }
 
                     return newState;
                   });
 
-                  deactivateListSelectionMode(ref);
+                  ref.read(isListSelectionModeActiveProvider.notifier).update((state) => false);
+                  // appBarRef is used, because ref of ListSelectionAppBarState is not accessible after above line executed.
+                  // because ref is actually context of Consumer(Stateful)Widget
+                  final appBarRef = context.findAncestorStateOfType<MyAppBarState>()!.ref;
+
+                  showUndoSnackBar(
+                    message: "${selectedLists.length == 1 ? "Liste" : "Listeler"} kalıcı olarak silinecek.",
+                    duration: MyDurations.millisecond1000 * 5,
+                    undoCallback: () {
+                      appBarRef.read(myListsProvider.notifier).update((state) {
+                        final newState = [...state];
+
+                        for (MapEntry<int, String> entry in willRemoveIndexesSorted.reversed) {
+                          newState.insert(entry.key, entry.value);
+                        }
+
+                        return newState;
+                      });
+                    },
+                    noUndoCallback: () {
+                      for (String listName in selectedLists) {
+                        SqlDatabase.deleteList(listName);
+                      }
+                    },
+                    snackBarClosedCallback: () {
+                      deactivateListSelectionMode(appBarRef);
+                    },
+                  );
                 },
               ),
             ),

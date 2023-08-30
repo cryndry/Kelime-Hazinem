@@ -21,6 +21,7 @@ final internetConnectivityProvider = Provider<InternetConnectivity>(
 
 void activateListSelectionMode(WidgetRef ref) {
   ref.read(isListSelectionModeActiveProvider.notifier).update((state) => true);
+  ref.read(selectedListsProvider.notifier).update((state) => []);
 }
 
 void deactivateListSelectionMode(WidgetRef ref) {
@@ -30,6 +31,7 @@ void deactivateListSelectionMode(WidgetRef ref) {
 
 void activateWordSelectionMode(WidgetRef ref) {
   ref.read(isWordSelectionModeActiveProvider.notifier).update((state) => true);
+  ref.read(selectedWordsProvider.notifier).update((state) => []);
 }
 
 void deactivateWordSelectionMode(WidgetRef ref) {
