@@ -270,7 +270,6 @@ class WordEditState extends ConsumerState<WordEdit> {
                               ),
                             ),
                           ),
-                          onPressed: () {},
                         );
                       }
                       return FillColoredButton(
@@ -308,7 +307,6 @@ class WordEditState extends ConsumerState<WordEdit> {
                                 ),
                               ),
                             ),
-                            onPressed: () {},
                           );
                         }
                         if (snapshot.connectionState == ConnectionState.done) {
@@ -325,7 +323,6 @@ class WordEditState extends ConsumerState<WordEdit> {
                                   icon: MySvgs.save,
                                   size: 32,
                                 ),
-                                onPressed: () {},
                               );
                             }
                             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

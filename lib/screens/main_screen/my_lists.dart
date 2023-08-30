@@ -145,7 +145,6 @@ class MyListsState extends ConsumerState<MyLists> {
                                         semanticsLabel: "Oluşturuluyor...",
                                       ),
                                     ),
-                                    onPressed: () {},
                                   );
                                 }
                                 return FillColoredButton(
@@ -177,7 +176,7 @@ class MyListsState extends ConsumerState<MyLists> {
                       ),
                     ],
                   );
-                  
+
                   if (newListName == null) return;
                   final willAddWords = await popDialog<bool>(
                     context: context,

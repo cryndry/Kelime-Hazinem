@@ -247,7 +247,6 @@ class WordTestState extends State<WordTest> {
                         semanticsLabel: "Kaydediliyor...",
                       ),
                     ),
-                    onPressed: () {},
                   ),
                 );
               } else if (snapshot.connectionState == ConnectionState.done) {

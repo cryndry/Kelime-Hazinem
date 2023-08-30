@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class StrokeColoredButton extends StatelessWidget {
-  StrokeColoredButton({super.key, required this.title, required this.onPressed});
+  StrokeColoredButton({super.key, required this.title, this.onPressed});
 
   final String title;
-  final void Function() onPressed;
+  final void Function()? onPressed;
 
   final ButtonStyle outlinedButtonStyle = OutlinedButton.styleFrom(
-    foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
     backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
+    foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
+    disabledBackgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
+    disabledForegroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
     side: const BorderSide(color: MyColors.darkBlue, width: 1.5),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(

@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 
 class FillColoredButton extends StatelessWidget {
-  FillColoredButton({super.key, this.title, required this.onPressed, this.icon});
+  FillColoredButton({super.key, this.title, this.onPressed, this.icon});
 
   final String? title;
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final Widget? icon;
 
   final ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
     foregroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
+    disabledBackgroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
+    disabledForegroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(24),

@@ -255,15 +255,11 @@ class WordAddState extends ConsumerState<WordAdd> {
                                 ),
                               ),
                             ),
-                            onPressed: () {},
                           );
                         }
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.data is Map) {
-                            return FillColoredButton(
-                              title: "Kaydedildi",
-                              onPressed: () {},
-                            );
+                            return FillColoredButton(title: "Kaydedildi");
                           } else if (snapshot.data == "DbError") {
                             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                               popDialog(

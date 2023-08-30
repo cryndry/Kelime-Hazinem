@@ -231,7 +231,7 @@ class ListSelectionAppBarState extends ConsumerState {
                                         semanticsLabel: "Kaydediliyor...",
                                       ),
                                     ),
-                                    onPressed: () {},
+                                    
                                   );
                                 }
                                 return FillColoredButton(

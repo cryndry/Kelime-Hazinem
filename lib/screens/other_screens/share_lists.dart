@@ -157,7 +157,6 @@ class ShareListsState extends ConsumerState {
                                       semanticsLabel: "Yükleniyor...",
                                     ),
                                   ),
-                                  onPressed: () {},
                                 );
                               }
                               return FillColoredButton(
