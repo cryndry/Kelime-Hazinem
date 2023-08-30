@@ -18,7 +18,7 @@ void showUndoSnackBar({
   ScaffoldMessenger.of(context).clearSnackBars();
   final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
       backgroundColor: MyColors.darkBlue,
       duration: duration,
       onVisible: () {
@@ -49,7 +49,12 @@ void showUndoSnackBar({
             },
           ),
           const SizedBox(width: 4),
-          Text(message, style: MyTextStyles.font_16_20_400),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(message, style: MyTextStyles.font_16_20_400),
+            ),
+          ),
         ],
       ),
     ),

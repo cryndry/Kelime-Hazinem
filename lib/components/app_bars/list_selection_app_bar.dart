@@ -149,11 +149,23 @@ class ListSelectionAppBarState extends ConsumerState {
             onTap: deactivateShareMode,
           ),
           const SizedBox(width: 12),
-          Text(
-            '${selectedLists.length.toString()} Liste Seçildi',
-            style: MyTextStyles.font_24_32_500.apply(color: Colors.white),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    '${selectedLists.length.toString()} Liste Seçildi',
+                    style: MyTextStyles.font_24_32_500.apply(color: Colors.white),
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
           if (selectedLists.isNotEmpty && !isUsedInListSharePage)
             Padding(
               padding: const EdgeInsets.only(right: 8),

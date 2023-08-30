@@ -155,11 +155,23 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
             onTap: deactivateShareMode,
           ),
           const SizedBox(width: 12),
-          Text(
-            '${selectedWords.length.toString()} Kelime Seçildi',
-            style: MyTextStyles.font_24_32_500.apply(color: Colors.white),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    '${selectedWords.length.toString()} Kelime Seçildi',
+                    style: MyTextStyles.font_24_32_500.apply(color: Colors.white),
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
           if (selectedWords.isNotEmpty && !isUsedInListCreateMode)
             Padding(
               padding: const EdgeInsets.only(right: 8),
