@@ -25,103 +25,120 @@ class WordActionButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAnimatable = KeyValueDatabase.getIsAnimatable();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+
+    return SizedBox(
+      height: eachIconSize + 16,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: isAnimatable
-            ? <AnimatedActionButton>[
-                AnimatedActionButton(
-                  duration: 300,
-                  size: eachIconSize,
-                  icon: MySvgs.willLearn,
-                  isActive: intAsBool(word.willLearn),
-                  activeFillColor: MyColors.red,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Öğreneceklerime Ekle",
-                  onTap: () {
-                    handleSetState(word.willLearnToggle);
-                  },
-                ),
-                AnimatedActionButton(
-                  duration: 300,
-                  size: eachIconSize,
-                  icon: MySvgs.favorites,
-                  isActive: intAsBool(word.favorite),
-                  activeFillColor: MyColors.amber,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Favorilerime Ekle",
-                  onTap: () {
-                    handleSetState(word.favoriteToggle);
-                  },
-                ),
-                AnimatedActionButton(
-                  duration: 300,
-                  size: eachIconSize,
-                  icon: MySvgs.learned,
-                  isActive: intAsBool(word.learned),
-                  activeFillColor: MyColors.green,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Öğrendiklerime Ekle",
-                  onTap: () {
-                    handleSetState(word.learnedToggle);
-                  },
-                ),
-                AnimatedActionButton(
-                  duration: 300,
-                  size: eachIconSize,
-                  icon: MySvgs.memorized,
-                  isActive: intAsBool(word.memorized),
-                  activeFillColor: MyColors.darkGreen,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Hazineme Ekle",
-                  onTap: () {
-                    handleSetState(word.memorizedToggle);
-                  },
-                ),
-              ]
-            : <ActionButton>[
-                ActionButton(
-                  size: eachIconSize,
-                  icon: MySvgs.willLearn,
-                  fillColor: intAsBool(word.willLearn) ? MyColors.red : Colors.transparent,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Öğreneceklerime Ekle",
-                  onTap: () {
-                    handleSetState(word.willLearnToggle);
-                  },
-                ),
-                ActionButton(
-                  size: eachIconSize,
-                  icon: MySvgs.favorites,
-                  fillColor: intAsBool(word.favorite) ? MyColors.amber : Colors.transparent,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Favorilerime Ekle",
-                  onTap: () {
-                    handleSetState(word.favoriteToggle);
-                  },
-                ),
-                ActionButton(
-                  size: eachIconSize,
-                  icon: MySvgs.learned,
-                  fillColor: intAsBool(word.learned) ? MyColors.green : Colors.transparent,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Öğrendiklerime Ekle",
-                  onTap: () {
-                    handleSetState(word.learnedToggle);
-                  },
-                ),
-                ActionButton(
-                  size: eachIconSize,
-                  icon: MySvgs.memorized,
-                  fillColor: intAsBool(word.memorized) ? MyColors.darkGreen : Colors.transparent,
-                  strokeColor: iconStrokeColor,
-                  semanticsLabel: "Hazineme Ekle",
-                  onTap: () {
-                    handleSetState(word.memorizedToggle);
-                  },
-                ),
-              ],
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                handleSetState(word.willLearnToggle);
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Align(
+                child: isAnimatable
+                    ? AnimatedActionButton(
+                        duration: 300,
+                        size: eachIconSize,
+                        icon: MySvgs.willLearn,
+                        isActive: intAsBool(word.willLearn),
+                        activeFillColor: MyColors.red,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Öğreneceklerime Ekle",
+                      )
+                    : ActionButton(
+                        size: eachIconSize,
+                        icon: MySvgs.willLearn,
+                        fillColor: intAsBool(word.willLearn) ? MyColors.red : Colors.transparent,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Öğreneceklerime Ekle",
+                      ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                handleSetState(word.favoriteToggle);
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Align(
+                child: isAnimatable
+                    ? AnimatedActionButton(
+                        duration: 300,
+                        size: eachIconSize,
+                        icon: MySvgs.favorites,
+                        isActive: intAsBool(word.favorite),
+                        activeFillColor: MyColors.amber,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Favorilerime Ekle",
+                      )
+                    : ActionButton(
+                        size: eachIconSize,
+                        icon: MySvgs.favorites,
+                        fillColor: intAsBool(word.favorite) ? MyColors.amber : Colors.transparent,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Favorilerime Ekle",
+                      ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                handleSetState(word.learnedToggle);
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Align(
+                child: isAnimatable
+                    ? AnimatedActionButton(
+                        duration: 300,
+                        size: eachIconSize,
+                        icon: MySvgs.learned,
+                        isActive: intAsBool(word.learned),
+                        activeFillColor: MyColors.green,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Öğrendiklerime Ekle",
+                      )
+                    : ActionButton(
+                        size: eachIconSize,
+                        icon: MySvgs.learned,
+                        fillColor: intAsBool(word.learned) ? MyColors.green : Colors.transparent,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Öğrendiklerime Ekle",
+                      ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                handleSetState(word.memorizedToggle);
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Align(
+                child: isAnimatable
+                    ? AnimatedActionButton(
+                        duration: 300,
+                        size: eachIconSize,
+                        icon: MySvgs.memorized,
+                        isActive: intAsBool(word.memorized),
+                        activeFillColor: MyColors.darkGreen,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Hazineme Ekle",
+                      )
+                    : ActionButton(
+                        size: eachIconSize,
+                        icon: MySvgs.memorized,
+                        fillColor: intAsBool(word.memorized) ? MyColors.darkGreen : Colors.transparent,
+                        strokeColor: iconStrokeColor,
+                        semanticsLabel: "Hazineme Ekle",
+                      ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

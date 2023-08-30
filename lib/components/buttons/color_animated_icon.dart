@@ -89,7 +89,7 @@ class AnimatedActionButtonState extends State<AnimatedActionButton> with SingleT
         size: widget.size,
         fillColor: _colorTween.value,
         semanticsLabel: widget.semanticsLabel,
-        onTap: widget.onTap!,
+        onTap: widget.onTap,
       ),
     );
   }
