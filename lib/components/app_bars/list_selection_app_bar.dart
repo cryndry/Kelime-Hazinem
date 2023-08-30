@@ -71,6 +71,55 @@ class ListSelectionAppBarState extends ConsumerState {
     deactivateListSelectionMode(ref);
   }
 
+  void deleteLists(selectedLists) {
+    final willRemoveIndexes = <int, String>{};
+    List<MapEntry<int, String>> willRemoveIndexesSorted = [];
+
+    ref.read(myListsProvider.notifier).update((state) {
+      final newState = [...state];
+
+      for (String listName in selectedLists) {
+        final index = newState.indexOf(listName);
+        if (index != -1) willRemoveIndexes[index] = listName;
+      }
+
+      willRemoveIndexesSorted = willRemoveIndexes.entries.toList()
+        ..sort((entry1, entry2) => entry2.key.compareTo(entry1.key));
+
+      for (MapEntry<int, String> entry in willRemoveIndexesSorted) {
+        newState.removeAt(entry.key);
+      }
+
+      return newState;
+    });
+
+    deactivateListSelectionMode(ref);
+    // appBarRef is used, because ref of ListSelectionAppBarState is not accessible after above line executed.
+    // because ref is actually context of Consumer(Stateful)Widget
+    final appBarRef = context.findAncestorStateOfType<MyAppBarState>()!.ref;
+
+    showUndoSnackBar(
+      message: "${selectedLists.length == 1 ? "Liste" : "Listeler"} kalıcı olarak silinecek.",
+      duration: MyDurations.millisecond1000 * 5,
+      undoCallback: () {
+        appBarRef.read(myListsProvider.notifier).update((state) {
+          final newState = [...state];
+
+          for (MapEntry<int, String> entry in willRemoveIndexesSorted.reversed) {
+            newState.insert(entry.key, entry.value);
+          }
+
+          return newState;
+        });
+      },
+      noUndoCallback: () {
+        for (String listName in selectedLists) {
+          SqlDatabase.deleteList(listName);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeTabIndex = ref.watch(activeTabIndexProvider);
@@ -112,56 +161,8 @@ class ListSelectionAppBarState extends ConsumerState {
                 icon: MySvgs.delete,
                 size: 32,
                 semanticsLabel: "${selectedLists.length == 1 ? "Listeyi" : "Listeleri"} Sil",
-                onTap: () async {
-                  final willRemoveIndexes = <int, String>{};
-                  List<MapEntry<int, String>> willRemoveIndexesSorted = [];
-
-                  ref.read(myListsProvider.notifier).update((state) {
-                    final newState = [...state];
-
-                    for (String listName in selectedLists) {
-                      final index = newState.indexOf(listName);
-                      if (index != -1) willRemoveIndexes[index] = listName;
-                    }
-
-                    willRemoveIndexesSorted = willRemoveIndexes.entries.toList()
-                      ..sort((entry1, entry2) => entry2.key.compareTo(entry1.key));
-
-                    for (MapEntry<int, String> entry in willRemoveIndexesSorted) {
-                      newState.removeAt(entry.key);
-                    }
-
-                    return newState;
-                  });
-
-                  ref.read(isListSelectionModeActiveProvider.notifier).update((state) => false);
-                  // appBarRef is used, because ref of ListSelectionAppBarState is not accessible after above line executed.
-                  // because ref is actually context of Consumer(Stateful)Widget
-                  final appBarRef = context.findAncestorStateOfType<MyAppBarState>()!.ref;
-
-                  showUndoSnackBar(
-                    message: "${selectedLists.length == 1 ? "Liste" : "Listeler"} kalıcı olarak silinecek.",
-                    duration: MyDurations.millisecond1000 * 5,
-                    undoCallback: () {
-                      appBarRef.read(myListsProvider.notifier).update((state) {
-                        final newState = [...state];
-
-                        for (MapEntry<int, String> entry in willRemoveIndexesSorted.reversed) {
-                          newState.insert(entry.key, entry.value);
-                        }
-
-                        return newState;
-                      });
-                    },
-                    noUndoCallback: () {
-                      for (String listName in selectedLists) {
-                        SqlDatabase.deleteList(listName);
-                      }
-                    },
-                    snackBarClosedCallback: () {
-                      deactivateListSelectionMode(appBarRef);
-                    },
-                  );
+                onTap: () {
+                  deleteLists([...selectedLists]);
                 },
               ),
             ),
