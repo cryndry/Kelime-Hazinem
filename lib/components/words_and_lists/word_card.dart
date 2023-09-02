@@ -5,6 +5,7 @@ import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/undo_snack_bar.dart';
+import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
@@ -74,6 +75,7 @@ class WordCardState extends ConsumerState<WordCard> {
   @override
   Widget build(BuildContext context) {
     final selectedWords = ref.watch(selectedWordsProvider);
+    final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
 
     return LayoutBuilder(builder: (context, constraints) {
       return DecoratedBox(
@@ -87,6 +89,7 @@ class WordCardState extends ConsumerState<WordCard> {
           borderRadius: BorderRadius.circular(20),
           child: Slidable(
             key: widget.key,
+            enabled: !isWordSelectionModeActive,
             startActionPane: ActionPane(
               motion: const DrawerMotion(),
               extentRatio: 48 / constraints.maxWidth,
@@ -187,6 +190,9 @@ class WordCardState extends ConsumerState<WordCard> {
             child: Builder(builder: (context) {
               return GestureDetector(
                 onLongPress: () {
+                  final isRandomWordCard = context.findAncestorWidgetOfExactType<RandomWordCard>();
+                  if (isRandomWordCard != null) return;
+
                   activateWordSelectionMode(ref);
                   updateSelectedWords(ref, widget.word.id);
                 },
