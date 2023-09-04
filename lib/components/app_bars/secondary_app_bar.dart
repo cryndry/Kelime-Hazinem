@@ -31,6 +31,11 @@ class SecondaryAppBar extends ConsumerWidget {
             duration: MyDurations.millisecond300,
             child: secondaryAppBar,
           )
-        : secondaryAppBar;
+        : Positioned(
+            left: 0,
+            right: 0,
+            top: (isListSelectionModeActive || isWordSelectionModeActive) ? 0 : -appBarHeight,
+            child: secondaryAppBar,
+          );
   }
 }
