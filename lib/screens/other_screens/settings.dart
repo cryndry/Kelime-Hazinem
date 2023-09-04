@@ -20,14 +20,13 @@ class SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const MyAppBar(
-          title: "Ayarlar",
-        ),
+        appBar: const MyAppBar(title: "Ayarlar"),
         body: PageLayout(
           children: <SettingRow>[
             SettingRow(
               title: "Açılış Ekranı",
               child: SelectableSetting<int>(
+                key: const ValueKey("Açılış Ekranı"),
                 values: const {
                   0: "Anasayfa",
                   1: "Listelerim",
@@ -43,6 +42,7 @@ class SettingsState extends State<Settings> {
             SettingRow(
               title: "Animasyonlar",
               child: SwitchSetting(
+                key: const ValueKey("Animasyonlar"),
                 initialValue: KeyValueDatabase.getIsAnimatable(),
                 onChange: (bool newValue) {
                   return KeyValueDatabase.setIsAnimatable(newValue);
@@ -52,6 +52,7 @@ class SettingsState extends State<Settings> {
             SettingRow(
               title: "Bildirimler",
               child: SwitchSetting(
+                key: const ValueKey("Bildirimler"),
                 initialValue: KeyValueDatabase.getNotifications(),
                 onChange: (bool newValue) {
                   final change = KeyValueDatabase.setNotifications(newValue);
@@ -67,6 +68,7 @@ class SettingsState extends State<Settings> {
                 title: "Günlük Bildirim Saati",
                 info: "Pil tasarrufu vb. sebeplerle bu özellik düzgün çalışmayabilir.",
                 child: TimePickSetting(
+                  key: const ValueKey("Günlük Bildirim Saati"),
                   initialValue: KeyValueDatabase.getNotificationTime(),
                   onChange: (value) {
                     Notifications.createDailyWordNotification(value);
@@ -78,6 +80,7 @@ class SettingsState extends State<Settings> {
               title: "Kelime Öğrenme modu liste uzunluğu",
               info: "(en\xA0az\xA020 - en\xA0fazla\xA0200)",
               child: NumericSetting(
+                key: const ValueKey("Kelime Öğrenme modu liste uzunluğu"),
                 min: 20,
                 max: 200,
                 initialValue: KeyValueDatabase.getWordLearnListLength(),
@@ -90,6 +93,7 @@ class SettingsState extends State<Settings> {
               title: "Diğer modlarda liste uzunluğu",
               info: "(en\xA0az\xA010 - en\xA0fazla\xA0100)",
               child: NumericSetting(
+                key: const ValueKey("Diğer modlarda liste uzunluğu"),
                 min: 10,
                 max: 100,
                 initialValue: KeyValueDatabase.getOtherModsListLength(),
@@ -171,9 +175,17 @@ class NumericSetting extends StatefulWidget {
 }
 
 class NumericSettingState extends State<NumericSetting> {
-  late int state = widget.initialValue;
-  late final textEditingController = TextEditingController(text: widget.initialValue.toString());
+  late int state;
+  late final TextEditingController textEditingController;
   final textInputFocus = FocusNode();
+
+  @override
+  void initState() {
+    state = widget.initialValue;
+    textEditingController = TextEditingController(text: widget.initialValue.toString());
+
+    super.initState();
+  }
 
   void changeHandler() {
     final int value = int.parse(textEditingController.text);
@@ -243,7 +255,14 @@ class SwitchSetting extends StatefulWidget {
 }
 
 class SwitchSettingState extends State<SwitchSetting> {
-  late bool state = widget.initialValue;
+  late bool state;
+
+  @override
+  void initState() {
+    state = widget.initialValue;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,9 +306,15 @@ class SelectableSetting<T> extends StatefulWidget {
 }
 
 class SelectableSettingState<T> extends State<SelectableSetting<T>> {
-  late T state = widget.initialValue;
-
+  late T state;
   final TextStyle textStyle = MyTextStyles.font_16_20_400;
+
+  @override
+  void initState() {
+    state = widget.initialValue;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

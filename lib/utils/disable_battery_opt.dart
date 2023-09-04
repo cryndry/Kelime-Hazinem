@@ -1,5 +1,5 @@
-import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:flutter/material.dart';
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/dialog.dart';
 import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/buttons/stroke_colored_button.dart';
@@ -9,7 +9,7 @@ import 'package:kelime_hazinem/utils/const_objects.dart';
 Future<void> requestDisablingBatteryOptimization() async {
   bool? isBatOptDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
   bool? isManBatOptDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
-  if (!(isBatOptDisabled == true && isManBatOptDisabled == true)) {
+  if (!((isBatOptDisabled ?? false) && (isManBatOptDisabled ?? false))) {
     final context = KelimeHazinem.navigatorKey.currentContext!;
     await popDialog(
       context: context,

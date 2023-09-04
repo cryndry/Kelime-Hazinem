@@ -75,8 +75,8 @@ class Notifications {
         NotificationPermission.FullScreenIntent,
       ]);
       isAllowed = await AwesomeNotifications().isNotificationAllowed();
-      if (isAllowed) requestDisablingBatteryOptimization();
     }
+    if (isAllowed) requestDisablingBatteryOptimization();
     return isAllowed;
   }
 
