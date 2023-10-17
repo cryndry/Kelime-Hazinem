@@ -31,9 +31,12 @@ class WordCard extends ConsumerStatefulWidget {
 }
 
 class WordCardState extends ConsumerState<WordCard> {
-  final TextStyle wordTextStyle = MyTextStyles.font_20_24_600.apply(color: Colors.white);
-  final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.apply(color: Colors.white60);
-  final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
+  final TextStyle wordTextStyle =
+      MyTextStyles.font_20_24_600.apply(color: Colors.white);
+  final TextStyle infoTextStyle =
+      MyTextStyles.font_14_16_500.apply(color: Colors.white60);
+  final TextStyle meaningTextStyle =
+      MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
 
   void handleSetState(Function() callback) {
     setState(() {
@@ -43,10 +46,12 @@ class WordCardState extends ConsumerState<WordCard> {
 
   void deleteWord(BuildContext context) async {
     final scaffoldContext = Scaffold.of(context).context;
-    final allWordsPageLayoutState = context.findAncestorStateOfType<AllWordsPageLayoutState>();
+    final allWordsPageLayoutState =
+        context.findAncestorStateOfType<AllWordsPageLayoutState>();
 
     final slidableController = Slidable.of(context)!;
-    await slidableController.dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
+    await slidableController
+        .dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
 
     void Function()? reverseRemoveCallback;
     if (widget.wordRemove != null) {
@@ -64,9 +69,11 @@ class WordCardState extends ConsumerState<WordCard> {
       noUndoCallback: () {
         SqlDatabase.deleteWord(widget.word.id);
         Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
-        final bool? allWordsPageLayoutHasNoWord = allWordsPageLayoutState?.words.isEmpty;
+        final bool? allWordsPageLayoutHasNoWord =
+            allWordsPageLayoutState?.words.isEmpty;
         if (allWordsPageLayoutHasNoWord ?? false) {
-          Navigator.of(scaffoldContext).popUntil(ModalRoute.withName("MainScreen"));
+          Navigator.of(scaffoldContext)
+              .popUntil(ModalRoute.withName("MainScreen"));
         }
       },
     );
@@ -75,12 +82,14 @@ class WordCardState extends ConsumerState<WordCard> {
   @override
   Widget build(BuildContext context) {
     final selectedWords = ref.watch(selectedWordsProvider);
-    final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
+    final isWordSelectionModeActive =
+        ref.watch(isWordSelectionModeActiveProvider);
 
     return LayoutBuilder(builder: (context, constraints) {
       return DecoratedBox(
-        position:
-            selectedWords.contains(widget.word.id) ? DecorationPosition.foreground : DecorationPosition.background,
+        position: selectedWords.contains(widget.word.id)
+            ? DecorationPosition.foreground
+            : DecorationPosition.background,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: MyColors.darkGreen, width: 3),
@@ -167,7 +176,8 @@ class WordCardState extends ConsumerState<WordCard> {
                   child: Builder(builder: (boxContext) {
                     return GestureDetector(
                       onTap: () {
-                        addWordToLists(context: context, wordId: widget.word.id).then((value) {
+                        addWordToLists(context: context, wordId: widget.word.id)
+                            .then((value) {
                           final slidableController = Slidable.of(boxContext)!;
                           slidableController.close();
                         });
@@ -190,14 +200,20 @@ class WordCardState extends ConsumerState<WordCard> {
             child: Builder(builder: (context) {
               return GestureDetector(
                 onLongPress: () {
-                  final isRandomWordCard = context.findAncestorWidgetOfExactType<RandomWordCard>();
+                  final isRandomWordCard =
+                      context.findAncestorWidgetOfExactType<RandomWordCard>();
                   if (isRandomWordCard != null) return;
 
                   activateWordSelectionMode(ref);
+                  final slidableController = Slidable.of(context)!;
+                  if (slidableController.ratio != 0) {
+                    slidableController.close();
+                  }
                   updateSelectedWords(ref, widget.word.id);
                 },
                 onTap: () async {
-                  bool isWordSelectionModeActive = getIsWordSelectionModeActive(ref);
+                  bool isWordSelectionModeActive =
+                      getIsWordSelectionModeActive(ref);
                   if (isWordSelectionModeActive) {
                     updateSelectedWords(ref, widget.word.id);
                     return;
@@ -213,7 +229,9 @@ class WordCardState extends ConsumerState<WordCard> {
                     "WordShow",
                     arguments: {"word": widget.word},
                   );
-                  if (result != null && (result as Map)["deleted"] && widget.wordRemove != null) {
+                  if (result != null &&
+                      (result as Map)["deleted"] &&
+                      widget.wordRemove != null) {
                     widget.wordRemove!(widget.word.id);
                   } else {
                     setState(() {});
@@ -226,14 +244,18 @@ class WordCardState extends ConsumerState<WordCard> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(widget.word.word, style: wordTextStyle),
-                            if (widget.word.description.isNotEmpty) const SizedBox(height: 4),
-                            if (widget.word.description.isNotEmpty) Text(widget.word.description, style: infoTextStyle),
+                            if (widget.word.description.isNotEmpty)
+                              const SizedBox(height: 4),
+                            if (widget.word.description.isNotEmpty)
+                              Text(widget.word.description,
+                                  style: infoTextStyle),
                             const SizedBox(height: 8),
                             Text(widget.word.meaning, style: meaningTextStyle),
                           ],
