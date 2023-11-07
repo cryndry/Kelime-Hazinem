@@ -136,7 +136,7 @@ class ListSelectionAppBarState extends ConsumerState {
       onWillPop: () async {
         if (getIsListSelectionModeActive(ref)) {
           deactivateListSelectionMode(ref);
-          return false;
+          return isUsedInListSharePage;
         }
         return true;
       },
