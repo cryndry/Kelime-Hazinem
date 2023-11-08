@@ -80,7 +80,7 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
                   "Aylık": "Aylık",
                   "3 Aylık": "3 Aylık",
                 },
-                initialValue: "Haftalık",
+                initialValue: period,
                 color: MyColors.darkBlue,
                 onChange: (value) {
                   KeyValueDatabase.setMyPerformancePeriod(value);
