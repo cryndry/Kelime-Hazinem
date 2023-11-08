@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/undo_snack_bar.dart';
 import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
@@ -13,6 +14,7 @@ import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
+import 'package:social_share/social_share.dart';
 
 class WordCard extends ConsumerStatefulWidget {
   const WordCard({
@@ -31,12 +33,9 @@ class WordCard extends ConsumerStatefulWidget {
 }
 
 class WordCardState extends ConsumerState<WordCard> {
-  final TextStyle wordTextStyle =
-      MyTextStyles.font_20_24_600.apply(color: Colors.white);
-  final TextStyle infoTextStyle =
-      MyTextStyles.font_14_16_500.apply(color: Colors.white60);
-  final TextStyle meaningTextStyle =
-      MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
+  final TextStyle wordTextStyle = MyTextStyles.font_20_24_600.apply(color: Colors.white);
+  final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.apply(color: Colors.white60);
+  final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
 
   void handleSetState(Function() callback) {
     setState(() {
@@ -46,12 +45,10 @@ class WordCardState extends ConsumerState<WordCard> {
 
   void deleteWord(BuildContext context) async {
     final scaffoldContext = Scaffold.of(context).context;
-    final allWordsPageLayoutState =
-        context.findAncestorStateOfType<AllWordsPageLayoutState>();
+    final allWordsPageLayoutState = context.findAncestorStateOfType<AllWordsPageLayoutState>();
 
     final slidableController = Slidable.of(context)!;
-    await slidableController
-        .dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
+    await slidableController.dismiss(ResizeRequest(MyDurations.millisecond300, () {}));
 
     void Function()? reverseRemoveCallback;
     if (widget.wordRemove != null) {
@@ -69,11 +66,9 @@ class WordCardState extends ConsumerState<WordCard> {
       noUndoCallback: () {
         SqlDatabase.deleteWord(widget.word.id);
         Analytics.logWordAction(word: widget.word.word, action: "word_deleted");
-        final bool? allWordsPageLayoutHasNoWord =
-            allWordsPageLayoutState?.words.isEmpty;
+        final bool? allWordsPageLayoutHasNoWord = allWordsPageLayoutState?.words.isEmpty;
         if (allWordsPageLayoutHasNoWord ?? false) {
-          Navigator.of(scaffoldContext)
-              .popUntil(ModalRoute.withName("MainScreen"));
+          Navigator.of(scaffoldContext).popUntil(ModalRoute.withName("MainScreen"));
         }
       },
     );
@@ -82,14 +77,11 @@ class WordCardState extends ConsumerState<WordCard> {
   @override
   Widget build(BuildContext context) {
     final selectedWords = ref.watch(selectedWordsProvider);
-    final isWordSelectionModeActive =
-        ref.watch(isWordSelectionModeActiveProvider);
+    final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
 
     return LayoutBuilder(builder: (context, constraints) {
       return DecoratedBox(
-        position: selectedWords.contains(widget.word.id)
-            ? DecorationPosition.foreground
-            : DecorationPosition.background,
+        position: selectedWords.contains(widget.word.id) ? DecorationPosition.foreground : DecorationPosition.background,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: MyColors.darkGreen, width: 3),
@@ -136,7 +128,7 @@ class WordCardState extends ConsumerState<WordCard> {
               openThreshold: 0.0001,
               closeThreshold: 0.0001,
               motion: const DrawerMotion(),
-              extentRatio: 160 / constraints.maxWidth,
+              extentRatio: 216 / constraints.maxWidth,
               children: [
                 Flexible(
                   child: Builder(builder: (context) {
@@ -160,7 +152,7 @@ class WordCardState extends ConsumerState<WordCard> {
                         }
                       },
                       child: Container(
-                        width: 80,
+                        width: 72,
                         color: MyColors.darkGreen,
                         alignment: Alignment.center,
                         child: const ActionButton(
@@ -176,14 +168,13 @@ class WordCardState extends ConsumerState<WordCard> {
                   child: Builder(builder: (boxContext) {
                     return GestureDetector(
                       onTap: () {
-                        addWordToLists(context: context, wordId: widget.word.id)
-                            .then((value) {
+                        addWordToLists(context: context, wordId: widget.word.id).then((value) {
                           final slidableController = Slidable.of(boxContext)!;
                           slidableController.close();
                         });
                       },
                       child: Container(
-                        width: 80,
+                        width: 72,
                         color: MyColors.darkBlue,
                         alignment: Alignment.center,
                         child: const ActionButton(
@@ -195,13 +186,104 @@ class WordCardState extends ConsumerState<WordCard> {
                     );
                   }),
                 ),
+                Flexible(
+                  child: Builder(builder: (boxContext) {
+                    return GestureDetector(
+                      onTap: () async {
+                        popBottomSheet(
+                          context: context,
+                          title: "Kelimeni Paylaş",
+                          bottomWidgets: (setSheetState) {
+                            Widget buttonWidget({
+                              required Color color,
+                              required String icon,
+                              required Future<void> Function() onTap,
+                            }) =>
+                                GestureDetector(
+                                  onTap: onTap,
+                                  child: Container(
+                                    width: 72,
+                                    height: 72,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: color),
+                                    child: ActionButton(icon: icon, size: 36),
+                                  ),
+                                );
+
+                            final descr = widget.word.description;
+                            final descrData = descr.isEmpty ? '' : descr.startsWith("Ç") ? "Çoğulu: ${descr.substring(3)}\n" : "Mastarı: ${descr.substring(3)}\n";
+                            final messageText = "Kelime: ${widget.word.word}\n${descrData}Anlamı: ${widget.word.meaning}\n\nDaha fazlası Kelime Hazinem uygulamasında!\nhttps://play.google.com/store/apps/details?id=com.kelime_hazinem.ar_tr";
+                            return [
+                              Wrap(
+                                spacing: 16,
+                                runSpacing: 16,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  buttonWidget(
+                                    color: Colors.grey[700]!,
+                                    icon: MySvgs.copy,
+                                    onTap: () async {
+                                      await SocialShare.copyToClipboard(text: messageText);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  buttonWidget(
+                                    color: const Color(0xFF25D366),
+                                    icon: MySvgs.whatsapp,
+                                    onTap: () async {
+                                      await SocialShare.shareWhatsapp(messageText);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  buttonWidget(
+                                    color: const Color(0xFF00ACEE),
+                                    icon: MySvgs.twitter,
+                                    onTap: () async {
+                                      await SocialShare.shareTwitter(messageText);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  buttonWidget(
+                                    color: const Color(0xFF64B4F0),
+                                    icon: MySvgs.telegram,
+                                    onTap: () async {
+                                      await SocialShare.shareTelegram(messageText);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  buttonWidget(
+                                    color: MyColors.darkBlue,
+                                    icon: MySvgs.sms,
+                                    onTap: () async {
+                                      await SocialShare.shareSms(messageText);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ];
+                          },
+                        );
+                      },
+                      child: Container(
+                        width: 72,
+                        color: MyColors.green,
+                        alignment: Alignment.center,
+                        child: const ActionButton(
+                          icon: MySvgs.share,
+                          size: 32,
+                          semanticsLabel: "Paylaş",
+                        ),
+                      ),
+                    );
+                  }),
+                ),
               ],
             ),
             child: Builder(builder: (context) {
               return GestureDetector(
                 onLongPress: () {
-                  final isRandomWordCard =
-                      context.findAncestorWidgetOfExactType<RandomWordCard>();
+                  final isRandomWordCard = context.findAncestorWidgetOfExactType<RandomWordCard>();
                   if (isRandomWordCard != null) return;
 
                   activateWordSelectionMode(ref);
@@ -212,8 +294,7 @@ class WordCardState extends ConsumerState<WordCard> {
                   updateSelectedWords(ref, widget.word.id);
                 },
                 onTap: () async {
-                  bool isWordSelectionModeActive =
-                      getIsWordSelectionModeActive(ref);
+                  bool isWordSelectionModeActive = getIsWordSelectionModeActive(ref);
                   if (isWordSelectionModeActive) {
                     updateSelectedWords(ref, widget.word.id);
                     return;
@@ -229,9 +310,7 @@ class WordCardState extends ConsumerState<WordCard> {
                     "WordShow",
                     arguments: {"word": widget.word},
                   );
-                  if (result != null &&
-                      (result as Map)["deleted"] &&
-                      widget.wordRemove != null) {
+                  if (result != null && (result as Map)["deleted"] && widget.wordRemove != null) {
                     widget.wordRemove!(widget.word.id);
                   } else {
                     setState(() {});
@@ -244,18 +323,14 @@ class WordCardState extends ConsumerState<WordCard> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(widget.word.word, style: wordTextStyle),
-                            if (widget.word.description.isNotEmpty)
-                              const SizedBox(height: 4),
-                            if (widget.word.description.isNotEmpty)
-                              Text(widget.word.description,
-                                  style: infoTextStyle),
+                            if (widget.word.description.isNotEmpty) const SizedBox(height: 4),
+                            if (widget.word.description.isNotEmpty) Text(widget.word.description, style: infoTextStyle),
                             const SizedBox(height: 8),
                             Text(widget.word.meaning, style: meaningTextStyle),
                           ],
