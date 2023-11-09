@@ -3,7 +3,7 @@ description: Kelime Hazinem
 publish_to: 'none'
 
 
-version: 1.0.0
+version: 1.1.0
 
 environment:
   sdk: '>=3.0.3 <4.0.0'
@@ -37,9 +37,10 @@ dependencies:
   url_launcher: ^6.1.12
   cr_file_saver: ^0.0.2+1
   package_info_plus: ^4.1.0
-  awesome_notifications: ^0.7.4+1
+  awesome_notifications: ^0.8.2
   observe_internet_connectivity: ^1.0.2
   disable_battery_optimization: ^1.1.0+1
+  social_share: ^2.3.1
 
 dev_dependencies:
   flutter_test:

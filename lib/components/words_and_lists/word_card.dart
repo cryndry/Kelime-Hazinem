@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/share_word.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/undo_snack_bar.dart';
 import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
@@ -79,8 +80,7 @@ class WordCardState extends ConsumerState<WordCard> {
 
     return LayoutBuilder(builder: (context, constraints) {
       return DecoratedBox(
-        position:
-            selectedWords.contains(widget.word.id) ? DecorationPosition.foreground : DecorationPosition.background,
+        position: selectedWords.contains(widget.word.id) ? DecorationPosition.foreground : DecorationPosition.background,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: MyColors.darkGreen, width: 3),
@@ -127,7 +127,7 @@ class WordCardState extends ConsumerState<WordCard> {
               openThreshold: 0.0001,
               closeThreshold: 0.0001,
               motion: const DrawerMotion(),
-              extentRatio: 160 / constraints.maxWidth,
+              extentRatio: 216 / constraints.maxWidth,
               children: [
                 Flexible(
                   child: Builder(builder: (context) {
@@ -151,7 +151,7 @@ class WordCardState extends ConsumerState<WordCard> {
                         }
                       },
                       child: Container(
-                        width: 80,
+                        width: 72,
                         color: MyColors.darkGreen,
                         alignment: Alignment.center,
                         child: const ActionButton(
@@ -173,13 +173,34 @@ class WordCardState extends ConsumerState<WordCard> {
                         });
                       },
                       child: Container(
-                        width: 80,
+                        width: 72,
                         color: MyColors.darkBlue,
                         alignment: Alignment.center,
                         child: const ActionButton(
                           icon: MySvgs.add2List,
                           size: 32,
                           semanticsLabel: "Listelere Ekle",
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                Flexible(
+                  child: Builder(builder: (boxContext) {
+                    return GestureDetector(
+                      onTap: () async {
+                        await shareWord(context: context, word: widget.word);
+                        final slidableController = Slidable.of(boxContext)!;
+                        slidableController.close();
+                      },
+                      child: Container(
+                        width: 72,
+                        color: MyColors.green,
+                        alignment: Alignment.center,
+                        child: const ActionButton(
+                          icon: MySvgs.share,
+                          size: 32,
+                          semanticsLabel: "Paylaş",
                         ),
                       ),
                     );
@@ -194,6 +215,10 @@ class WordCardState extends ConsumerState<WordCard> {
                   if (isRandomWordCard != null) return;
 
                   activateWordSelectionMode(ref);
+                  final slidableController = Slidable.of(context)!;
+                  if (slidableController.ratio != 0) {
+                    slidableController.close();
+                  }
                   updateSelectedWords(ref, widget.word.id);
                 },
                 onTap: () async {

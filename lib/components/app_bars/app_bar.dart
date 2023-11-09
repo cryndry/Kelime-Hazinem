@@ -42,8 +42,9 @@ class MyAppBarState extends ConsumerStateWithRefreshOnPopNext<MyAppBar> {
         Container(
           constraints: const BoxConstraints.tightFor(height: 64),
           color: MyColors.darkBlue,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: AppBar(
+            toolbarHeight: widget.appBarHeight,
             backgroundColor: MyColors.darkBlue,
             foregroundColor: Colors.white,
             centerTitle: false,

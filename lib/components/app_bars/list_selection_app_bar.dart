@@ -83,8 +83,7 @@ class ListSelectionAppBarState extends ConsumerState {
         if (index != -1) willRemoveIndexes[index] = listName;
       }
 
-      willRemoveIndexesSorted = willRemoveIndexes.entries.toList()
-        ..sort((entry1, entry2) => entry2.key.compareTo(entry1.key));
+      willRemoveIndexesSorted = willRemoveIndexes.entries.toList()..sort((entry1, entry2) => entry2.key.compareTo(entry1.key));
 
       for (MapEntry<int, String> entry in willRemoveIndexesSorted) {
         newState.removeAt(entry.key);
@@ -136,7 +135,7 @@ class ListSelectionAppBarState extends ConsumerState {
       onWillPop: () async {
         if (getIsListSelectionModeActive(ref)) {
           deactivateListSelectionMode(ref);
-          return false;
+          return isUsedInListSharePage;
         }
         return true;
       },
@@ -218,8 +217,7 @@ class ListSelectionAppBarState extends ConsumerState {
                             FutureBuilder(
                               future: renamingList,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting ||
-                                    snapshot.connectionState == ConnectionState.active) {
+                                if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.active) {
                                   return FillColoredButton(
                                     title: "Kaydediliyor",
                                     icon: const SizedBox(
@@ -231,7 +229,6 @@ class ListSelectionAppBarState extends ConsumerState {
                                         semanticsLabel: "Kaydediliyor...",
                                       ),
                                     ),
-                                    
                                   );
                                 }
                                 return FillColoredButton(
@@ -367,9 +364,9 @@ class ListSelectionAppBarState extends ConsumerState {
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Text(sharedFileId, style: MyTextStyles.font_16_24_500),
+                                              FittedBox(fit: BoxFit.contain, child: Text(sharedFileId, style: MyTextStyles.font_16_24_500)),
                                               const SizedBox(width: 16),
-                                              const Icon(Icons.copy, size: 24),
+                                              const ActionButton(icon: MySvgs.copy, size: 24, strokeColor: Colors.black),
                                             ],
                                           );
                                         },
