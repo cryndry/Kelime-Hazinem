@@ -275,7 +275,7 @@ class WordGuessState extends State<WordGuess> {
                         child: TextField(
                           showCursor: true,
                           focusNode: textInputFocus,
-                          style: MyTextStyles.font_24_32_500,
+                          style: MyTextStyles.font_24_32_500.apply(color: MyColors.darkBlue),
                           autocorrect: false,
                           keyboardType: TextInputType.number,
                           controller: textEditingController,
