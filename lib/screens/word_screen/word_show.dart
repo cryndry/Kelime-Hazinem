@@ -3,6 +3,7 @@ import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.d
 import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/share_word.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -14,7 +15,7 @@ class WordShow extends StatefulWidget {
   final Word word;
 
   @override
-  State<WordShow> createState() => WordShowState();
+  WordShowState createState() => WordShowState();
 }
 
 class WordShowState extends State<WordShow> {
@@ -51,6 +52,14 @@ class WordShowState extends State<WordShow> {
           } else {
             setState(() {});
           }
+        },
+      ),
+      ActionButton(
+        icon: MySvgs.share,
+        size: 32,
+        semanticsLabel: "Kelimeyi Paylaş",
+        onTap: () {
+          shareWord(context: context, word: widget.word);
         },
       ),
     ];

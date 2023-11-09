@@ -4,7 +4,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kelime_hazinem/components/layouts/all_words_page_layout.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/add_word_to_lists.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
-import 'package:kelime_hazinem/components/sheets_and_dialogs/bottom_sheet.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/share_word.dart';
 import 'package:kelime_hazinem/components/sheets_and_dialogs/undo_snack_bar.dart';
 import 'package:kelime_hazinem/components/words_and_lists/random_word_card.dart';
@@ -15,7 +14,6 @@ import 'package:kelime_hazinem/utils/my_svgs.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
-import 'package:social_share/social_share.dart';
 
 class WordCard extends ConsumerStatefulWidget {
   const WordCard({

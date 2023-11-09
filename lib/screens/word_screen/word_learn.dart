@@ -5,6 +5,7 @@ import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/others/keep_alive_widget.dart';
 import 'package:kelime_hazinem/components/layouts/nonscrollable_page_layout.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/share_word.dart';
 import 'package:kelime_hazinem/components/words_and_lists/word_action_button_row.dart';
 import 'package:kelime_hazinem/utils/admob.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
@@ -62,6 +63,14 @@ class _WordLearnState extends State<WordLearn> {
             }
           }
         });
+      },
+    ),
+    ActionButton(
+      icon: MySvgs.share,
+      size: 32,
+      semanticsLabel: "Kelimeyi Paylaş",
+      onTap: () {
+        shareWord(context: context, word: words[pageController.page!.toInt()]);
       },
     ),
   ];
@@ -210,7 +219,7 @@ class _WordLearnState extends State<WordLearn> {
                       child: PageView.custom(
                         onPageChanged: (value) {
                           textEditingController.value = TextEditingValue(text: (value + 1).toString());
-                          if (value + 1 == words.length && appBarButtons.length == 2) {
+                          if (value + 1 == words.length && appBarButtons.length == constAppBarButtons.length) {
                             setState(() {
                               appBarButtons = [
                                 ...constAppBarButtons,
@@ -289,8 +298,7 @@ class _WordLearnState extends State<WordLearn> {
             ),
             InternetConnectivityBuilder(
               child: SizedBox(height: 50, child: AdMob.bannerAdWidget),
-              connectivityBuilder: (context, hasInternetAccess, child) =>
-                  (hasInternetAccess) ? child! : const SizedBox.shrink(),
+              connectivityBuilder: (context, hasInternetAccess, child) => (hasInternetAccess) ? child! : const SizedBox.shrink(),
             ),
           ],
         ),
