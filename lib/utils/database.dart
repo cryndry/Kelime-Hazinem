@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cr_file_saver/file_saver.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/firebase_options.dart';
 import 'package:kelime_hazinem/utils/analytics.dart';
+import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/get_time_string.dart';
 import 'package:kelime_hazinem/utils/notifications.dart';
 import 'package:kelime_hazinem/utils/word_db_model.dart';
@@ -336,8 +338,7 @@ abstract class SqlDatabase {
 
         if (query.isEmpty && isWordInList) {
           final timeCreated = GetTimeString.now;
-          batch.rawInsert(
-              "INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
+          batch.rawInsert("INSERT INTO $_dbEntryTableName (word_id, list_id, time_created) VALUES ($wordId, $listId, '$timeCreated')");
         } else if (query.isNotEmpty && !isWordInList) {
           batch.rawDelete("DELETE FROM $_dbEntryTableName WHERE word_id = $wordId AND list_id = $listId");
         }
@@ -531,22 +532,49 @@ abstract class SqlDatabase {
       await batch.commit();
     });
 
-    return cacheDbData["listData"]!.map((e) => e["name"] as String).toList()
-      ..removeWhere((list) => extendedExistingList.contains(list));
+    return cacheDbData["listData"]!.map((e) => e["name"] as String).toList()..removeWhere((list) => extendedExistingList.contains(list));
   }
 
-  static Future<void> exportDBFile() async {
+  static Future<bool> exportDBFile() async {
     final isPermitted = await CRFileSaver.requestWriteExternalStoragePermission();
-    debugPrint("isPermitted: $isPermitted");
     if (isPermitted) {
       String dbPath = path.join(_applicationDirectory.path, _dbName);
       final timeCreated = GetTimeString.now;
-      final result = await CRFileSaver.saveFileWithDialog(SaveFileDialogParams(
+      await CRFileSaver.saveFileWithDialog(SaveFileDialogParams(
         sourceFilePath: dbPath,
         destinationFileName: "$timeCreated.db",
       ));
-      debugPrint(result);
+      return true;
     }
+    return false;
+  }
+
+  static Future<String?> importDBFile() async {
+    String dbPath = path.join(_applicationDirectory.path, _dbName);
+
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      if (result.files.single.extension != "db") {
+        return "Geçersiz bir dosya seçtiniz. Lütfen doğru dosyayı seçtiğinizden emin olun.";
+      }
+
+      final newDBFilePath = result.files.single.path!;
+      try {
+        Uint8List newDBFileBytes = io.File(newDBFilePath).readAsBytesSync();
+        await io.File(dbPath).writeAsBytes(newDBFileBytes, flush: true);
+      } on io.FileSystemException {
+        return "Dosya açılamadı.";
+      }
+
+      _db.close();
+      _db = await openDatabase(dbPath, onOpen: (db) {
+        db.execute("PRAGMA foreign_keys = ON");
+      });
+
+      await Future.delayed(MyDurations.millisecond500);
+      return "Yükleme Başarılı! Uygulama yeniden başlatmanızı tavsiye ederiz.";
+    }
+    return null;
   }
 
   static Future<void> execTempOperation({required FutureOr Function(Database) action}) async {

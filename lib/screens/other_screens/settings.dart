@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
+import 'package:kelime_hazinem/components/buttons/fill_colored_button.dart';
 import 'package:kelime_hazinem/components/buttons/icon.dart';
 import 'package:kelime_hazinem/components/layouts/page_layout.dart';
+import 'package:kelime_hazinem/components/sheets_and_dialogs/dialog.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/my_svgs.dart';
@@ -22,7 +24,7 @@ class SettingsState extends State<Settings> {
       child: Scaffold(
         appBar: const MyAppBar(title: "Ayarlar"),
         body: PageLayout(
-          children: <SettingRow>[
+          children: [
             SettingRow(
               title: "Açılış Ekranı",
               child: SelectableSetting<int>(
@@ -100,6 +102,93 @@ class SettingsState extends State<Settings> {
                 onChange: (int newValue) {
                   KeyValueDatabase.setOtherModsListLength(newValue);
                 },
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(blurRadius: 4, color: Colors.black26),
+                ],
+              ),
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(top: 8),
+              child: Column(
+                children: [
+                  const Text(
+                    "Verilerini taşımak istiyorsan buraya!",
+                    style: MyTextStyles.font_16_24_500,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final String? message = await SqlDatabase.importDBFile();
+                            if (message != null) {
+                              await popDialog(
+                                context: context,
+                                duration: MyDurations.millisecond1000 * 3,
+                                routeName: "RestoreCompleteDialog",
+                                builder: (setDialogState) {
+                                  return [
+                                    Text(
+                                      message,
+                                      textAlign: TextAlign.center,
+                                      style: MyTextStyles.font_18_20_500,
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ];
+                                },
+                              );
+                            }
+                          },
+                          child: FillColoredButton(
+                            title: "Geri Yükle",
+                            icon: const ActionButton(
+                              icon: MySvgs.import,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final isSuccessful = await SqlDatabase.exportDBFile();
+                            if (isSuccessful) {
+                              await popDialog(
+                                context: context,
+                                duration: MyDurations.millisecond1000 * 3,
+                                routeName: "BackupCompleteDialog",
+                                builder: (setDialogState) {
+                                  return const [
+                                    Text(
+                                      "Yedekleme Başarılı",
+                                      textAlign: TextAlign.center,
+                                      style: MyTextStyles.font_18_20_500,
+                                    ),
+                                    SizedBox(height: 8),
+                                  ];
+                                },
+                              );
+                            }
+                          },
+                          child: FillColoredButton(
+                            title: "Yedekle",
+                            icon: const ActionButton(
+                              icon: MySvgs.export,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
           ],
