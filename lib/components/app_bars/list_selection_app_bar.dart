@@ -131,13 +131,12 @@ class ListSelectionAppBarState extends ConsumerState {
       }
     });
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: isUsedInListSharePage,
+      onPopInvoked: (didPop) {
         if (getIsListSelectionModeActive(ref)) {
           deactivateListSelectionMode(ref);
-          return isUsedInListSharePage;
         }
-        return true;
       },
       child: Row(
         children: [
