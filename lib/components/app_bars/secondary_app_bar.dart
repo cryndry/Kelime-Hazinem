@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kelime_hazinem/components/app_bars/app_bar.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/providers.dart';
@@ -8,7 +9,7 @@ class SecondaryAppBar extends ConsumerWidget {
   const SecondaryAppBar({super.key, this.child = const Row()});
 
   final Widget child;
-  final double appBarHeight = 64;
+  static const double appBarHeight = MyAppBar.appBarHeight;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,7 +18,7 @@ class SecondaryAppBar extends ConsumerWidget {
     final isWordSelectionModeActive = ref.watch(isWordSelectionModeActiveProvider);
 
     final secondaryAppBar = Container(
-      constraints: BoxConstraints.tightFor(height: appBarHeight),
+      constraints: const BoxConstraints.tightFor(height: appBarHeight),
       color: MyColors.darkBlue,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: child,

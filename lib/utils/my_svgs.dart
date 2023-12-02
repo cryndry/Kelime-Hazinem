@@ -80,6 +80,18 @@ abstract final class MySvgs {
     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 """;
+  static const export = """
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 6L12 2M12 2L8 6M12 2V10M6 18H6.01M10 18H10.01M4 14H20C21.1046 14 22 14.8954 22 16V20C22 21.1046 21.1046 22 20 22H4C2.89543 22 2 21.1046 2 20V16C2 14.8954 2.89543 14 4 14Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+""";
+  static const import = """
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2V10M12 10L16 6M12 10L8 6M6 18H6.01M10 18H10.01M4 14H20C21.1046 14 22 14.8954 22 16V20C22 21.1046 21.1046 22 20 22H4C2.89543 22 2 21.1046 2 20V16C2 14.8954 2.89543 14 4 14Z"
+    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+""";
   static const info = """
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M15.9998 22.0001V16.0001M15.9998 10.6667H16.0132M29.3332 16.0001C29.3332 23.3639 23.3636 29.3334 15.9998 29.3334C8.63604 29.3334 2.6665 23.3639 2.6665 16.0001C2.6665 8.63628 8.63604 2.66675 15.9998 2.66675C23.3636 2.66675 29.3332 8.63628 29.3332 16.0001Z"

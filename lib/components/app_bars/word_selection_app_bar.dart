@@ -22,12 +22,6 @@ class WordSelectionAppBar extends ConsumerStatefulWidget {
 }
 
 class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
-  void deactivateShareMode() {
-    final isUsedInListCreateMode = MyNavigatorObserver.stack.first == "AddWordsToNewList";
-    if (isUsedInListCreateMode) Navigator.of(context).pop();
-    deactivateWordSelectionMode(ref);
-  }
-
   void deleteWords(List<int> selectedWordIds) {
     final isUsedInAllWordsOfListPage = MyNavigatorObserver.stack.first == "AllWordsOfList";
 
@@ -138,13 +132,10 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
       }
     });
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (getIsWordSelectionModeActive(ref)) {
-          deactivateWordSelectionMode(ref);
-          return false;
-        }
-        return true;
+    return PopScope(
+      canPop: isUsedInListCreateMode,
+      onPopInvoked: (didPop) {
+        deactivateWordSelectionMode(ref);
       },
       child: Row(
         children: [
@@ -152,7 +143,9 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
             icon: MySvgs.clearText,
             size: 40,
             semanticsLabel: "Seçimleri İptal Et",
-            onTap: deactivateShareMode,
+            onTap: () {
+              deactivateWordSelectionMode(ref);
+            },
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -213,7 +206,6 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
                 }
 
                 deactivateWordSelectionMode(ref);
-                Navigator.of(context).pop();
               },
             ),
         ],

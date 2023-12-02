@@ -21,10 +21,10 @@ class MyAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   final String title;
   final String? secTitle;
   final List<Widget> buttons;
-  final double appBarHeight = 64;
+  static const double appBarHeight = 64;
 
   @override
-  Size get preferredSize => Size.fromHeight(appBarHeight);
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
 
   @override
   MyAppBarState createState() => MyAppBarState();
@@ -44,7 +44,7 @@ class MyAppBarState extends ConsumerStateWithRefreshOnPopNext<MyAppBar> {
           color: MyColors.darkBlue,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: AppBar(
-            toolbarHeight: widget.appBarHeight,
+            toolbarHeight: MyAppBar.appBarHeight,
             backgroundColor: MyColors.darkBlue,
             foregroundColor: Colors.white,
             centerTitle: false,
