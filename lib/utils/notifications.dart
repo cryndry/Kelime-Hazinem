@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:kelime_hazinem/main.dart';
+import 'package:kelime_hazinem/utils/analytics.dart';
+import 'package:kelime_hazinem/utils/app_info.dart';
 import 'package:kelime_hazinem/utils/const_objects.dart';
 import 'package:kelime_hazinem/utils/database.dart';
 import 'package:kelime_hazinem/utils/disable_battery_opt.dart';
@@ -169,6 +171,12 @@ class Notifications {
 class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+    // Needed initializations for Analytics
+    await SqlDatabase.initDB();
+    await AppInfo.initializeApp();
+    await FirebaseDatabase.initDB();
+    await Analytics.initService();
+
     final word = Word.fromJson(json.decode(receivedAction.payload!["word"]!));
     switch (receivedAction.buttonKeyPressed) {
       case "willLearn":
