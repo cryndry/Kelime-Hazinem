@@ -31,7 +31,15 @@ class ListCard extends ConsumerStatefulWidget {
 
 class ListCardState extends ConsumerState<ListCard> {
   final beginOffsetForRotatingPage = const Offset(0, 1);
-  Border? border;
+  final overlayPortalController = OverlayPortalController();
+
+  void showOverlayPortal() {
+    overlayPortalController.hide();
+    overlayPortalController.show();
+    Future.delayed(MyDurations.millisecond1000, () {
+      overlayPortalController.hide();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,46 +59,78 @@ class ListCardState extends ConsumerState<ListCard> {
           return;
         }
 
-        bool doesHaveWord = (widget.dbTitle == null)
-            ? await SqlDatabase.checkIfListHaveWords(widget.title)
-            : await SqlDatabase.checkIfIconicListHaveWords(widget.dbTitle!);
+        final [doesHaveWord, isStudiable] = (widget.dbTitle == null)
+            ? await SqlDatabase.checkIfListHaveWords(listName: widget.title, studiable: true)
+            : [await SqlDatabase.checkIfIconicListHaveWords(listName: widget.dbTitle!), true];
         if (doesHaveWord) {
           popBottomSheet(
             context: context,
             title: widget.title,
             info: "Seçtiğiniz listenin ilgili menüsüne alttan ulaşabilirsiniz.",
             routeName: "ListActionsBottomSheet",
-            bottomWidgets: (setSheetState) => <Widget>[
+            bottomWidgets: (setSheetState) => [
+              OverlayPortal(
+                controller: overlayPortalController,
+                overlayChildBuilder: (context) => Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                    color: const Color(0xFF323232),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Listedeki tüm kelimeleri öğrenmişsin!",
+                          style: MyTextStyles.font_16_20_400.apply(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               FillColoredButton(
                 title: "Kelime Öğrenme",
                 onPressed: () {
-                  Navigator.of(context).pushReplacementNamed("WordLearn", arguments: {
-                    "listName": widget.title,
-                    "dbTitle": widget.dbTitle ?? widget.title,
-                    "beginOffset": beginOffsetForRotatingPage,
-                  });
+                  if (isStudiable) {
+                    Navigator.of(context).pushReplacementNamed("WordLearn", arguments: {
+                      "listName": widget.title,
+                      "dbTitle": widget.dbTitle ?? widget.title,
+                      "beginOffset": beginOffsetForRotatingPage,
+                    });
+                  } else {
+                    showOverlayPortal();
+                  }
                 },
               ),
               const SizedBox(height: 12),
               FillColoredButton(
                 title: "Kelime Testi",
                 onPressed: () {
-                  Navigator.of(context).pushReplacementNamed("WordTest", arguments: {
-                    "listName": widget.title,
-                    "dbTitle": widget.dbTitle ?? widget.title,
-                    "beginOffset": beginOffsetForRotatingPage,
-                  });
+                  if (isStudiable) {
+                    Navigator.of(context).pushReplacementNamed("WordTest", arguments: {
+                      "listName": widget.title,
+                      "dbTitle": widget.dbTitle ?? widget.title,
+                      "beginOffset": beginOffsetForRotatingPage,
+                    });
+                  } else {
+                    showOverlayPortal();
+                  }
                 },
               ),
               const SizedBox(height: 12),
               FillColoredButton(
                 title: "Kelimeyi Bul",
                 onPressed: () {
-                  Navigator.of(context).pushReplacementNamed("WordGuess", arguments: {
-                    "listName": widget.title,
-                    "dbTitle": widget.dbTitle ?? widget.title,
-                    "beginOffset": beginOffsetForRotatingPage,
-                  });
+                  if (isStudiable) {
+                    Navigator.of(context).pushReplacementNamed("WordGuess", arguments: {
+                      "listName": widget.title,
+                      "dbTitle": widget.dbTitle ?? widget.title,
+                      "beginOffset": beginOffsetForRotatingPage,
+                    });
+                  } else {
+                    showOverlayPortal();
+                  }
                 },
               ),
               const SizedBox(height: 12),

@@ -107,8 +107,10 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
                     StrokeColoredButton(
                       title: "Kısa Bir Tekrar?",
                       onPressed: () async {
-                        final doesWillLearnHaveEnoughWords =
-                            await SqlDatabase.checkIfIconicListHaveWords("willLearn", 50);
+                        final doesWillLearnHaveEnoughWords = await SqlDatabase.checkIfIconicListHaveWords(
+                          listName: "willLearn",
+                          atLeast: KeyValueDatabase.getWordLearnListLength(),
+                        );
                         Navigator.of(context).pushNamed(
                           "WordLearn",
                           arguments: (doesWillLearnHaveEnoughWords)

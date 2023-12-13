@@ -80,13 +80,7 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<List<Word>> getWordsQuery({
-    required String listName,
-    required bool isIconicList,
-    required bool isInRandomOrder,
-    int? limit,
-    List<int>? exceptionIds,
-  }) async {
+  static Future<List<Word>> getWordsQuery({required String listName, required bool isIconicList, required bool isInRandomOrder, int? limit, List<int>? exceptionIds, bool toStudy = true}) async {
     List<Map<String, dynamic>> words = await _db.transaction((txn) async {
       if (isIconicList) {
         String exceptionQuery = "";
@@ -126,6 +120,10 @@ abstract class SqlDatabase {
             JOIN $_dbListTableName
               ON $_dbListTableName.name = '$listName'
             WHERE $_dbEntryTableName.list_id = $_dbListTableName.id $exceptionQuery
+            ${toStudy ? '''
+              AND $_dbWordTableName.learned = 0
+              AND $_dbWordTableName.memorized = 0
+            ''' : ""}
             ${isInRandomOrder ? "ORDER BY RANDOM()" : ""}
             ${limit != null ? "LIMIT $limit" : ""}
           ''');
@@ -134,31 +132,57 @@ abstract class SqlDatabase {
     return words.map((word) => Word.fromJson(word)).toList();
   }
 
-  static Future<bool> checkIfListHaveWords(String listName, [int? atLeast]) async {
+  static Future<List<bool>> checkIfListHaveWords({
+    required String listName,
+    bool studiable = false,
+    int atLeast = 1,
+  }) async {
     return await _db.transaction((txn) async {
+      // does list even exist
       final listDataQuery = await txn.rawQuery("SELECT * FROM $_dbListTableName WHERE name='$listName'");
       final listData = listDataQuery.isEmpty ? null : listDataQuery.first;
-      if (listData == null) return false;
+      if (listData == null) return [false, false];
 
-      final result = await txn.rawQuery('''
+      // is there any word in list
+      final queryResult = await txn.rawQuery('''
         SELECT COUNT(*) as count 
         FROM $_dbEntryTableName
         WHERE list_id=${listData['id']}
-        LIMIT ${atLeast ?? 1}
+        LIMIT $atLeast
       ''');
-      return ((result[0]["count"] as int) >= (atLeast ?? 1));
+      final bool result = (queryResult[0]["count"] as int) >= atLeast;
+
+      if (!studiable) return [result, false];
+
+      // is there any word stduiable in this list
+      final studiableQueryResult = await txn.rawQuery('''
+        SELECT COUNT(*) as count 
+        FROM $_dbEntryTableName
+        JOIN $_dbWordTableName 
+          ON $_dbWordTableName.id = $_dbEntryTableName.word_id
+        WHERE $_dbEntryTableName.list_id=${listData['id']}
+          AND $_dbWordTableName.learned = 0
+          AND $_dbWordTableName.memorized = 0
+        LIMIT $atLeast
+      ''');
+      final bool studiableResult = (studiableQueryResult[0]["count"] as int) >= atLeast;
+
+      return [result, studiableResult];
     });
   }
 
-  static Future<bool> checkIfIconicListHaveWords(String listName, [int? atLeast]) async {
+  static Future<bool> checkIfIconicListHaveWords({
+    required String listName,
+    int atLeast = 1,
+  }) async {
     return await _db.transaction((txn) async {
       final result = await txn.rawQuery('''
         SELECT COUNT(*) as count
         FROM $_dbWordTableName
         WHERE $listName = 1
-        LIMIT ${atLeast ?? 1}
+        LIMIT $atLeast
       ''');
-      return ((result[0]["count"] as int) >= (atLeast ?? 1));
+      return ((result[0]["count"] as int) >= atLeast);
     });
   }
 
