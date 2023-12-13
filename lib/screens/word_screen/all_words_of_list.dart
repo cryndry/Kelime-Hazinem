@@ -26,6 +26,7 @@ class AllWordsOfListState extends ConsumerState<AllWordsOfList> {
       listName: widget.dbTitle,
       isIconicList: widget.dbTitle != widget.listName,
       isInRandomOrder: false,
+      toStudy: false,
     ).then((result) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         ref.read(allWordsOfListProvider.notifier).update((state) => result);
