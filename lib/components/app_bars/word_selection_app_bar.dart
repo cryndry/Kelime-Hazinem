@@ -144,6 +144,9 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
             size: 40,
             semanticsLabel: "Seçimleri İptal Et",
             onTap: () {
+              if (isUsedInListCreateMode) {
+                Navigator.of(context).pop();
+              }
               deactivateWordSelectionMode(ref);
             },
           ),
@@ -205,6 +208,7 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
                   await SqlDatabase.changeListsOfWord(wordId, listsData);
                 }
 
+                Navigator.of(context).pop();
                 deactivateWordSelectionMode(ref);
               },
             ),
