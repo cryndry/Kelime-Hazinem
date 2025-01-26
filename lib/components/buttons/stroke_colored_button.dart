@@ -8,10 +8,10 @@ class StrokeColoredButton extends StatelessWidget {
   final void Function()? onPressed;
 
   final ButtonStyle outlinedButtonStyle = OutlinedButton.styleFrom(
-    backgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-    foregroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
-    disabledBackgroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-    disabledForegroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
+    backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+    foregroundColor: WidgetStateColor.resolveWith((states) => MyColors.darkBlue),
+    disabledBackgroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+    disabledForegroundColor: WidgetStateColor.resolveWith((states) => MyColors.darkBlue),
     side: const BorderSide(color: MyColors.darkBlue, width: 1.5),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(

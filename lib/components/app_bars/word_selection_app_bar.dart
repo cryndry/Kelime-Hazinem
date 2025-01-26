@@ -134,7 +134,7 @@ class WordSelectionAppBarState extends ConsumerState<WordSelectionAppBar> {
 
     return PopScope(
       canPop: isUsedInListCreateMode,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, popResult) {
         deactivateWordSelectionMode(ref);
       },
       child: Row(

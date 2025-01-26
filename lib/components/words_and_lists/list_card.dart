@@ -167,7 +167,7 @@ class ListCardState extends ConsumerState<ListCard> {
               : null,
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(blurRadius: 4, color: widget.color.withOpacity(0.25))],
+          boxShadow: [BoxShadow(blurRadius: 4, color: widget.color.withValues(alpha: 0.25))],
         ),
         child: Column(
           children: [

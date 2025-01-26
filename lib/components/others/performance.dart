@@ -62,7 +62,7 @@ class MyPerformanceState extends StateWithRefreshOnPopNext<MyPerformance> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: MyColors.darkBlue.withOpacity(0.7),
+          color: MyColors.darkBlue.withValues(alpha: 0.7),
           width: 2,
         ),
       ),

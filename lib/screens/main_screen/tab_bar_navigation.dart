@@ -44,7 +44,7 @@ class MainScreenTabBar extends ConsumerWidget {
               labelStyle: MyTextStyles.font_14_16_500,
               unselectedLabelStyle: MyTextStyles.font_14_16_500,
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.white.withOpacity(0.8),
+              unselectedLabelColor: Colors.white.withValues(alpha: 0.8),
               tabs: const [
                 Tab(height: 48, child: Center(child: Text('Anasayfa', textAlign: TextAlign.center))),
                 Tab(height: 48, child: Center(child: Text('Listelerim', textAlign: TextAlign.center))),

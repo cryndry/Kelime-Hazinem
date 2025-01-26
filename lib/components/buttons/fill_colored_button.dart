@@ -9,10 +9,10 @@ class FillColoredButton extends StatelessWidget {
   final Widget? icon;
 
   final ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
-    foregroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
-    disabledBackgroundColor: MaterialStateColor.resolveWith((states) => MyColors.darkBlue),
-    disabledForegroundColor: MaterialStateColor.resolveWith((states) => Colors.white),
+    backgroundColor: WidgetStateColor.resolveWith((states) => MyColors.darkBlue),
+    foregroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
+    disabledBackgroundColor: WidgetStateColor.resolveWith((states) => MyColors.darkBlue),
+    disabledForegroundColor: WidgetStateColor.resolveWith((states) => Colors.white),
     padding: const EdgeInsets.all(12),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(24),

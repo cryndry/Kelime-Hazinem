@@ -34,7 +34,7 @@ class WordCard extends ConsumerStatefulWidget {
 class WordCardState extends ConsumerState<WordCard> {
   final TextStyle wordTextStyle = MyTextStyles.font_20_24_600.apply(color: Colors.white);
   final TextStyle infoTextStyle = MyTextStyles.font_14_16_500.apply(color: Colors.white60);
-  final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withOpacity(0.9));
+  final TextStyle meaningTextStyle = MyTextStyles.font_16_20_500.apply(color: Colors.white.withValues(alpha: 0.9));
 
   void handleSetState(Function() callback) {
     setState(() {

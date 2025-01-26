@@ -47,7 +47,7 @@ class WordTestState extends State<WordTest> {
 
   final correctTextStyle = MyTextStyles.font_20_24_500.apply(color: MyColors.green);
   final wrongTextStyle = MyTextStyles.font_20_24_500.apply(color: MyColors.red);
-  final emptyTextStyle = MyTextStyles.font_20_24_500.apply(color: Colors.black.withOpacity(0.6));
+  final emptyTextStyle = MyTextStyles.font_20_24_500.apply(color: Colors.black.withValues(alpha: 0.6));
 
   void animateToPageHandler() {
     textInputFocus.unfocus();
@@ -325,7 +325,7 @@ class WordTestState extends State<WordTest> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: MyColors.darkBlue.withOpacity(0.7),
+                          color: MyColors.darkBlue.withValues(alpha: 0.7),
                           width: 2,
                         ),
                       ),

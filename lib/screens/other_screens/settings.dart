@@ -360,8 +360,8 @@ class SwitchSettingState extends State<SwitchSetting> {
       width: 56,
       child: Switch(
         activeTrackColor: MyColors.darkBlue,
-        inactiveTrackColor: Colors.black.withOpacity(0.6),
-        thumbColor: const MaterialStatePropertyAll(Colors.white),
+        inactiveTrackColor: Colors.black.withValues(alpha: 0.6),
+        thumbColor: const WidgetStatePropertyAll(Colors.white),
         value: state,
         onChanged: (value) async {
           final newState = await widget.onChange(value);

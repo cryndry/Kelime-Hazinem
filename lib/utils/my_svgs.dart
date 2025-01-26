@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 abstract final class MySvgs {
   static String colorToHex(Color color) {
     String result = "#";
-    for (int value in [color.red, color.green, color.blue, color.alpha]) {
-      result += value.toRadixString(16).padLeft(2, "0");
+    for (double value in [color.r, color.g, color.b, color.a]) {
+      result += value.toInt().toRadixString(16).padLeft(2, "0");
     }
     return result;
   }

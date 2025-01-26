@@ -32,7 +32,7 @@ void showUndoSnackBar({
         children: [
           TextButton.icon(
             label: Text("Geri Al", style: MyTextStyles.font_14_16_500.apply(color: Colors.white)),
-            style: const ButtonStyle(overlayColor: MaterialStatePropertyAll(Colors.white24)),
+            style: const ButtonStyle(overlayColor: WidgetStatePropertyAll(Colors.white24)),
             icon: CircularProgressIndicatorWithDuration(
               size: 30,
               strokeWidth: 3,

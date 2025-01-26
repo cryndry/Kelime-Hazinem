@@ -133,7 +133,7 @@ class ListSelectionAppBarState extends ConsumerState {
 
     return PopScope(
       canPop: isUsedInListSharePage,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, popResult) {
         if (getIsListSelectionModeActive(ref)) {
           deactivateListSelectionMode(ref);
         }

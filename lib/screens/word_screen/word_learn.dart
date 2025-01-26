@@ -212,7 +212,7 @@ class _WordLearnState extends State<WordLearn> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: MyColors.darkBlue.withOpacity(0.7),
+                          color: MyColors.darkBlue.withValues(alpha: 0.7),
                           width: 2,
                         ),
                       ),
@@ -355,7 +355,7 @@ class WordLearnPageState extends State<WordLearnPage> {
               child: Text(
                 widget.currentWord.description,
                 style: MyTextStyles.font_16_20_500.merge(TextStyle(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                 )),
               ),
             ),
@@ -365,7 +365,7 @@ class WordLearnPageState extends State<WordLearnPage> {
               widget.currentWord.meaning,
               textAlign: TextAlign.center,
               style: MyTextStyles.font_20_24_500.merge(TextStyle(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
               )),
             ),
           ),
